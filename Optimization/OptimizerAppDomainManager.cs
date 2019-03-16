@@ -1,17 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Optimization
 {
-
     public class OptimizerAppDomainManager
     {
-
         static AppDomainSetup _ads;
         static Dictionary<string, Dictionary<string, decimal>> _results;
         static object _resultsLocker;
@@ -26,12 +21,13 @@ namespace Optimization
         static AppDomainSetup SetupAppDomain()
         {
             // Construct and initialize settings for a second AppDomain.
-            AppDomainSetup ads = new AppDomainSetup();
-            ads.ApplicationBase = AppDomain.CurrentDomain.BaseDirectory;
-
-            ads.DisallowBindingRedirects = false;
-            ads.DisallowCodeDownload = true;
-            ads.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
+            AppDomainSetup ads = new AppDomainSetup
+            {
+                ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
+                DisallowBindingRedirects = false,
+                DisallowCodeDownload = true,
+                ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile
+            };
 
             return ads;
         }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Optimization
+﻿namespace Optimization
 {
     public class Enums
     {
@@ -17,7 +11,5 @@ namespace Optimization
             Bayesian = 4,
             GlobalizedBoundedNelderMead = 5
         }
-
-
     }
 }

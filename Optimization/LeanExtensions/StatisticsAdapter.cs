@@ -1,16 +1,12 @@
 ﻿using QuantConnect.Statistics;
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Optimization
 {
     public class StatisticsAdapter
     {
-        private static Dictionary<string, string> _binding = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> _binding = new Dictionary<string, string>
         {
             {"Total Trades", "TotalNumberOfTrades"},
             {"Average Win","AverageWinRate"},

@@ -145,40 +145,40 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeflatedSharpeRatioFitness.cs" />
-    <Compile Include="DualPeriodSharpeFitness.cs" />
-    <Compile Include="EmptyApiHandler.cs" />
+    <Compile Include="Fitness\DeflatedSharpeRatioFitness.cs" />
+    <Compile Include="Fitness\DualPeriodSharpeFitness.cs" />
+    <Compile Include="LeanExtensions\EmptyApiHandler.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="FitnessFilter.cs" />
-    <Compile Include="IOptimizerManager.cs" />
-    <Compile Include="NFoldCrossReturnMaximizer.cs" />
-    <Compile Include="NFoldCrossSharpeMaximizer.cs" />
-    <Compile Include="NestedCrossSharpeMaximizer.cs" />
-    <Compile Include="SharpeMaximizer.cs" />
-    <Compile Include="MaximizerManager.cs" />
-    <Compile Include="IFitnessFilter.cs" />
-    <Compile Include="FibonacciRandomization.cs" />
+    <Compile Include="OptimizerManager\IOptimizerManager.cs" />
+    <Compile Include="Fitness\NFoldCrossReturnMaximizer.cs" />
+    <Compile Include="Fitness\NFoldCrossSharpeMaximizer.cs" />
+    <Compile Include="Fitness\NestedCrossSharpeMaximizer.cs" />
+    <Compile Include="Fitness\SharpeMaximizer.cs" />
+    <Compile Include="OptimizerManager\MaximizerManager.cs" />
+    <Compile Include="Interfaces\IFitnessFilter.cs" />
+    <Compile Include="GeneticSharpExtensions\FibonacciRandomization.cs" />
     <Compile Include="OptimizerAppDomainManager.cs" />
-    <Compile Include="Chromosome.cs" />
+    <Compile Include="GeneticSharpExtensions\Chromosome.cs" />
     <Compile Include="GeneConfiguration.cs" />
     <Compile Include="GeneConverter.cs" />
     <Compile Include="GeneFactory.cs" />
-    <Compile Include="GeneManager.cs" />
-    <Compile Include="IFitnessConfiguration.cs" />
-    <Compile Include="AdaptiveSharpeRatioFitness.cs" />
+    <Compile Include="OptimizerManager\GeneManager.cs" />
+    <Compile Include="Interfaces\IFitnessConfiguration.cs" />
+    <Compile Include="Fitness\AdaptiveSharpeRatioFitness.cs" />
     <Compile Include="OptimizerInitializer.cs" />
-    <Compile Include="IOptimizerConfiguration.cs" />
-    <Compile Include="OptimizerFitness.cs" />
+    <Compile Include="Interfaces\IOptimizerConfiguration.cs" />
+    <Compile Include="Fitness\OptimizerFitness.cs" />
     <Compile Include="OptimizerConfiguration.cs" />
     <Compile Include="OptimizerResultHandler.cs" />
-    <Compile Include="Queuer.cs" />
-    <Compile Include="StatisticsAdapter.cs" />
-    <Compile Include="PreloadPopulation.cs" />
+    <Compile Include="LeanExtensions\Queuer.cs" />
+    <Compile Include="LeanExtensions\StatisticsAdapter.cs" />
+    <Compile Include="GeneticSharpExtensions\PreloadPopulation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Runner.cs" />
-    <Compile Include="CompoundingAnnualReturnFitness.cs" />
-    <Compile Include="ConfiguredFitness.cs" />
+    <Compile Include="LeanExtensions\Runner.cs" />
+    <Compile Include="Fitness\CompoundingAnnualReturnFitness.cs" />
+    <Compile Include="Fitness\ConfiguredFitness.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

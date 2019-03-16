@@ -3,10 +3,8 @@ using NLog;
 
 namespace Optimization
 {
-
     public class Program
     {
-
         public static Logger Logger = LogManager.GetLogger("optimizer");
 
         public static void Main(string[] args)
@@ -15,6 +13,5 @@ namespace Optimization
 
             Console.ReadKey();
         }
-
     }
 }

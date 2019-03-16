@@ -1,9 +1,5 @@
 ﻿using GeneticSharp.Domain;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Optimization.Enums;
 
 namespace Optimization
@@ -11,7 +7,6 @@ namespace Optimization
     [Serializable]
     public class OptimizerConfiguration : IOptimizerConfiguration
     {
-
         /// <summary>
         /// The settings to generate gene values
         /// </summary>
@@ -124,7 +119,6 @@ namespace Optimization
     [Serializable]
     public class FitnessConfiguration : IFitnessConfiguration
     {
-
         /// <summary>
         /// Name of the fitness
         /// </summary>
