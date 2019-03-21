@@ -63,10 +63,10 @@ namespace Optimization
                 //todo:
                 // GridSearchOptimizer?
 
-                Func<double[], OptimizerResult> minimize = p => Minimize(p, (Chromosome)chromosome);
+                OptimizerResult Func(double[] p) => Minimize(p, (Chromosome) chromosome);
 
                 // run optimizer
-                var result = optimizer.OptimizeBest(minimize);
+                var result = optimizer.OptimizeBest(Func);
 
                 Best = ToChromosome(result, chromosome);
 
@@ -115,7 +115,7 @@ namespace Optimization
                 _resultIndex.Add(result, id);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Program.Logger.Error($"Id: {id}, Iteration failed.");
 
