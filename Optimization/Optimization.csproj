@@ -147,10 +147,14 @@
   <ItemGroup>
     <Compile Include="Fitness\DeflatedSharpeRatioFitness.cs" />
     <Compile Include="Fitness\DualPeriodSharpeFitness.cs" />
+    <Compile Include="Gene\GeneConfiguration.cs" />
+    <Compile Include="Gene\GeneConverter.cs" />
+    <Compile Include="Gene\GeneFactory.cs" />
+    <Compile Include="Interfaces\IOptimizerManager.cs" />
     <Compile Include="LeanExtensions\EmptyApiHandler.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="FitnessFilter.cs" />
-    <Compile Include="OptimizerManager\IOptimizerManager.cs" />
+    <Compile Include="LeanExtensions\OptimizerResultHandler.cs" />
     <Compile Include="Fitness\NFoldCrossReturnMaximizer.cs" />
     <Compile Include="Fitness\NFoldCrossSharpeMaximizer.cs" />
     <Compile Include="Fitness\NestedCrossSharpeMaximizer.cs" />
@@ -160,9 +164,6 @@
     <Compile Include="GeneticSharpExtensions\FibonacciRandomization.cs" />
     <Compile Include="OptimizerAppDomainManager.cs" />
     <Compile Include="GeneticSharpExtensions\Chromosome.cs" />
-    <Compile Include="GeneConfiguration.cs" />
-    <Compile Include="GeneConverter.cs" />
-    <Compile Include="GeneFactory.cs" />
     <Compile Include="OptimizerManager\GeneManager.cs" />
     <Compile Include="Interfaces\IFitnessConfiguration.cs" />
     <Compile Include="Fitness\AdaptiveSharpeRatioFitness.cs" />
@@ -170,7 +171,6 @@
     <Compile Include="Interfaces\IOptimizerConfiguration.cs" />
     <Compile Include="Fitness\OptimizerFitness.cs" />
     <Compile Include="OptimizerConfiguration.cs" />
-    <Compile Include="OptimizerResultHandler.cs" />
     <Compile Include="LeanExtensions\Queuer.cs" />
     <Compile Include="LeanExtensions\StatisticsAdapter.cs" />
     <Compile Include="GeneticSharpExtensions\PreloadPopulation.cs" />
