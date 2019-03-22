@@ -124,8 +124,8 @@ namespace Optimization
                     Log.Error("Engine.Main(): Failed to load library: " + compositionException);
                     throw;
                 }
-                string algorithmPath;
-                AlgorithmNodePacket job = systemHandlers.JobQueue.NextJob(out algorithmPath);
+
+                AlgorithmNodePacket job = systemHandlers.JobQueue.NextJob(out var algorithmPath);
 
                 try
                 {

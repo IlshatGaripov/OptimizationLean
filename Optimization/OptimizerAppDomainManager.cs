@@ -5,12 +5,18 @@ using System.Threading.Tasks;
 
 namespace Optimization
 {
-    public class OptimizerAppDomainManager
+    /// <summary>
+    /// Static class ..
+    /// </summary>
+    public static class OptimizerAppDomainManager
     {
-        static AppDomainSetup _ads;
-        static Dictionary<string, Dictionary<string, decimal>> _results;
-        static object _resultsLocker;
+        private static AppDomainSetup _ads;
+        private static Dictionary<string, Dictionary<string, decimal>> _results;
+        private static object _resultsLocker;
 
+        /// <summary>
+        /// Startup method
+        /// </summary>
         public static void Initialize()
         {
             _results = new Dictionary<string, Dictionary<string, decimal>>();
@@ -18,10 +24,12 @@ namespace Optimization
             _resultsLocker = new object();
         }
 
-        static AppDomainSetup SetupAppDomain()
+        /// <summary>
+        /// Construct and initialize settings for a second AppDomain.
+        /// </summary>
+        private static AppDomainSetup SetupAppDomain()
         {
-            // Construct and initialize settings for a second AppDomain.
-            AppDomainSetup ads = new AppDomainSetup
+            var ads = new AppDomainSetup
             {
                 ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
                 DisallowBindingRedirects = false,
@@ -31,23 +39,14 @@ namespace Optimization
 
             return ads;
         }
+        
 
-        static Runner CreateRunnerInAppDomain(ref AppDomain ad)
-        {
-            // Create the second AppDomain.
-            var name = Guid.NewGuid().ToString("x");
-            ad = AppDomain.CreateDomain(name, null, _ads);
-
-            // Create an instance of MarshalbyRefType in the second AppDomain. 
-            // A proxy to the object is returned.
-            Runner rc = (Runner)ad.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, typeof(Runner).FullName);
-
-            SetResults(ad, _results);
-
-            return rc;
-        }
-
-        static Queuer CreateQueuerInAppDomain(ref AppDomain ad)
+        //TODO: Resharper suggests this method has never been used ?? Can it be deleted?
+        /*
+        /// <summary>
+        /// ..
+        /// </summary>
+        static Queuer CreateQueuerInAppDomain(out AppDomain ad)
         {
             // Create the second AppDomain.
             var name = Guid.NewGuid().ToString("x");
@@ -61,11 +60,14 @@ namespace Optimization
 
             return rc;
         }
+        */
 
+        /// <summary>
+        /// Runs an algorithm in separate app doman and returns the results.
+        /// </summary>
         public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list, IOptimizerConfiguration config)
         {
-            AppDomain ad = null;
-            Runner rc = CreateRunnerInAppDomain(ref ad);
+            var rc = CreateRunnerInAppDomain(out var ad);
 
             var result = rc.Run(list, config);
 
@@ -80,9 +82,29 @@ namespace Optimization
                 }
             }
 
+            // unload an App Domain and assembly.
             AppDomain.Unload(ad);
 
             return result;
+        }
+
+        /// <summary>
+        /// Creates a lean algorithm runner in a new app domain
+        /// </summary>
+        /// <returns>a proxy to an object in newly created App Domain</returns>
+        private static Runner CreateRunnerInAppDomain(out AppDomain ad)
+        {
+            // Create the second AppDomain.
+            var name = Guid.NewGuid().ToString("x");
+            ad = AppDomain.CreateDomain(name, null, _ads);
+
+            // Create an instance of MarshalbyRefType in AppDomain. A proxy to the object is returned.
+            var rc = (Runner)ad.CreateInstanceAndUnwrap(typeof(Runner).Assembly.FullName, "Runner");
+
+            // set @Results@ property for App Domain.
+            SetResults(ad, _results);
+
+            return rc;
         }
 
         /// <summary>
@@ -93,7 +115,7 @@ namespace Optimization
         /// <returns></returns>
         public static Tuple<AppDomain, Task<Dictionary<string, decimal>>> RunAlgorithmAsync(Dictionary<string, object> list, IOptimizerConfiguration config)
         {
-            var runner = CreateRunnerInAppDomain(ref EngineContext.AppDomain);
+            var runner = CreateRunnerInAppDomain(out EngineContext.AppDomain);
 
             var result = Task.Run(() => runner.Run(list, config));
 
@@ -115,16 +137,13 @@ namespace Optimization
             return (T)ad.GetData(key);
         }
 
+        /// <summary>
+        /// Sets value to App Domain's @Results@ property.
+        /// </summary>
         public static void SetResults(AppDomain ad, object item)
         {
-            SetData(ad, "Results", item);
+            ad.SetData("Results", item);
         }
-
-        public static void SetData(AppDomain ad, string key, object item)
-        {
-            ad.SetData(key, item);
-        }
-
     }
 
 }

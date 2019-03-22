@@ -133,8 +133,7 @@ namespace Optimization
                 throw;
             }
 
-            string algorithmPath;
-            AlgorithmNodePacket job = EngineContext.SystemHandlers.JobQueue.NextJob(out algorithmPath);
+            AlgorithmNodePacket job = EngineContext.SystemHandlers.JobQueue.NextJob(out var algorithmPath);
 
             EngineContext.Engine.Run(job, new AlgorithmManager(false), algorithmPath);
             Log.Trace("Engine.Main(): Packet removed from queue: " + job.AlgorithmId);
