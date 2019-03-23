@@ -63,8 +63,9 @@ namespace Optimization.Batcher
 
                 _logWrapper.Result($"For period: {_current.StartDate} {_current.EndDate}");
 
-                var initializer = new OptimizerInitializer(_file, _managerFactory.Create());
-                initializer.Initialize(new[] { _configFilename });
+                // TODO: fix this in accordance with changes I made to OptimizerInitializer class
+                //var initializer = new OptimizerInitializer(_file, _managerFactory.Create());
+                //initializer.Initialize(new[] { _configFilename });
             }
         }
 
@@ -84,24 +85,25 @@ namespace Optimization.Batcher
                 {
                     var split = optimal.Split(',');
 
-                    for (int ii = 0; ii < split.Length; ii++)
+                    foreach (var t in split)
                     {
-                        string[] pair = split[ii].Split(':');
+                        var pair = t.Split(':');
                         var gene = _current.Genes.SingleOrDefault(g => g.Key == pair[0].Trim());
 
-                        decimal parsedDecimal;
-                        int parsedInt;
-                        if (int.TryParse(pair[1].Trim(), out parsedInt))
+                        if (int.TryParse(pair[1].Trim(), out var parsedInt))
                         {
                             gene.ActualInt = parsedInt;
                         }
-                        else if (decimal.TryParse(pair[1].Trim(), out parsedDecimal))
-                        {
-                            gene.ActualDecimal = parsedDecimal;
-                        }
                         else
                         {
-                            throw new Exception($"Unable to parse optimal gene from range {_current.StartDate} {_current.EndDate}");
+                            if (decimal.TryParse(pair[1].Trim(), out var parsedDecimal))
+                            {
+                                gene.ActualDecimal = parsedDecimal;
+                            }
+                            else
+                            {
+                                throw new Exception($"Unable to parse optimal gene from range {_current.StartDate} {_current.EndDate}");
+                            }
                         }
                     }
                 }

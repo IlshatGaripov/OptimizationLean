@@ -15,19 +15,20 @@ using QuantConnect.Algorithm;
 using QuantConnect.Configuration;
 using QuantConnect.Data.Market;
 using QuantConnect.Indicators;
-using QuantConnect.Parameters;
+using QuantConnect.Securities;
 
 namespace Optimization.Example
 {
     public class ParameterizedAlgorithm : QCAlgorithm
     {
-
         public int FastPeriod = Config.GetInt("fast", 13);
-
         public int SlowPeriod = Config.GetInt("slow", 56);
 
         public ExponentialMovingAverage Fast;
         public ExponentialMovingAverage Slow;
+
+        private Security _security;
+        private Symbol _symbol;
 
         public override void Initialize()
         {
@@ -35,10 +36,11 @@ namespace Optimization.Example
             SetEndDate(2013, 10, 11);
             SetCash(100 * 1000);
 
-            AddSecurity(SecurityType.Equity, "SPY");
+            _security = AddSecurity(SecurityType.Equity, "SPY");
+            _symbol = _security.Symbol;
 
-            Fast = EMA("SPY", FastPeriod);
-            Slow = EMA("SPY", SlowPeriod);
+            Fast = EMA(_symbol, FastPeriod);
+            Slow = EMA(_symbol, SlowPeriod);
         }
 
         public void OnData(TradeBars data)
@@ -48,11 +50,11 @@ namespace Optimization.Example
 
             if (Fast > Slow * 1.001m)
             {
-                SetHoldings("SPY", 1);
+                SetHoldings(_symbol, 1);
             }
             else if (Portfolio["SPY"].HoldStock && Portfolio["SPY"].UnrealizedProfitPercent > Config.GetValue<decimal>("take", 0.2m))
             {
-                Liquidate("SPY");
+                Liquidate(_symbol);
             }
 
         }

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 namespace Optimization
 {
+    /// <inheritdoc />
     /// <summary>
     /// Default optimizer behaviour using Sharpe ratio.
     /// </summary>

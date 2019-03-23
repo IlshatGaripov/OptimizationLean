@@ -1,7 +1,6 @@
 ﻿using GeneticSharp.Domain;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Crossovers;
-using GeneticSharp.Domain.Fitnesses;
 using GeneticSharp.Domain.Mutations;
 using GeneticSharp.Domain.Populations;
 using GeneticSharp.Domain.Reinsertions;
@@ -49,8 +48,10 @@ namespace Optimization
             }
 
             int max = _config.PopulationSizeMaximum < _config.PopulationSize ? _config.PopulationSize * 2 : _config.PopulationSizeMaximum;
-            _population = new PreloadPopulation(_config.PopulationSize, max, list);
-            _population.GenerationStrategy = new PerformanceGenerationStrategy();
+            _population = new PreloadPopulation(_config.PopulationSize, max, list)
+            {
+                GenerationStrategy = new PerformanceGenerationStrategy()
+            };
 
             //create the GA itself 
             var ga = new GeneticAlgorithm(_population, _fitness, new TournamentSelection(),
@@ -68,14 +69,14 @@ namespace Optimization
             ga.Start();
         }
 
-        void TerminationReached(object sender, EventArgs e)
+        private void TerminationReached(object sender, EventArgs e)
         {
             Program.Logger.Info(Termination);
 
             GenerationRan(null, null);
         }
 
-        void GenerationRan(object sender, EventArgs e)
+        private void GenerationRan(object sender, EventArgs e)
         {
             //keep first iteration of alpha to maintain id
             if (_bestChromosome == null || _population.BestChromosome.Fitness > _bestChromosome?.Fitness)
