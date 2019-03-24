@@ -7,7 +7,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Optimization</RootNamespace>
     <AssemblyName>Optimization</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
@@ -56,18 +56,6 @@
     </Reference>
     <Reference Include="Accord.Statistics, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
       <HintPath>..\packages\Accord.Statistics.3.8.0\lib\net46\Accord.Statistics.dll</HintPath>
-    </Reference>
-    <Reference Include="GeneticSharp.Domain, Version=1.0.5894.2743, Culture=neutral, PublicKeyToken=d63d2a65268366c6, processorArchitecture=MSIL">
-      <HintPath>..\packages\GeneticSharp.1.0.100\lib\net35\GeneticSharp.Domain.dll</HintPath>
-    </Reference>
-    <Reference Include="GeneticSharp.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f24c5e2578f0ecff, processorArchitecture=MSIL">
-      <HintPath>..\packages\GeneticSharp.1.0.100\lib\net35\GeneticSharp.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="GeneticSharp.Infrastructure.Framework, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f24c5e2578f0ecff, processorArchitecture=MSIL">
-      <HintPath>..\packages\GeneticSharp.1.0.100\lib\net35\GeneticSharp.Infrastructure.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="GeneticSharp.Infrastructure.Threading, Version=1.0.5894.2743, Culture=neutral, PublicKeyToken=f24c5e2578f0ecff, processorArchitecture=MSIL">
-      <HintPath>..\packages\GeneticSharp.1.0.100\lib\net35\GeneticSharp.Infrastructure.Threading.dll</HintPath>
     </Reference>
     <Reference Include="HelperSharp, Version=1.0.5560.27038, Culture=neutral, PublicKeyToken=3d44152485e1a4e1, processorArchitecture=MSIL">
       <HintPath>..\packages\GeneticSharp.1.0.100\lib\net35\HelperSharp.dll</HintPath>
@@ -198,5 +186,19 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GeneticSharp\src\GeneticSharp.Domain\GeneticSharp.Domain.csproj">
+      <Project>{b7fdc057-f9f2-4467-89e7-041202fb7bdc}</Project>
+      <Name>GeneticSharp.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GeneticSharp\src\GeneticSharp.Extensions\GeneticSharp.Extensions.csproj">
+      <Project>{441ecaa0-8ed6-46ce-b83e-b11e1abb8f9d}</Project>
+      <Name>GeneticSharp.Extensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GeneticSharp\src\GeneticSharp.Infrastructure.Framework\GeneticSharp.Infrastructure.Framework.csproj">
+      <Project>{14130612-ff14-4df4-8829-27c0e85e09f0}</Project>
+      <Name>GeneticSharp.Infrastructure.Framework</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

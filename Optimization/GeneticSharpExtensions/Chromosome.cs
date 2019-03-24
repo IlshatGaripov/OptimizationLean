@@ -6,12 +6,13 @@ using System.Text;
 
 namespace Optimization
 {
-
+    /// <summary>
+    /// Custom implementation of a chromosome class.
+    /// </summary>
     public class Chromosome : ChromosomeBase
     {
-
         GeneConfiguration[] _config;
-        bool _isActual;
+        readonly bool _isActual;
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
 
         public Chromosome(bool isActual, GeneConfiguration[] config) : base(config.Length)

@@ -4,7 +4,6 @@ namespace Optimization
 {
     public class FitnessFilter : IFitnessFilter
     {
-
         /// <summary>
         /// Applies standard filters to eliminate some false positive optimizer results
         /// </summary>

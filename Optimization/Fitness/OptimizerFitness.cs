@@ -27,11 +27,11 @@ namespace Optimization
 
         public virtual double Evaluate(IChromosome chromosome)
         {
-            this.Name = "Sharpe";
-
             try
             {
-                string output = "";
+                var output = "";
+
+                // 
                 var list = ((Chromosome)chromosome).ToDictionary();
 
                 list.Add("Id", ((Chromosome)chromosome).Id);
@@ -43,7 +43,7 @@ namespace Optimization
 
                 if (Config.StartDate.HasValue && Config.EndDate.HasValue)
                 {
-                    output += string.Format("Start: {0}, End: {1}, ", Config.StartDate, Config.EndDate);
+                    output += $"Start: {Config.StartDate}, End: {Config.EndDate}, ";
                 }
 
                 var result = OptimizerAppDomainManager.RunAlgorithm(list, Config);
@@ -102,6 +102,7 @@ namespace Optimization
             /// The value of the result
             /// </summary>
             public decimal Value { get; set; }
+
             /// <summary>
             /// The scaled or adjused fitness
             /// </summary>
