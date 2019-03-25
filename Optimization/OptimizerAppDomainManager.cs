@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Optimization
 {
     /// <summary>
-    /// Static class ..
+    /// Manages execution of QCAlgorithm that is optimized in a separate AppDomain.
     /// </summary>
     public static class OptimizerAppDomainManager
     {
@@ -39,7 +39,7 @@ namespace Optimization
 
             return ads;
         }
-        
+
 
         //TODO: Resharper suggests this method has never been used ?? Can it be deleted?
         /*
@@ -65,6 +65,9 @@ namespace Optimization
         /// <summary>
         /// Runs an algorithm in separate app doman and returns the results.
         /// </summary>
+        /// <param name="list">Input parameters.</param>
+        /// <param name="config">Optimizer configuration.</param>
+        /// <returns>Backtest statisctics in way of a dictionary.</returns>
         public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list, IOptimizerConfiguration config)
         {
             var rc = CreateRunnerInAppDomain(out var ad);

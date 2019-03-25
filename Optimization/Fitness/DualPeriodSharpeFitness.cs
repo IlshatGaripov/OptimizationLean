@@ -40,7 +40,7 @@ namespace Optimization
             {
                 Fitness = (first + second) / 2
             };
-            fitness.Value = (decimal)base.GetValueFromFitness(fitness.Fitness);
+            fitness.Value = (decimal)base.GetAdjustedFitness(fitness.Fitness);
 
             var output = string.Format($"Start: {Config.StartDate}, End: {Config.EndDate}, Start: {dualConfig.StartDate}, End: {dualConfig.EndDate}, "
             + $"Id: {((Chromosome)chromosome).Id}, Dual Period {this.Name}: {fitness.Value}");

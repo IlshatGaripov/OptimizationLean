@@ -11,8 +11,8 @@ namespace Optimization
     /// </summary>
     public class Chromosome : ChromosomeBase
     {
-        GeneConfiguration[] _config;
-        readonly bool _isActual;
+        private readonly GeneConfiguration[] _config;
+        private readonly bool _isActual;
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
 
         public Chromosome(bool isActual, GeneConfiguration[] config) : base(config.Length)
@@ -20,13 +20,18 @@ namespace Optimization
             _isActual = isActual;
             _config = config;
 
-            for (int i = 0; i < _config.Length; i++)
+            for (var i = 0; i < _config.Length; i++)
             {
                 ReplaceGene(i, GenerateGene(i));
             }
         }
 
-        public override Gene GenerateGene(int geneIndex)
+        /// <summary>
+        /// Generates the gene for the specified index.
+        /// </summary>
+        /// <param name="geneIndex">Gene index.</param>
+        /// <returns>The gene generated at the specified index.</returns>
+        public sealed override Gene GenerateGene(int geneIndex)
         {
             var item = _config[geneIndex];
             return GeneFactory.Generate(item, _isActual);
@@ -43,14 +48,18 @@ namespace Optimization
             return clone;
         }
 
+        /// <summary>
+        /// Converts a collection of chromosome genes into string/object dictionary.
+        /// </summary>
         public Dictionary<string, object> ToDictionary()
         {
-            return this.GetGenes().ToDictionary(d => ((KeyValuePair<string, object>)d.Value).Key, d => ((KeyValuePair<string, object>)d.Value).Value);
+            // TODO: wondering what would be logged after this expression been used?
+            return GetGenes().ToDictionary(d => ((KeyValuePair<string, object>)d.Value).Key, d => ((KeyValuePair<string, object>)d.Value).Value);
         }
 
         public string ToKeyValueString()
         {
-            StringBuilder output = new StringBuilder();
+            var output = new StringBuilder();
             foreach (var item in this.ToDictionary())
             {
                 output.Append(item.Key).Append(": ").Append(item.Value.ToString()).Append(", ");

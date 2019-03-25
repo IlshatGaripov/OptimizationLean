@@ -30,9 +30,11 @@ namespace Optimization
 
             // TODO: Should be easier to use Activator.CreateInstance? look into documentation ..
 
+            // create a new instance of a OptimizerFitness object itself or its descendant.
             var fitness = (OptimizerFitness)Assembly.GetExecutingAssembly().CreateInstance(config.FitnessTypeName,
                 false, BindingFlags.Default, null,
                 new object[] { config, new FitnessFilter() }, null, null);
+
 
             if (Manager == null)
             {
@@ -51,7 +53,9 @@ namespace Optimization
                 }
             }
 
+            // here extensively used Initialize() instead of the constructor
             Manager.Initialize(config, fitness);
+
             Manager.Start();
 
             Console.ReadKey();

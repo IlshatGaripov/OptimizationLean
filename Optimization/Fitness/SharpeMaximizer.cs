@@ -167,7 +167,7 @@ namespace Optimization
             };
         }
 
-        public override double GetValueFromFitness(double? fitness)
+        public override double GetAdjustedFitness(double? fitness)
         {
             return ((fitness ?? ErrorFitness) - 1) * 1000 * -1;
         }

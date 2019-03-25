@@ -114,7 +114,7 @@ namespace Optimization
             return base.Evaluate(chromosome);
         }
 
-        public override double GetValueFromFitness(double? fitness)
+        public override double GetAdjustedFitness(double? fitness)
         {
             return fitness ?? 0;
         }

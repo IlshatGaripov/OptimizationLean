@@ -12,16 +12,24 @@ using System.Collections.Generic;
 
 namespace Optimization
 {
-
+    /// <summary>
+    /// The one that manages the whole genetic optimization process. 
+    /// </summary>
     public class GeneManager : IOptimizerManager
     {
         public const string Termination = "Termination Reached.";
+
+        // this is now made global (static)
         private IOptimizerConfiguration _config;
+
         private ParallelTaskExecutor _executor;
         private Population _population;
         private OptimizerFitness _fitness;
         private Chromosome _bestChromosome;
 
+        /// <summary>
+        /// Init the class variables. 
+        /// </summary>
         public void Initialize(IOptimizerConfiguration config, OptimizerFitness fitness)
         {
             _config = config;
@@ -32,6 +40,9 @@ namespace Optimization
             };
         }
 
+        /// <summary>
+        /// Start the optimization. The core method.
+        /// </summary>
         public void Start()
         {           
             if (_executor == null)
@@ -57,16 +68,19 @@ namespace Optimization
 
             //create the GA itself 
             var ga = new GeneticAlgorithm(_population, _fitness, new TournamentSelection(),
-                _config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover(), new UniformMutation(true));
+                _config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover(), new UniformMutation(true))
+            {
+                TaskExecutor = _executor,
+                Termination = new OrTermination(new FitnessStagnationTermination(_config.StagnationGenerations), new GenerationNumberTermination(_config.Generations)),
+                Reinsertion = new ElitistReinsertion(),
+                MutationProbability = _config.MutationProbability,
+                CrossoverProbability = _config.CrossoverProbability
+            };
 
             //subscribe to events
             ga.GenerationRan += GenerationRan;
             ga.TerminationReached += TerminationReached;
-            ga.TaskExecutor = _executor;
-            ga.Termination = new OrTermination(new FitnessStagnationTermination(_config.StagnationGenerations), new GenerationNumberTermination(_config.Generations));
-            ga.Reinsertion = new ElitistReinsertion();
-            ga.MutationProbability = _config.MutationProbability;
-            ga.CrossoverProbability = _config.CrossoverProbability;
+
             //run the GA 
             ga.Start();
         }
@@ -86,8 +100,9 @@ namespace Optimization
                 _bestChromosome = (Chromosome)_population.BestChromosome;
             }
 
-            Program.Logger.Info("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}, {5}, Id: {6}", _config.AlgorithmTypeName, _population.GenerationsNumber, _bestChromosome.Fitness,
-                _fitness.Name, _fitness.GetValueFromFitness(_bestChromosome.Fitness), _bestChromosome.ToKeyValueString(), _bestChromosome.Id);
+            Program.Logger.Info("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}, Id: {5}", 
+                _config.AlgorithmTypeName, _population.GenerationsNumber, _bestChromosome.Fitness,
+                _fitness.Name, _bestChromosome.ToKeyValueString(), _bestChromosome.Id);
         }
 
     }

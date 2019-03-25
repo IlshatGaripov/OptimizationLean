@@ -13,27 +13,53 @@ namespace Optimization
     /// <remarks>Default behaviour will nullify fitness for negative return</remarks>
     public class OptimizerFitness : IFitness
     {
+        /// <summary>
+        /// Name. Virtual.
+        /// </summary>
         public virtual string Name { get; set; } = "Sharpe";
+
+        /// <summary>
+        /// Program configuration.
+        /// </summary>
         public IOptimizerConfiguration Config { get; protected set; }
+
+        /// <summary>
+        /// Filter used to sort out insignificant values.
+        /// </summary>
         public IFitnessFilter Filter { get; set; }
-        protected double Scale { get; set; } = 0.02;
+
+        /// <summary>
+        /// The scale used to calculate the normalized value of fitness. Can be overriden is child class.
+        /// </summary>
+        protected virtual double Scale { get; set; } = 0.02;
+
+        /// <summary>
+        /// Default value for insignificat result of evaluation.
+        /// </summary>
         protected const decimal ErrorRatio = -10;
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public OptimizerFitness(IOptimizerConfiguration config, IFitnessFilter filter)
         {
             Config = config;
             Filter = filter;
         }
 
+        /// <summary>
+        /// Evaluates the chromosome's fitness.
+        /// </summary>
         public virtual double Evaluate(IChromosome chromosome)
         {
             try
             {
                 var output = "";
 
-                // 
+                // convert chromosome genes to dictionary to feed the algorithm. 
                 var list = ((Chromosome)chromosome).ToDictionary();
 
+                // add one more item to the dictionary that will stand for chromosome id
                 list.Add("Id", ((Chromosome)chromosome).Id);
 
                 foreach (var item in list)
@@ -46,16 +72,22 @@ namespace Optimization
                     output += $"Start: {Config.StartDate}, End: {Config.EndDate}, ";
                 }
 
+                // run the algorithm - core functionality.
                 var result = OptimizerAppDomainManager.RunAlgorithm(list, Config);
 
                 if (result == null)
                 {
+                    // do we need additional logging when result is null ?? 
+                    // Program.Logger ..
+
                     return 0;
                 }
 
                 var fitness = CalculateFitness(result);
 
-                output += $"{this.Name}: {fitness.Value}";
+                output += $"{Name}: {fitness.Value}";
+
+                // log final output
                 Program.Logger.Info(output);
 
                 return fitness.Fitness;
@@ -67,35 +99,51 @@ namespace Optimization
             }
         }
 
+        /// <summary>
+        /// Calculates the fitness by Sharp Ratio.
+        /// </summary>
         protected virtual FitnessResult CalculateFitness(Dictionary<string, decimal> result)
         {
             var fitness = new FitnessResult();
-
             var ratio = result["SharpeRatio"];
 
+            // if there is an isignificant result by applying filter
             if (Filter != null && !Filter.IsSuccess(result, this))
             {
+                // then assign a ratio the default error value  
                 ratio = ErrorRatio;
             }
 
+            // otherwise fitness value is ratio
             fitness.Value = ratio;
 
+            // what is a fitness fitness for? 
             fitness.Fitness = (double)(System.Math.Max(ratio, ErrorRatio) + 10) * Scale;
 
             return fitness;
         }
 
-        public virtual double GetValueFromFitness(double? fitness)
+        /// <summary>
+        /// ??
+        /// </summary>
+        public virtual double GetAdjustedFitness(double? fitness)
         {
-            return fitness.Value / Scale - 10;
-        }
+            return fitness.HasValue ? fitness.Value / Scale - 10 : 0;
 
+        }
+        
+        /// <summary>
+        /// Clone method used to create a copy of an Configuration object.
+        /// </summary>
         protected static T Clone<T>(T source)
         {
             var serialized = JsonConvert.SerializeObject(source);
             return JsonConvert.DeserializeObject<T>(serialized);
         }
 
+        /// <summary>
+        /// Nested class to contain the fintess function results.
+        /// </summary>
         protected class FitnessResult
         {
             /// <summary>

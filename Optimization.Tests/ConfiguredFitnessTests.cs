@@ -51,7 +51,7 @@ namespace Optimization.Tests
                 }
             });
 
-            var actual = unit.GetValueFromFitness(-1d);
+            var actual = unit.GetAdjustedFitness(-1d);
             Assert.AreEqual(10, actual);
         }
 

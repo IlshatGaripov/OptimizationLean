@@ -24,8 +24,8 @@
 
             var best = ((Chromosome)((SharpeMaximizer)_fitness).Best);
 
-            var info = $"Algorithm: {_config.AlgorithmTypeName}, Fitness: {chromosome.Fitness}, {_fitness.Name}: " +
-            $"{_fitness.GetValueFromFitness(chromosome.Fitness).ToString("F")}, {best.ToKeyValueString()}";
+            var info =
+                $"Algorithm: {_config.AlgorithmTypeName}, Fitness: {chromosome.Fitness}, {_fitness.Name}: {best.ToKeyValueString()}";
 
             Program.Logger.Info(info);
         }

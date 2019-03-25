@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Optimization
 {
     public class CompoundingAnnualReturnFitness : OptimizerFitness
     {
-
         public override string Name { get; set; } = "Return";
+        protected override double Scale { get; set; } = 0.01;
 
         public CompoundingAnnualReturnFitness(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
         {
         }
-
-        double scale = 0.01;
-
+        
         //Fitness based on Compounding Annual Return
         protected override FitnessResult CalculateFitness(Dictionary<string, decimal> result)
         {
@@ -31,14 +25,14 @@ namespace Optimization
 
             fitness.Value = car;
 
-            fitness.Fitness = (double)car * scale;
+            fitness.Fitness = (double)car * Scale;
 
             return fitness;
         }
 
-        public override double GetValueFromFitness(double? fitness)
+        public override double GetAdjustedFitness(double? fitness)
         {
-            return fitness.Value / scale;
+            return fitness.Value / Scale;
         }
 
     }

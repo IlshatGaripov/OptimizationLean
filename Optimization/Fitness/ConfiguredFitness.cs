@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Optimization
 {
@@ -23,7 +20,8 @@ namespace Optimization
             {
                 config.Fitness.Modifier = 1;
             }
-            this.Name = Config.Fitness.Name;
+
+            Name = Config.Fitness.Name;
         }
 
         //Fitness based on config settings
@@ -40,7 +38,7 @@ namespace Optimization
             return fitness;
         }
 
-        public override double GetValueFromFitness(double? fitness)
+        public override double GetAdjustedFitness(double? fitness)
         {
             return (fitness.Value / Config.Fitness.Scale.Value) / Config.Fitness.Modifier.Value;
         }
