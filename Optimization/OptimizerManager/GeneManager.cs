@@ -50,17 +50,24 @@ namespace Optimization
                 throw new Exception("Executor was not initialized");
             }
 
-            //create the population
+            // list to store the chromosomes
             IList<IChromosome> list = new List<IChromosome>();
+
+            // GeneFactory generates the chromosome genes.
             GeneFactory.Initialize(_config.Genes);
-            for (int i = 0; i < _config.PopulationSize; i++)
+
+            // creates chromosomes 
+            for (var i = 0; i < _config.PopulationSize; i++)
             {
                 //first chromosome always use actuals. For others decide by config
                 var isActual = i == 0 || _config.UseActualGenesForWholeGeneration;
-                list.Add(new Chromosome(isActual, GeneFactory.Config));
+
+                list.Add(new Chromosome(isActual, GeneFactory.GeneConfigArray));
             }
 
-            int max = _config.PopulationSizeMaximum < _config.PopulationSize ? _config.PopulationSize * 2 : _config.PopulationSizeMaximum;
+            var max = _config.PopulationSizeMaximum < _config.PopulationSize ? _config.PopulationSize * 2 : _config.PopulationSizeMaximum;
+
+            // create the population
             _population = new PreloadPopulation(_config.PopulationSize, max, list)
             {
                 GenerationStrategy = new PerformanceGenerationStrategy()

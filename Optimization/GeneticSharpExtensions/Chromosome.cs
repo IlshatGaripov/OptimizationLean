@@ -9,43 +9,56 @@ namespace Optimization
     /// <summary>
     /// Custom implementation of a chromosome class.
     /// </summary>
-    public class Chromosome : ChromosomeBase
+    public sealed class Chromosome : ChromosomeBase
     {
+        /// <summary>
+        /// Array of gene configurations.
+        /// </summary>
         private readonly GeneConfiguration[] _config;
+
+        /// <summary>
+        /// Flag indicating whether take actual value or generate it randomly.
+        /// </summary>
         private readonly bool _isActual;
+
+        /// <summary>
+        /// Unique chromosome id.
+        /// </summary>
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public Chromosome(bool isActual, GeneConfiguration[] config) : base(config.Length)
         {
             _isActual = isActual;
             _config = config;
-
+            
+            // fill the gene array with generated values
             for (var i = 0; i < _config.Length; i++)
             {
                 ReplaceGene(i, GenerateGene(i));
             }
         }
-
+        
         /// <summary>
         /// Generates the gene for the specified index.
         /// </summary>
         /// <param name="geneIndex">Gene index.</param>
         /// <returns>The gene generated at the specified index.</returns>
-        public sealed override Gene GenerateGene(int geneIndex)
+        public override Gene GenerateGene(int geneIndex)
         {
-            var item = _config[geneIndex];
-            return GeneFactory.Generate(item, _isActual);
+            var geneConfig = _config[geneIndex];
+            return GeneFactory.Generate(geneConfig, _isActual);
         }
 
+        /// <summary>
+        /// Creates a new chromosome using the same structure of this.
+        /// </summary>
+        /// <returns>The new chromosome.</returns>
         public override IChromosome CreateNew()
         {
-            return new Chromosome(false, GeneFactory.Config);
-        }
-
-        public override IChromosome Clone()
-        {
-            var clone = base.Clone() as Chromosome;
-            return clone;
+            return new Chromosome(_isActual, _config);
         }
 
         /// <summary>

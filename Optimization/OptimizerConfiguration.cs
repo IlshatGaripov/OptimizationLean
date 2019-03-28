@@ -4,6 +4,9 @@ using static Optimization.Enums;
 
 namespace Optimization
 {
+    /// <summary>
+    /// The main program configuration object. Reflecting all those values that optimization.json contains.
+    /// </summary>
     [Serializable]
     public class OptimizerConfiguration : IOptimizerConfiguration
     {

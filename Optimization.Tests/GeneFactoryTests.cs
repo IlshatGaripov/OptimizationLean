@@ -25,7 +25,7 @@ namespace Optimization.Tests
         public void InitializeTest()
         {
             GeneFactory.Initialize(new GeneConfiguration[0]);
-            Assert.IsNotNull(GeneFactory.Config);
+            Assert.IsNotNull(GeneFactory.GeneConfigArray);
         }
 
         [Test()]
@@ -97,7 +97,7 @@ namespace Optimization.Tests
             actual = GeneFactory.Generate(config[1], false);
             decimal parsed;
             Assert.IsTrue(decimal.TryParse(((KeyValuePair<string, object>)actual.Value).Value.ToString(), out parsed));
-            Assert.AreEqual(2, GeneFactory.GetPrecision(parsed));
+            Assert.AreEqual(2, GeneFactory.DecimalScale(parsed));
 
         }
     }

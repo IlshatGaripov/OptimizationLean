@@ -3,6 +3,9 @@ using System;
 
 namespace Optimization
 {
+    /// <summary>
+    /// Class determines the values helpful to identify genes.
+    /// </summary>
     [JsonConverter(typeof(GeneConverter))]
     [Serializable]
     public class GeneConfiguration
