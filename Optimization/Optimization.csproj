@@ -88,9 +88,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\FitnessConfiguration.cs" />
     <Compile Include="Fitness\DeflatedSharpeRatioFitness.cs" />
     <Compile Include="Fitness\DualPeriodSharpeFitness.cs" />
-    <Compile Include="Gene\GeneConfiguration.cs" />
+    <Compile Include="Configuration\GeneConfiguration.cs" />
     <Compile Include="Gene\GeneConverter.cs" />
     <Compile Include="Gene\GeneFactory.cs" />
     <Compile Include="Interfaces\IOptimizerManager.cs" />
@@ -108,10 +109,10 @@
     <Compile Include="OptimizerAppDomainManager.cs" />
     <Compile Include="GeneticSharpExtensions\Chromosome.cs" />
     <Compile Include="OptimizerManager\GeneManager.cs" />
-    <Compile Include="Interfaces\IFitnessConfiguration.cs" />
+    <Compile Include="Configuration\IFitnessConfiguration.cs" />
     <Compile Include="Fitness\AdaptiveSharpeRatioFitness.cs" />
     <Compile Include="OptimizerInitializer.cs" />
-    <Compile Include="Interfaces\IOptimizerConfiguration.cs" />
+    <Compile Include="Configuration\IOptimizerConfiguration.cs" />
     <Compile Include="Fitness\OptimizerFitness.cs" />
     <Compile Include="Configuration\OptimizerConfiguration.cs" />
     <Compile Include="LeanExtensions\Queuer.cs" />
