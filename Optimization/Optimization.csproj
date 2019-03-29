@@ -92,6 +92,7 @@
     <Compile Include="Fitness\DeflatedSharpeRatioFitness.cs" />
     <Compile Include="Fitness\DualPeriodSharpeFitness.cs" />
     <Compile Include="Configuration\GeneConfiguration.cs" />
+    <Compile Include="GeneticSharpExtensions\PopulationBase.cs" />
     <Compile Include="Gene\GeneConverter.cs" />
     <Compile Include="Gene\GeneFactory.cs" />
     <Compile Include="Interfaces\IOptimizerManager.cs" />

@@ -22,9 +22,24 @@ namespace Optimization
         // this is now made global (static)
         private IOptimizerConfiguration _config;
 
+        /// <summary>
+        /// An executor.
+        /// </summary>
         private ParallelTaskExecutor _executor;
-        private Population _population;
+
+        /// <summary>
+        /// Population.
+        /// </summary>
+        private IPopulation _population;
+
+        /// <summary>
+        /// GA fitness.
+        /// </summary>
         private OptimizerFitness _fitness;
+
+        /// <summary>
+        /// Best chromosome.
+        /// </summary>
         private Chromosome _bestChromosome;
 
         /// <summary>
@@ -51,7 +66,7 @@ namespace Optimization
             }
 
             // list to store the chromosomes
-            IList<IChromosome> list = new List<IChromosome>();
+            IList<IChromosome> chromosomes = new List<IChromosome>();
 
             // GeneFactory generates the chromosome genes.
             GeneFactory.Initialize(_config.Genes);
@@ -62,16 +77,11 @@ namespace Optimization
                 //first chromosome always use actuals. For others decide by config
                 var isActual = i == 0 || _config.UseActualGenesForWholeGeneration;
 
-                list.Add(new Chromosome(isActual, GeneFactory.GeneConfigArray));
+                chromosomes.Add(new Chromosome(isActual, GeneFactory.GeneConfigArray));
             }
 
-            var max = _config.PopulationSizeMaximum < _config.PopulationSize ? _config.PopulationSize * 2 : _config.PopulationSizeMaximum;
-
-            // create the population
-            _population = new PreloadPopulation(_config.PopulationSize, max, list)
-            {
-                GenerationStrategy = new PerformanceGenerationStrategy()
-            };
+            // create a population from the pre-defined list of chromosomes.
+            _population = new PreloadPopulation(chromosomes);
 
             //create the GA itself 
             var ga = new GeneticAlgorithm(_population, _fitness, new TournamentSelection(),
