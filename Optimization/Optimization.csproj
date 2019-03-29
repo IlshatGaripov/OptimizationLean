@@ -113,7 +113,7 @@
     <Compile Include="OptimizerInitializer.cs" />
     <Compile Include="Interfaces\IOptimizerConfiguration.cs" />
     <Compile Include="Fitness\OptimizerFitness.cs" />
-    <Compile Include="OptimizerConfiguration.cs" />
+    <Compile Include="Configuration\OptimizerConfiguration.cs" />
     <Compile Include="LeanExtensions\Queuer.cs" />
     <Compile Include="LeanExtensions\StatisticsAdapter.cs" />
     <Compile Include="GeneticSharpExtensions\PreloadPopulation.cs" />
