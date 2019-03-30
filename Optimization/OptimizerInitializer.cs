@@ -44,7 +44,7 @@ namespace Optimization
         /// <summary>
         /// Loads values from JSON text file to a special class holding the config values.
         /// </summary>
-        public static OptimizerConfiguration LoadConfig()
+        public static OptimizerConfiguration LoadConfigFromFile()
         {
             // default path
             const string path = "optimization.json";

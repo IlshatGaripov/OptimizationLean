@@ -69,13 +69,10 @@ namespace Optimization
             // GeneFactory generates the chromosome genes.
             GeneFactory.Initialize(Program.Config.Genes);
 
-            // creates chromosomes 
+            // create chromosomes and add them to list.
             for (var i = 0; i < Program.Config.PopulationSize; i++)
             {
-                //first chromosome always use actuals. For others decide by config
-                var isActual = i == 0 || Program.Config.UseActualGenesForWholeGeneration;
-
-                chromosomes.Add(new Chromosome(isActual, GeneFactory.GeneConfigArray));
+                chromosomes.Add(new Chromosome(GeneFactory.GeneConfigArray));
             }
 
             // create a population from the pre-defined list of chromosomes.

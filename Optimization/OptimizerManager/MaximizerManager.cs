@@ -15,7 +15,7 @@
         public void Start()
         {
             GeneFactory.Initialize(Program.Config.Genes);
-            var chromosome = new Chromosome(false, GeneFactory.GeneConfigArray);
+            var chromosome = new Chromosome( GeneFactory.GeneConfigArray);
             _fitness.Evaluate(chromosome);
 
             Program.Logger.Info(Termination);

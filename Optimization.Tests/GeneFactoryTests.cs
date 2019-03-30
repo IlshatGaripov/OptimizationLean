@@ -1,12 +1,7 @@
 ﻿using GeneticSharp.Domain.Randomizations;
 using NUnit.Framework;
-using Optimization;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Optimization.Tests
 {
@@ -90,13 +85,12 @@ namespace Optimization.Tests
             RandomizationProvider.Current = new BasicRandomization();
             GeneFactory.Initialize(config);
 
-            var actual = GeneFactory.Generate(config[0], true);
+            var actual = GeneFactory.Generate(config[0]);
             Assert.AreEqual(200, (int)((KeyValuePair<string, object>)actual.Value).Value);
 
             RandomizationProvider.Current = new BasicRandomization();
-            actual = GeneFactory.Generate(config[1], false);
-            decimal parsed;
-            Assert.IsTrue(decimal.TryParse(((KeyValuePair<string, object>)actual.Value).Value.ToString(), out parsed));
+            actual = GeneFactory.Generate(config[1]);
+            Assert.IsTrue(decimal.TryParse(((KeyValuePair<string, object>)actual.Value).Value.ToString(), out var parsed));
             Assert.AreEqual(2, GeneFactory.DecimalScale(parsed));
 
         }

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Globalization;
+//using System.Globalization;
 
 namespace Optimization
 {
@@ -32,8 +32,10 @@ namespace Optimization
                 MinInt = precision > 0 ? null : json["min"].Value<int?>(),
                 MaxInt = precision > 0 ? null : json["max"].Value<int?>(),
                 Precision = precision, 
-                Fibonacci = json["fibonacci"] != null ? json["fibonacci"].Value<bool>() : false
+                Fibonacci = json["fibonacci"]?.Value<bool>() ?? false
             };
+
+            /*
             if (json["actual"] != null)
             {
 
@@ -57,6 +59,7 @@ namespace Optimization
                     }
                 }
             }
+            */
 
             return gene;
         }
@@ -92,6 +95,8 @@ namespace Optimization
                 writer.WritePropertyName("precision");
                 writer.WriteValue(gene.Precision);
             }
+
+            /*
             if (gene.ActualInt.HasValue)
             {
                 writer.WritePropertyName("actual");
@@ -102,7 +107,7 @@ namespace Optimization
                 writer.WritePropertyName("actual");
                 writer.WriteValue(gene.ActualDecimal);
             }
-
+            */
 
             writer.WriteEndObject();
 

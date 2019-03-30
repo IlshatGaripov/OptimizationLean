@@ -20,7 +20,7 @@ namespace Optimization
         /// </summary>
         public static void Main(string[] args)
         {
-            Config = OptimizerInitializer.LoadConfig();
+            Config = OptimizerInitializer.LoadConfigFromFile();
 
             // Init those few variables used when joggling with App Domain features used launching the lean runner.
             OptimizerAppDomainManager.Initialize();

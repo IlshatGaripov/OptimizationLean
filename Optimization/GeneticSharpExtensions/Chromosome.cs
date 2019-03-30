@@ -17,11 +17,6 @@ namespace Optimization
         private readonly GeneConfiguration[] _config;
 
         /// <summary>
-        /// Flag indicating whether take actual value or generate it randomly.
-        /// </summary>
-        private readonly bool _isActual;
-
-        /// <summary>
         /// Unique chromosome id.
         /// </summary>
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
@@ -29,9 +24,8 @@ namespace Optimization
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Chromosome(bool isActual, GeneConfiguration[] config) : base(config.Length)
+        public Chromosome( GeneConfiguration[] config) : base(config.Length)
         {
-            _isActual = isActual;
             _config = config;
             
             // fill the gene array with generated values
@@ -49,7 +43,7 @@ namespace Optimization
         public override Gene GenerateGene(int geneIndex)
         {
             var geneConfig = _config[geneIndex];
-            return GeneFactory.Generate(geneConfig, _isActual);
+            return GeneFactory.Generate(geneConfig);
         }
 
         /// <summary>
@@ -58,7 +52,7 @@ namespace Optimization
         /// <returns>The new chromosome.</returns>
         public override IChromosome CreateNew()
         {
-            return new Chromosome(_isActual, _config);
+            return new Chromosome( _config);
         }
 
         /// <summary>

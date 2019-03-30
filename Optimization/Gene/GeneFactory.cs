@@ -79,24 +79,11 @@ namespace Optimization
         /// Generate gene according to GeneConfiguration.
         /// </summary>
         /// <param name="config">Gene configuration.</param>
-        /// <param name="isActual">Inicated if take pre-defined value or generate random.</param>
-        public static Gene Generate(GeneConfiguration config, bool isActual)
+        public static Gene Generate(GeneConfiguration config)
         {
             // set randomization scheme.
             RandomizationProvider.Current = config.Fibonacci ? _fibonacci : _basic;
-
-            // if actual int value is set
-            if (isActual && config.ActualInt.HasValue)
-            {
-                return new Gene(new KeyValuePair<string, object>(config.Key, config.ActualInt));
-            }
-
-            // if actual decimal value is set
-            if (isActual && config.ActualDecimal.HasValue)
-            {
-                return new Gene(new KeyValuePair<string, object>(config.Key, config.ActualDecimal));
-            }
-
+            
             // generate random decimal within an interval
             if (config.MinDecimal.HasValue && config.MaxDecimal.HasValue)
             {

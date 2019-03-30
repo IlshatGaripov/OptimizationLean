@@ -4,21 +4,18 @@
       "key": "take",
       "min": 0.02,
       "max": 0.1,
-      "precision": 2,
-      "actual": 0.06
+      "precision": 2
     },
     {
       "key": "fast",
       "min": 6,
       "max": 48,
-      "precision": 0,
-      "actual": 44
+      "precision": 0
     },
     {
       "key": "slow",
       "min": 48,
-      "max": 500,
-      "actual": 63
+      "max": 500
     }
   ],
   "populationSize": 24,

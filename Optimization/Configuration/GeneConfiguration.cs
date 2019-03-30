@@ -41,6 +41,13 @@ namespace Optimization
         public int? Precision { get; set; }
 
         /// <summary>
+        /// When true, will randomly select a value between 0 to 10946 from the Fibonacci sequence instead of generating random values
+        /// </summary>
+        /// <remarks></remarks>
+        public bool Fibonacci { get; set; }
+
+        /*
+        /// <summary>
         /// The non-random starting value of an int
         /// </summary>
         public int? ActualInt { get; set; }
@@ -49,12 +56,6 @@ namespace Optimization
         /// The non-random starting value of a decimal
         /// </summary>
         public decimal? ActualDecimal { get; set; }
-
-        /// <summary>
-        /// When true, will randomly select a value between 0 to 10946 from the Fibonacci sequence instead of generating random values
-        /// </summary>
-        /// <remarks></remarks>
-        public bool Fibonacci { get; set; }
-
+        */
     }
 }
