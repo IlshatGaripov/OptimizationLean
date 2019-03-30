@@ -4,19 +4,17 @@
     public class MaximizerManager : IOptimizerManager
     {
         public const string Termination = "Termination Reached.";
-        private IOptimizerConfiguration _config;
         private OptimizerFitness _fitness;
 
-        public void Initialize(IOptimizerConfiguration config, OptimizerFitness fitness)
+        public void Initialize(OptimizerFitness fitness)
         {
-            _config = config;
             _fitness = fitness;
             // _executor.MaxThreads = _config.MaxThreads > 0 ? _config.MaxThreads : 8;
         }
 
         public void Start()
         {
-            GeneFactory.Initialize(_config.Genes);
+            GeneFactory.Initialize(Program.Config.Genes);
             var chromosome = new Chromosome(false, GeneFactory.GeneConfigArray);
             _fitness.Evaluate(chromosome);
 
@@ -25,7 +23,7 @@
             var best = ((Chromosome)((SharpeMaximizer)_fitness).Best);
 
             var info =
-                $"Algorithm: {_config.AlgorithmTypeName}, Fitness: {chromosome.Fitness}, {_fitness.Name}: {best.ToKeyValueString()}";
+                $"Algorithm: {Program.Config.AlgorithmTypeName}, Fitness: {chromosome.Fitness}, {_fitness.Name}: {best.ToKeyValueString()}";
 
             Program.Logger.Info(info);
         }

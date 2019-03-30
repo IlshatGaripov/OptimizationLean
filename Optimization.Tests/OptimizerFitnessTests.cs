@@ -13,16 +13,11 @@ namespace Optimization.Tests
     [TestFixture()]
     public class OptimizerFitnessTests
     {
-
-        Wrapper _unit;
+        private readonly Wrapper _unit;
 
         public OptimizerFitnessTests()
         {
-            _unit = new Wrapper(new OptimizerConfiguration
-            {
-                FitnessTypeName = "Optimization.OptimizerFitness",
-                EnableFitnessFilter = true
-            }, new FitnessFilter());
+            _unit = new Wrapper( new FitnessFilter());
         }
 
         [TestCase(1, 12, 0.22, 0.5)]
@@ -51,7 +46,7 @@ namespace Optimization.Tests
         private class Wrapper : OptimizerFitness
         {
 
-            public Wrapper(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
+            public Wrapper(IFitnessFilter filter) : base(filter)
             {
             }
 

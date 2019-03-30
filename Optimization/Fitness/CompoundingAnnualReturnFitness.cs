@@ -2,6 +2,7 @@
 
 namespace Optimization
 {
+    /*
     public class CompoundingAnnualReturnFitness : OptimizerFitness
     {
         public override string Name { get; set; } = "Return";
@@ -34,6 +35,6 @@ namespace Optimization
         {
             return fitness.Value / Scale;
         }
-
     }
+    */
 }

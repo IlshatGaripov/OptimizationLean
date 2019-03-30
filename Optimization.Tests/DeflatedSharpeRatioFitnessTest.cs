@@ -16,7 +16,7 @@ namespace Optimization.Tests
         [Test]
         public void CalculateExpectedMaximumTest()
         {
-            var unit = new Wrapper(null);
+            var unit = new Wrapper();
             unit.Initialize();
             var actual = unit.CalculateExpectedMaximum();
 
@@ -26,7 +26,7 @@ namespace Optimization.Tests
         [Test]
         public void CalculateDeflatedSharpeRatioTest()
         {
-            var unit = new Wrapper(null);
+            var unit = new Wrapper();
             unit.Initialize();
             var actual = unit.CalculateDeflatedSharpeRatio(0.1132);
 
@@ -35,11 +35,6 @@ namespace Optimization.Tests
 
         private class Wrapper : DeflatedSharpeRatioFitness
         {
-
-            public Wrapper(IOptimizerConfiguration config) : base(config, null)
-            {
-            }
-
             public override void Initialize()
             {
                 N = 100;

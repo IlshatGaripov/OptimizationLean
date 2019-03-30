@@ -12,19 +12,26 @@ namespace Optimization
         /// <returns></returns>        
         public bool IsSuccess(Dictionary<string, decimal> result, OptimizerFitness fitness)
         {
-            if (!fitness.Config.EnableFitnessFilter)
+            if (!Program.Config.EnableFitnessFilter)
             {
                 return true;
             }
 
+            /*
             //using config ignore a result with negative return or disable this single filter and still apply others
-            if (fitness.GetType() != typeof(CompoundingAnnualReturnFitness) && !fitness.Config.IncludeNegativeReturn && result["CompoundingAnnualReturn"] < 0)
+            if (fitness.GetType() != typeof(CompoundingAnnualReturnFitness) && !Program.Config.IncludeNegativeReturn && result["CompoundingAnnualReturn"] < 0)
+            {
+                return false;
+            }
+            */
+
+            if (!Program.Config.IncludeNegativeReturn && result["CompoundingAnnualReturn"] < 0)
             {
                 return false;
             }
 
             //must meet minimum trading activity if configured
-            if (fitness.Config.MinimumTrades > 0 && result["TotalNumberOfTrades"] < fitness.Config.MinimumTrades)
+            if (Program.Config.MinimumTrades > 0 && result["TotalNumberOfTrades"] < Program.Config.MinimumTrades)
             {
                 return false;
             }
@@ -36,12 +43,7 @@ namespace Optimization
             }
 
             //Consider 100% loss rate a failure
-            if (result["LossRate"] == 1)
-            {
-                return false;
-            }
-
-            return true;
+            return result["LossRate"] != 1;
         }
 
     }

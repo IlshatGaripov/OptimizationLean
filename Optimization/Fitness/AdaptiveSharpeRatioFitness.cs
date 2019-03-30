@@ -6,8 +6,6 @@ using Newtonsoft.Json;
 
 namespace Optimization
 {
-
-
     /// <summary>
     /// Adaptive fitness that increases period proportional to improvement in sharpe ratio
     /// </summary>
@@ -16,7 +14,7 @@ namespace Optimization
 
         private double _previousFitness = (double)ErrorRatio;
 
-        public AdaptiveSharpeRatioFitness(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
+        public AdaptiveSharpeRatioFitness(IFitnessFilter filter) : base( filter)
         {
         }
 
@@ -25,13 +23,13 @@ namespace Optimization
             var fitness = EvaluateBase(chromosome);
 
             //fitness has improved: adapt the period to steepen ascent. Don't adapt on degenerate negative return
-            if (_previousFitness > 0 && fitness > _previousFitness && Config.StartDate.HasValue)
+            if (_previousFitness > 0 && fitness > _previousFitness && Program.Config.StartDate.HasValue)
             {
-                var hours = Config.EndDate.Value.AddDays(1).AddTicks(-1).Subtract(Config.StartDate.Value).TotalHours;
+                var hours = Program.Config.EndDate.Value.AddDays(1).AddTicks(-1).Subtract(Program.Config.StartDate.Value).TotalHours;
                 var improvement = fitness / _previousFitness;
                 var adding = hours - (hours * improvement);
                 //todo: after config is modified, executions in process will still return for previous dates
-                Config.StartDate = Config.StartDate.Value.AddHours(adding);
+                Program.Config.StartDate = Program.Config.StartDate.Value.AddHours(adding);
 
                 //restart with longer in sample. History will now be ignored
                 //todo: retain history for failure (-10 Sharpe) executions			
@@ -56,7 +54,7 @@ namespace Optimization
         {
             var failures = OptimizerAppDomainManager.GetResults().Where(r => r.Value["SharpeRatio"] == ErrorRatio);
 
-            var previousKey = JsonConvert.SerializeObject(Config.StartDate);
+            var previousKey = JsonConvert.SerializeObject(Program.Config.StartDate);
             var extendingKey = JsonConvert.SerializeObject(extending);
 
             var switching = new List<Tuple<string, string>>();

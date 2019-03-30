@@ -35,7 +35,7 @@ namespace Optimization.Tests
             var fitness = new Mock<OptimizerFitness>(config.Object, null);
             fitness.Setup(f => f.Evaluate(It.IsAny<IChromosome>())).Returns(-10).Verifiable();
             var unit = new GeneManager();
-            unit.Initialize(config.Object, fitness.Object);
+            unit.Initialize(fitness.Object);
             unit.Start();
             fitness.Verify();
         }
@@ -55,7 +55,7 @@ namespace Optimization.Tests
             List<IChromosome> actualChromose = new List<IChromosome>();
             fitness.Setup(f => f.Evaluate(It.IsAny<IChromosome>())).Returns(-10).Callback<IChromosome>(c => actualChromose.Add(c));
             var unit = new GeneManager();
-            unit.Initialize(config.Object, fitness.Object);
+            unit.Initialize( fitness.Object);
             unit.Start();
             fitness.Verify();
             Assert.AreEqual(actualValue, ((KeyValuePair<string, object>)actualChromose.First().GetGenes().First().Value).Value);

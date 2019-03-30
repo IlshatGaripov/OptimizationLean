@@ -16,12 +16,7 @@ namespace Optimization
         /// <summary>
         /// Name. Virtual.
         /// </summary>
-        public virtual string Name { get; set; } = "Sharpe";
-
-        /// <summary>
-        /// Program configuration.
-        /// </summary>
-        public IOptimizerConfiguration Config { get; protected set; }
+        public string Name { get; set; } = "Sharpe";
 
         /// <summary>
         /// Filter used to sort out insignificant values.
@@ -41,9 +36,8 @@ namespace Optimization
         /// <summary>
         /// Constructor.
         /// </summary>
-        public OptimizerFitness(IOptimizerConfiguration config, IFitnessFilter filter)
+        public OptimizerFitness(IFitnessFilter filter = null)
         {
-            Config = config;
             Filter = filter;
         }
 
@@ -67,13 +61,13 @@ namespace Optimization
                     output += item.Key + ": " + item.Value.ToString() + ", ";
                 }
 
-                if (Config.StartDate.HasValue && Config.EndDate.HasValue)
+                if (Program.Config.StartDate.HasValue && Program.Config.EndDate.HasValue)
                 {
-                    output += $"Start: {Config.StartDate}, End: {Config.EndDate}, ";
+                    output += $"Start: {Program.Config.StartDate}, End: {Program.Config.EndDate}, ";
                 }
 
                 // run the algorithm - core functionality.
-                var result = OptimizerAppDomainManager.RunAlgorithm(list, Config);
+                var result = OptimizerAppDomainManager.RunAlgorithm(list, Program.Config);
 
                 if (result == null)
                 {

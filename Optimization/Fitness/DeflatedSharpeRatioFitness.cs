@@ -1,25 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MathNet.Numerics.Statistics;
 using MathNet.Numerics;
 using MathNet.Numerics.Distributions;
-using System.Runtime.CompilerServices;
 using GeneticSharp.Domain.Chromosomes;
 
 namespace Optimization
 {
-
     /// <summary>
     /// Deflated sharpe ratio fitness.
     /// </summary>
     /// <remarks>Calculates fitness by adjusting for the expectation that rate of false positives will increase with number of tests. Implements algorithm detailed here: http://www.davidhbailey.com/dhbpapers/deflated-sharpe.pdf </remarks>
     public class DeflatedSharpeRatioFitness : OptimizerFitness
     {
-
-        #region Declarations
+    
+        // declarations
         protected Dictionary<string, double> SharpeData { get; set; }
         protected Dictionary<string, double> ReturnsData { get; set; }
         protected double N { get; set; } //number of trials
@@ -28,10 +24,10 @@ namespace Optimization
         protected double Skewness { get; set; }
         protected double Kurtosis { get; set; }
         protected double CurrentSharpeRatio { get; set; }
-        const int days = 250; // trading days for annualization
-        #endregion
+        private const int Days = 250; // trading days for annualization
 
-        public DeflatedSharpeRatioFitness(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
+
+        public DeflatedSharpeRatioFitness() 
         {
         }
 
@@ -47,7 +43,7 @@ namespace Optimization
             var statistics = new DescriptiveStatistics(ReturnsData.Select(d => d.Value));
             V = new DescriptiveStatistics(SharpeData.Select(s => s.Value)).Variance;
             //measure only trading days
-            T = ((Config.EndDate - Config.StartDate).Value.TotalDays / 365) * days;
+            T = ((Program.Config.EndDate - Program.Config.StartDate).Value.TotalDays / 365) * Days;
             Skewness = statistics.Skewness;
             Kurtosis = statistics.Kurtosis;
         }
@@ -67,13 +63,13 @@ namespace Optimization
         public double CalculateExpectedMaximum()
         {
             var maxZ = (1 - Constants.EulerMascheroni) * ZInverse(1 - 1 / N) + Constants.EulerMascheroni * ZInverse(1 - 1 / (N * Constants.E));
-            var final = Math.Sqrt(1 / (V * days)) * maxZ;
+            var final = Math.Sqrt(1 / (V * Days)) * maxZ;
             return final;
         }
 
         public double CalculateDeflatedSharpeRatio(double expectedMaximum)
         {
-            var nonAnnualized = (CurrentSharpeRatio / Math.Sqrt(days));
+            var nonAnnualized = (CurrentSharpeRatio / Math.Sqrt(Days));
             var top = (nonAnnualized - expectedMaximum) * Math.Sqrt(T - 1);
             var bottom = Math.Sqrt(1 - (Skewness) * nonAnnualized + ((Kurtosis - 1) / 4) * Math.Pow(nonAnnualized, 2));
 
@@ -118,6 +114,5 @@ namespace Optimization
         {
             return fitness ?? 0;
         }
-
     }
 }

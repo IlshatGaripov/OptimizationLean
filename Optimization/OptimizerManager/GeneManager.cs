@@ -18,10 +18,7 @@ namespace Optimization
     public class GeneManager : IOptimizerManager
     {
         public const string Termination = "Termination Reached.";
-
-        // this is now made global (static)
-        private IOptimizerConfiguration _config;
-
+        
         /// <summary>
         /// An executor.
         /// </summary>
@@ -45,13 +42,14 @@ namespace Optimization
         /// <summary>
         /// Init the class variables. 
         /// </summary>
-        public void Initialize(IOptimizerConfiguration config, OptimizerFitness fitness)
+        public void Initialize(OptimizerFitness fitness)
         {
-            _config = config;
             _fitness = fitness;
+            
+            var maxTreads = Program.Config.MaxThreads;
             _executor = new ParallelTaskExecutor
             {
-                MinThreads = 1, MaxThreads = _config.MaxThreads > 0 ? _config.MaxThreads : 8
+                MinThreads = 1, MaxThreads = maxTreads > 0 ? maxTreads : 8
             };
         }
 
@@ -69,13 +67,13 @@ namespace Optimization
             IList<IChromosome> chromosomes = new List<IChromosome>();
 
             // GeneFactory generates the chromosome genes.
-            GeneFactory.Initialize(_config.Genes);
+            GeneFactory.Initialize(Program.Config.Genes);
 
             // creates chromosomes 
-            for (var i = 0; i < _config.PopulationSize; i++)
+            for (var i = 0; i < Program.Config.PopulationSize; i++)
             {
                 //first chromosome always use actuals. For others decide by config
-                var isActual = i == 0 || _config.UseActualGenesForWholeGeneration;
+                var isActual = i == 0 || Program.Config.UseActualGenesForWholeGeneration;
 
                 chromosomes.Add(new Chromosome(isActual, GeneFactory.GeneConfigArray));
             }
@@ -83,15 +81,19 @@ namespace Optimization
             // create a population from the pre-defined list of chromosomes.
             _population = new PreloadPopulation(chromosomes);
 
-            //create the GA itself 
-            var ga = new GeneticAlgorithm(_population, _fitness, new TournamentSelection(),
-                _config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover(), new UniformMutation(true))
+            // init GA params
+            var selection = new TournamentSelection();
+            var crossover = Program.Config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover();
+            var mutation = new UniformMutation(true);
+
+            // create the GA itself 
+            var ga = new GeneticAlgorithm(_population, _fitness, selection, crossover, mutation)
             {
                 TaskExecutor = _executor,
-                Termination = new OrTermination(new FitnessStagnationTermination(_config.StagnationGenerations), new GenerationNumberTermination(_config.Generations)),
+                Termination = new OrTermination(new FitnessStagnationTermination(Program.Config.StagnationGenerations), new GenerationNumberTermination(Program.Config.Generations)),
                 Reinsertion = new ElitistReinsertion(),
-                MutationProbability = _config.MutationProbability,
-                CrossoverProbability = _config.CrossoverProbability
+                MutationProbability = Program.Config.MutationProbability,
+                CrossoverProbability = Program.Config.CrossoverProbability
             };
 
             //subscribe to events
@@ -117,8 +119,8 @@ namespace Optimization
                 _bestChromosome = (Chromosome)_population.BestChromosome;
             }
 
-            Program.Logger.Info("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}, Id: {5}", 
-                _config.AlgorithmTypeName, _population.GenerationsNumber, _bestChromosome.Fitness,
+            Program.Logger.Info("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}, Id: {5}",
+                Program.Config.AlgorithmTypeName, _population.GenerationsNumber, _bestChromosome.Fitness,
                 _fitness.Name, _bestChromosome.ToKeyValueString(), _bestChromosome.Id);
         }
 

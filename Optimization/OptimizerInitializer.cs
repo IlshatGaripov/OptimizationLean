@@ -15,28 +15,15 @@ namespace Optimization
         private static readonly IFileSystem File = new FileSystem();
         
         /// <summary>
-        /// Class the holds values stored in json config file.
-        /// </summary>
-        public static readonly OptimizerConfiguration Configuration;
-
-        /// <summary>
-        /// Static constructor
-        /// </summary>
-        static OptimizerInitializer()
-        {
-            Configuration = LoadConfig();
-        }
-
-        /// <summary>
         /// Master method. Initialization for everything.
         /// </summary>
         public static void Initialize()
         {
             // takes config from Lean folder and makes a local copy in the same directory as an application.
-            File.File.Copy(Configuration.ConfigPath, System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"), true);
+            File.File.Copy(Program.Config.ConfigPath, System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"), true);
 
             // path to an assembly containing an algorithm.
-            var path = Configuration.AlgorithmLocation;
+            var path = Program.Config.AlgorithmLocation;
             
             if (!string.IsNullOrEmpty(path))
             {
@@ -57,7 +44,7 @@ namespace Optimization
         /// <summary>
         /// Loads values from JSON text file to a special class holding the config values.
         /// </summary>
-        private static OptimizerConfiguration LoadConfig()
+        public static OptimizerConfiguration LoadConfig()
         {
             // default path
             const string path = "optimization.json";

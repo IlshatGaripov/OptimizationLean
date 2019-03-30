@@ -10,24 +10,22 @@ namespace Optimization
 {
     public class DualPeriodSharpeFitness : OptimizerFitness
     {
-
-        public override string Name { get; set; } = "DualPeriodSharpe";
-
-        public DualPeriodSharpeFitness(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
+        public DualPeriodSharpeFitness()
         {
+            Name = "DualPeriodSharpe";
         }
 
         public override double Evaluate(IChromosome chromosome)
         {
-            var dualConfig = Clone<OptimizerConfiguration>((OptimizerConfiguration)Config);
-            var start = Config.StartDate.Value;
-            var end = Config.EndDate.Value;
+            var dualConfig = Clone<OptimizerConfiguration>((OptimizerConfiguration)Program.Config);
+            var start = Program.Config.StartDate.Value;
+            var end = Program.Config.EndDate.Value;
             var diff = end - start;
 
             dualConfig.StartDate = end;
             dualConfig.EndDate = end + diff;
 
-            var dualFitness = new OptimizerFitness(dualConfig, this.Filter);
+            var dualFitness = new OptimizerFitness();
 
             var first = base.Evaluate(chromosome);
             double second = -10;
@@ -42,15 +40,14 @@ namespace Optimization
             };
             fitness.Value = (decimal)base.GetAdjustedFitness(fitness.Fitness);
 
-            var output = string.Format($"Start: {Config.StartDate}, End: {Config.EndDate}, Start: {dualConfig.StartDate}, End: {dualConfig.EndDate}, "
+            var output = string.Format($"Start: {Program.Config.StartDate}, End: {Program.Config.EndDate}, Start: {dualConfig.StartDate}, End: {dualConfig.EndDate}, "
             + $"Id: {((Chromosome)chromosome).Id}, Dual Period {this.Name}: {fitness.Value}");
             Program.Logger.Info(output);
 
-            Config.StartDate = start;
-            Config.EndDate = end;
+            Program.Config.StartDate = start;
+            Program.Config.EndDate = end;
 
             return fitness.Fitness;
         }
-
     }
 }

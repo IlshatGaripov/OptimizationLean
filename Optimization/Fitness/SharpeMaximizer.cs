@@ -5,56 +5,56 @@ using System.Text;
 using GeneticSharp.Domain.Chromosomes;
 using SharpLearning.Optimization;
 using System.Runtime.CompilerServices;
+using QuantConnect.Configuration;
 
 namespace Optimization
 {
 
     public class SharpeMaximizer : OptimizerFitness
     {
-
         public virtual string ScoreKey { get; set; } = "SharpeRatio";
-        public override string Name { get; set; } = "Sharpe";
         public IChromosome Best { get; set; }
         private ConditionalWeakTable<OptimizerResult, string> _resultIndex;
         private const double ErrorFitness = 1.01;
 
-        public SharpeMaximizer(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
+        public SharpeMaximizer(IFitnessFilter filter) : base( filter)
         {
             _resultIndex = new ConditionalWeakTable<OptimizerResult, string>();
+            Name = "Sharpe";
         }
 
         public override double Evaluate(IChromosome chromosome)
         {
             try
             {
-                var parameters = Config.Genes.Select(s =>
+                var parameters = Program.Config.Genes.Select(s =>
                     new MinMaxParameterSpec(min: (double)(s.MinDecimal ?? s.MinInt.Value), max: (double)(s.MaxDecimal ?? s.MaxInt.Value),
                     transform: Transform.Linear, parameterType: s.Precision > 0 ? ParameterType.Continuous : ParameterType.Discrete)
                 ).ToArray();
 
 
                 IOptimizer optimizer = null;
-                if (Config.Fitness != null)
+                if (Program.Config.Fitness != null)
                 {
-                    if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.RandomSearch.ToString())
+                    if (Program.Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.RandomSearch.ToString())
                     {
-                        optimizer = new RandomSearchOptimizer(parameters, iterations: Config.Generations, seed: 42, maxDegreeOfParallelism: Config.MaxThreads);
+                        optimizer = new RandomSearchOptimizer(parameters, iterations: Program.Config.Generations, seed: 42, maxDegreeOfParallelism: Program.Config.MaxThreads);
                     }
-                    else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.ParticleSwarm.ToString())
+                    else if (Program.Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.ParticleSwarm.ToString())
                     {
-                        optimizer = new ParticleSwarmOptimizer(parameters, maxIterations: Config.Generations, numberOfParticles: Config.PopulationSize,
-                            seed: 42, maxDegreeOfParallelism: Config.MaxThreads);
+                        optimizer = new ParticleSwarmOptimizer(parameters, maxIterations: Program.Config.Generations, numberOfParticles: Program.Config.PopulationSize,
+                            seed: 42, maxDegreeOfParallelism: Program.Config.MaxThreads);
                     }
-                    else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Bayesian.ToString())
+                    else if (Program.Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Bayesian.ToString())
                     {
-                        optimizer = new BayesianOptimizer(parameters, maxIterations: Config.Generations, numberOfStartingPoints: Config.PopulationSize, seed: 42);
+                        optimizer = new BayesianOptimizer(parameters, maxIterations: Program.Config.Generations, numberOfStartingPoints: Program.Config.PopulationSize, seed: 42);
                     }
-                    else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.GlobalizedBoundedNelderMead.ToString())
+                    else if (Program.Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.GlobalizedBoundedNelderMead.ToString())
                     {
-                        optimizer = new GlobalizedBoundedNelderMeadOptimizer(parameters, maxRestarts: Config.Generations, 
-                            maxIterationsPrRestart: Config.PopulationSize, seed: 42, maxDegreeOfParallelism: Config.MaxThreads);
+                        optimizer = new GlobalizedBoundedNelderMeadOptimizer(parameters, maxRestarts: Program.Config.Generations, 
+                            maxIterationsPrRestart: Program.Config.PopulationSize, seed: 42, maxDegreeOfParallelism: Program.Config.MaxThreads);
                     }
-                    else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Genetic.ToString())
+                    else if (Program.Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Genetic.ToString())
                     {
                         throw new Exception("Genetic optimizer cannot be used with Sharpe Maximizer");
                     }
@@ -90,22 +90,22 @@ namespace Optimization
                 list.Add("Id", id);
                 output.Append("Id: " + id + ", ");
 
-                for (int i = 0; i < Config.Genes.Count(); i++)
+                for (int i = 0; i < Program.Config.Genes.Count(); i++)
                 {
-                    var key = Config.Genes.ElementAt(i).Key;
-                    var precision = Config.Genes.ElementAt(i).Precision ?? 0;
+                    var key = Program.Config.Genes.ElementAt(i).Key;
+                    var precision = Program.Config.Genes.ElementAt(i).Precision ?? 0;
                     var value = Math.Round(p[i], precision);
                     list[key] = value;
 
                     output.Append(key + ": " + value.ToString() + ", ");
                 }
 
-                if (Config.StartDate.HasValue && Config.EndDate.HasValue)
+                if (Program.Config.StartDate.HasValue && Program.Config.EndDate.HasValue)
                 {
-                    output.AppendFormat("Start: {0}, End: {1}, ", Config.StartDate, Config.EndDate);
+                    output.AppendFormat("Start: {0}, End: {1}, ", Program.Config.StartDate, Program.Config.EndDate);
                 }
 
-                var score = GetScore(list, Config);
+                var score = GetScore(list, Program.Config);
                 var fitness = CalculateFitness(score);
 
                 output.AppendFormat("{0}: {1}", Name, fitness.Value.ToString("0.##"));
@@ -141,7 +141,7 @@ namespace Optimization
             destination.Id = _resultIndex.GetValue(result, (k) => Guid.NewGuid().ToString("N") );
 
             var list = destination.ToDictionary();
-            for (int i = 0; i < Config.Genes.Count(); i++)
+            for (int i = 0; i < Program.Config.Genes.Count(); i++)
             {
                 var pair = (KeyValuePair<string, object>)destination.GetGene(i).Value;
                 destination.ReplaceGene(i, new Gene(new KeyValuePair<string, object>(pair.Key, result.ParameterSet[i])));
@@ -171,6 +171,6 @@ namespace Optimization
         {
             return ((fitness ?? ErrorFitness) - 1) * 1000 * -1;
         }
-
     }
+    
 }

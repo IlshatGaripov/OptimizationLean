@@ -26,7 +26,7 @@ namespace Optimization.Tests
             //var unit = new OptimizerInitializer(file.Object, manager.Object);
             //unit.Initialize(new[] {""});
 
-            manager.Verify(m => m.Initialize(It.IsAny<IOptimizerConfiguration>(), It.IsAny<OptimizerFitness>()));
+            manager.Verify(m => m.Initialize( It.IsAny<OptimizerFitness>()));
             manager.Verify(m => m.Start());
         }
 

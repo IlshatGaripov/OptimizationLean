@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Optimization
 {
+    /*
     public class NestedCrossSharpeMaximizer : SharpeMaximizer
     {
-
         public override string Name { get; set; } = "NestedCrossSharpe";
 
         public NestedCrossSharpeMaximizer(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
@@ -33,6 +33,6 @@ namespace Optimization
             return score.ToDictionary(d => d.Key, d => d.Value / 3);
 
         }
-
     }
+    */
 }

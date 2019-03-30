@@ -8,7 +8,7 @@
         /// <summary>
         /// ...
         /// </summary>
-        void Initialize(IOptimizerConfiguration config, OptimizerFitness fitness);
+        void Initialize(OptimizerFitness fitness);
 
         /// <summary>
         /// ...

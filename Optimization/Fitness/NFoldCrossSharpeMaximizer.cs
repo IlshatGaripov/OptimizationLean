@@ -6,24 +6,25 @@ using System.Threading.Tasks;
 
 namespace Optimization
 {
+    
     public class NFoldCrossSharpeMaximizer : SharpeMaximizer
     {
-
         private int _folds = 2;
-        public override string Name { get; set; } = "NFoldCrossSharpe";
-
-        public NFoldCrossSharpeMaximizer(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
+        
+        public NFoldCrossSharpeMaximizer( IFitnessFilter filter) : base(filter)
         {
-            var folds = config.Fitness?.Folds ?? 2;
+            var folds = Program.Config.Fitness?.Folds ?? 2;
             if (folds > 0)
             {
                 _folds = folds;
             }
+
+            Name = "NFoldCrossSharpe";
         }
 
         public override Dictionary<string, decimal> GetScore(Dictionary<string, object> list, IOptimizerConfiguration config)
         {
-            var firstConfig = Clone((OptimizerConfiguration)Config);
+            var firstConfig = Clone((OptimizerConfiguration)Program.Config);
 
             firstConfig.EndDate = firstConfig.EndDate.Value.Date.AddDays(1).AddTicks(-1);
             firstConfig.StartDate = firstConfig.StartDate.Value.Date;
@@ -71,6 +72,6 @@ namespace Optimization
 
             return average;
         }
-
     }
+    
 }

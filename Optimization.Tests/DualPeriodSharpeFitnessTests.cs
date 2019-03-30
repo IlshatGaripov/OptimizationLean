@@ -38,9 +38,7 @@ namespace Optimization.Tests
 
         private DualPeriodSharpeFitness CreateDualPeriodSharpeFitness()
         {
-            return new DualPeriodSharpeFitness(
-                this.mockOptimizerConfiguration.Object,
-                this.mockFitnessFilter.Object);
+            return new DualPeriodSharpeFitness();
         }
 
 

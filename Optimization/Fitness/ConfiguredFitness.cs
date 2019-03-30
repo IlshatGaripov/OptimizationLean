@@ -5,23 +5,22 @@ namespace Optimization
 {
     public class ConfiguredFitness : OptimizerFitness
     {
+        private readonly FitnessConfiguration _fitnessConfig;
 
-        public ConfiguredFitness(IOptimizerConfiguration config) : base(config, null)
+        public ConfiguredFitness(FitnessConfiguration fitnessConfiguration)
         {
-            if (config.Fitness == null)
+            _fitnessConfig = fitnessConfiguration;
+
+            if (!_fitnessConfig.Scale.HasValue)
             {
-                throw new ArgumentException("No fitness configuration was found.");
+                _fitnessConfig.Scale = 1;
             }
-            if (!config.Fitness.Scale.HasValue)
+            if (!_fitnessConfig.Modifier.HasValue)
             {
-                config.Fitness.Scale = 1;
-            }
-            if (!config.Fitness.Modifier.HasValue)
-            {
-                config.Fitness.Modifier = 1;
+                _fitnessConfig.Modifier = 1;
             }
 
-            Name = Config.Fitness.Name;
+            Name = _fitnessConfig.Name;
         }
 
         //Fitness based on config settings
@@ -29,19 +28,18 @@ namespace Optimization
         {
             var fitness = new FitnessResult();
 
-            var raw = StatisticsAdapter.Translate(Config.Fitness.ResultKey, result);
+            var raw = StatisticsAdapter.Translate(Program.Config.Fitness.ResultKey, result);
 
             fitness.Value = raw;
 
-            fitness.Fitness = (double)raw * Config.Fitness.Scale.Value * Config.Fitness.Modifier.Value;
+            fitness.Fitness = (double)raw * _fitnessConfig.Scale.Value * _fitnessConfig.Modifier.Value;
 
             return fitness;
         }
 
         public override double GetAdjustedFitness(double? fitness)
         {
-            return (fitness.Value / Config.Fitness.Scale.Value) / Config.Fitness.Modifier.Value;
+            return (fitness.Value / _fitnessConfig.Scale.Value) / _fitnessConfig.Modifier.Value;
         }
-
     }
 }

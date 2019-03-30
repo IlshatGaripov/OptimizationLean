@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Optimization.Tests
 {
+    /*
     [TestFixture()]
     public class NFoldCrossSharpeMaximizerTests
     {
@@ -60,6 +61,6 @@ namespace Optimization.Tests
         {
             return ((DateTime)date).ToString("yyyy-MM-dd HH:mm:ss");
         }
-
     }
+    */
 }

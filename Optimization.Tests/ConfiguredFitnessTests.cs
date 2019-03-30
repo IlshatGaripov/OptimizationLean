@@ -12,26 +12,21 @@ namespace Optimization.Tests
     [TestFixture()]
     public class ConfiguredFitnessTests
     {
-
-        Wrapper unit;
+        private Wrapper _unit;
 
         [TestCase("TotalNumberOfTrades")]
         [TestCase("Total Trades")]
         public void CalculateFitnessTest(string key)
         {
-            unit = new Wrapper(new OptimizerConfiguration
-            {
-                FitnessTypeName = "Optimization.ConfiguredFitness",
-                Fitness = new FitnessConfiguration
+            _unit = new Wrapper(new FitnessConfiguration
                 {
                     Scale = 0.1,
                     Modifier = -1,
                     Name = "TestName",
                     ResultKey = key
-                }
-            });
+                });
 
-            var actual = unit.CalculateFitnessWrapper(new Dictionary<string, decimal> { { "TotalNumberOfTrades", 10 } });
+            var actual = _unit.CalculateFitnessWrapper(new Dictionary<string, decimal> { { "TotalNumberOfTrades", 10 } });
 
             Assert.AreEqual(-1d, actual.Item2);
         }
@@ -39,26 +34,21 @@ namespace Optimization.Tests
         [Test()]
         public void GetValueFromFitnessTest()
         {
-            unit = new Wrapper(new OptimizerConfiguration
+            _unit = new Wrapper(new FitnessConfiguration
             {
-                FitnessTypeName = "Optimization.ConfiguredFitness",
-                Fitness = new FitnessConfiguration
-                {
-                    Scale = 0.1,
-                    Modifier = -1,
-                    Name = "TestName",
-                    ResultKey = "TotalTrades"
-                }
+                Scale = 0.1,
+                Modifier = -1,
+                Name = "TestName",
+                ResultKey = "TotalTrades"
             });
 
-            var actual = unit.GetAdjustedFitness(-1d);
+            var actual = _unit.GetAdjustedFitness(-1d);
             Assert.AreEqual(10, actual);
         }
 
         private class Wrapper : ConfiguredFitness
         {
-
-            public Wrapper(IOptimizerConfiguration config) : base(config)
+            public Wrapper(FitnessConfiguration fitnessConfiguration) : base(fitnessConfiguration)
             {
             }
 

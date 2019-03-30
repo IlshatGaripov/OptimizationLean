@@ -5,37 +5,36 @@ using NLog;
 
 namespace Optimization
 {
-    public class Program
+    public static class Program
     {
         // logger
         public static Logger Logger = LogManager.GetLogger("optimizer");
 
         // optimizer manager
         public static IOptimizerManager Manager;
-        
+
+        // program wide config file.
+        public static OptimizerConfiguration Config;
+
         /// <summary>
         /// Main program entry point.
         /// </summary>
         public static void Main(string[] args)
         {
-            // intit configuration and app domain.
-            OptimizerInitializer.Initialize();
+            Config = OptimizerInitializer.LoadConfig();
 
             // Init those few variables used when joggling with App Domain features used launching the lean runner.
             OptimizerAppDomainManager.Initialize();
-
-            // local alias for global config 
-            var config = OptimizerInitializer.Configuration;
-
+            
 
             // TODO: Should be easier to use Activator.CreateInstance? look into documentation ..
-
             // create a new instance of a OptimizerFitness object itself or its descendant.
-            var fitness = (OptimizerFitness)Assembly.GetExecutingAssembly().CreateInstance(config.FitnessTypeName,
-                false, BindingFlags.Default, null,
-                new object[] { config, new FitnessFilter() }, null, null);
+            var fitness = (OptimizerFitness)Assembly.GetExecutingAssembly().CreateInstance(
+                Program.Config.FitnessTypeName,false, BindingFlags.Default, null,
+                new object[] { new FitnessFilter() }, 
+                null, null);
 
-
+            /*
             if (Manager == null)
             {
                 if (((IList) new[]
@@ -52,13 +51,17 @@ namespace Optimization
                     Manager = new GeneManager();
                 }
             }
+            */
+
+            Manager = new GeneManager();
 
             // here extensively used Initialize() instead of the constructor
-            Manager.Initialize(config, fitness);
+            Manager.Initialize(fitness);
 
             Manager.Start();
 
             Console.ReadKey();
         }
+
     }
 }
