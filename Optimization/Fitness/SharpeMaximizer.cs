@@ -105,7 +105,7 @@ namespace Optimization
                     output.AppendFormat("Start: {0}, End: {1}, ", Program.Config.StartDate, Program.Config.EndDate);
                 }
 
-                var score = GetScore(list, Program.Config);
+                var score = GetScore(list);
                 var fitness = CalculateFitness(score);
 
                 output.AppendFormat("{0}: {1}", Name, fitness.Value.ToString("0.##"));
@@ -125,14 +125,14 @@ namespace Optimization
             }
         }
 
-        public virtual Dictionary<string, decimal> GetScore(Dictionary<string, object> list, IOptimizerConfiguration config)
+        public virtual Dictionary<string, decimal> GetScore(Dictionary<string, object> list)
         {
-            return RunAlgorithm(list, config);
+            return RunAlgorithm(list);
         }
 
-        public virtual Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list, IOptimizerConfiguration config)
+        public virtual Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list)
         {
-            return OptimizerAppDomainManager.RunAlgorithm(list, config);
+            return OptimizerAppDomainManager.RunAlgorithm(list);
         }
 
         private IChromosome ToChromosome(OptimizerResult result, IChromosome source)

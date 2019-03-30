@@ -8,16 +8,12 @@ namespace Optimization.Tests
     public class DualPeriodSharpeFitnessTests
     {
         private MockRepository mockRepository;
-
-        private Mock<IOptimizerConfiguration> mockOptimizerConfiguration;
         private Mock<IFitnessFilter> mockFitnessFilter;
 
         [SetUp]
         public void SetUp()
         {
             mockRepository = new MockRepository(MockBehavior.Strict);
-
-            mockOptimizerConfiguration = this.mockRepository.Create<IOptimizerConfiguration>();
             mockFitnessFilter = this.mockRepository.Create<IFitnessFilter>();
         }
 
@@ -32,8 +28,7 @@ namespace Optimization.Tests
         {
             //todo:
             DualPeriodSharpeFitness unit = this.CreateDualPeriodSharpeFitness();
-
-
+            
         }
 
         private DualPeriodSharpeFitness CreateDualPeriodSharpeFitness()

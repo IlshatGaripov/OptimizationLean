@@ -27,20 +27,18 @@ namespace Optimization
     {
 
         private OptimizerResultHandler _resultsHandler;
-        IOptimizerConfiguration _config;
         private string _id;    
 
-        public Dictionary<string, decimal> Run(Dictionary<string, object> items, IOptimizerConfiguration config)
+        public Dictionary<string, decimal> Run(Dictionary<string, object> items)
         {
             Dictionary<string, Dictionary<string, decimal>> results = OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain);
-            _config = config;
 
             _id = (items.ContainsKey("Id") ? items["Id"] : Guid.NewGuid()).ToString();
 
-            if (_config.StartDate.HasValue && _config.EndDate.HasValue)
+            if (Program.Config.StartDate.HasValue && Program.Config.EndDate.HasValue)
             {
-                if (!items.ContainsKey("startDate")) { items.Add("startDate", _config.StartDate); }
-                if (!items.ContainsKey("endDate")) { items.Add("endDate", _config.EndDate); }
+                if (!items.ContainsKey("startDate")) { items.Add("startDate", Program.Config.StartDate); }
+                if (!items.ContainsKey("endDate")) { items.Add("endDate", Program.Config.EndDate); }
             }
 
             string jsonKey = JsonConvert.SerializeObject(items);
@@ -88,19 +86,19 @@ namespace Optimization
             Config.Set("environment", "backtesting");
             Config.Set("forward-console-messages", "false");
 
-            if (!string.IsNullOrEmpty(_config.AlgorithmTypeName))
+            if (!string.IsNullOrEmpty(Program.Config.AlgorithmTypeName))
             {
-                Config.Set("algorithm-type-name", _config.AlgorithmTypeName);
+                Config.Set("algorithm-type-name", Program.Config.AlgorithmTypeName);
             }
 
-            if (!string.IsNullOrEmpty(_config.AlgorithmLocation))
+            if (!string.IsNullOrEmpty(Program.Config.AlgorithmLocation))
             {
-                Config.Set("algorithm-location", Path.GetFileName(_config.AlgorithmLocation));
+                Config.Set("algorithm-location", Path.GetFileName(Program.Config.AlgorithmLocation));
             }
 
-            if (!string.IsNullOrEmpty(_config.DataFolder))
+            if (!string.IsNullOrEmpty(Program.Config.DataFolder))
             {
-                Config.Set("data-folder", _config.DataFolder);
+                Config.Set("data-folder", Program.Config.DataFolder);
             }
 
             Config.Set("api-handler", nameof(EmptyApiHandler));

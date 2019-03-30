@@ -113,7 +113,6 @@
     <Compile Include="Configuration\IFitnessConfiguration.cs" />
     <Compile Include="Fitness\AdaptiveSharpeRatioFitness.cs" />
     <Compile Include="OptimizerInitializer.cs" />
-    <Compile Include="Configuration\IOptimizerConfiguration.cs" />
     <Compile Include="Fitness\OptimizerFitness.cs" />
     <Compile Include="Configuration\OptimizerConfiguration.cs" />
     <Compile Include="LeanExtensions\Queuer.cs" />

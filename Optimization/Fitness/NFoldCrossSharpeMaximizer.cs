@@ -9,7 +9,7 @@ namespace Optimization
     
     public class NFoldCrossSharpeMaximizer : SharpeMaximizer
     {
-        private int _folds = 2;
+        private readonly int _folds = 2;
         
         public NFoldCrossSharpeMaximizer( IFitnessFilter filter) : base(filter)
         {
@@ -22,6 +22,7 @@ namespace Optimization
             Name = "NFoldCrossSharpe";
         }
 
+        /*
         public override Dictionary<string, decimal> GetScore(Dictionary<string, object> list, IOptimizerConfiguration config)
         {
             var firstConfig = Clone((OptimizerConfiguration)Program.Config);
@@ -72,6 +73,7 @@ namespace Optimization
 
             return average;
         }
+        */
     }
     
 }

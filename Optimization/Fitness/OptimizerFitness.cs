@@ -67,7 +67,7 @@ namespace Optimization
                 }
 
                 // run the algorithm - core functionality.
-                var result = OptimizerAppDomainManager.RunAlgorithm(list, Program.Config);
+                var result = OptimizerAppDomainManager.RunAlgorithm(list);
 
                 if (result == null)
                 {

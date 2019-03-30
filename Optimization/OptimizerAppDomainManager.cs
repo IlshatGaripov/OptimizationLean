@@ -68,11 +68,11 @@ namespace Optimization
         /// <param name="list">Input parameters.</param>
         /// <param name="config">Optimizer configuration.</param>
         /// <returns>Backtest statisctics in way of a dictionary.</returns>
-        public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list, IOptimizerConfiguration config)
+        public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list)
         {
             var rc = CreateRunnerInAppDomain(out var ad);
 
-            var result = rc.Run(list, config);
+            var result = rc.Run(list);
 
             lock (_resultsLocker)
             {
@@ -116,11 +116,11 @@ namespace Optimization
         /// <param name="list"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public static Tuple<AppDomain, Task<Dictionary<string, decimal>>> RunAlgorithmAsync(Dictionary<string, object> list, IOptimizerConfiguration config)
+        public static Tuple<AppDomain, Task<Dictionary<string, decimal>>> RunAlgorithmAsync(Dictionary<string, object> list)
         {
             var runner = CreateRunnerInAppDomain(out EngineContext.AppDomain);
 
-            var result = Task.Run(() => runner.Run(list, config));
+            var result = Task.Run(() => runner.Run(list));
 
             return Tuple.Create(EngineContext.AppDomain, result);
         }

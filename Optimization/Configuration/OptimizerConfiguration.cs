@@ -7,7 +7,7 @@ namespace Optimization
     /// The main program configuration object. Reflecting all those values that optimization.json contains.
     /// </summary>
     [Serializable]
-    public class OptimizerConfiguration : IOptimizerConfiguration
+    public class OptimizerConfiguration
     {
         /// <summary>
         /// The settings to generate gene values

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace Optimization.Tests
 {
+    /*
     [TestFixture()]
     public class GeneManagerTests
     {
@@ -69,6 +70,6 @@ namespace Optimization.Tests
                 Assert.AreNotEqual(actualValue, ((KeyValuePair<string, object>)actualChromose.Last().GetGenes().First().Value).Value);
             }
         }
-
     }
+    */
 }
