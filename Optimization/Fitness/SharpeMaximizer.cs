@@ -29,32 +29,32 @@ namespace Optimization
             {
                 var parameters = Program.Config.Genes.Select(s =>
                     new MinMaxParameterSpec(min: (double)(s.MinDecimal ?? s.MinInt.Value), max: (double)(s.MaxDecimal ?? s.MaxInt.Value),
-                    transform: Transform.Linear, parameterType: s.Precision > 0 ? ParameterType.Continuous : ParameterType.Discrete)
+                    transform: Transform.Linear, parameterType: s.Scale > 0 ? ParameterType.Continuous : ParameterType.Discrete)
                 ).ToArray();
 
 
                 IOptimizer optimizer = null;
                 if (Program.Config.Fitness != null)
                 {
-                    if (Program.Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.RandomSearch.ToString())
+                    if (Program.Config.Fitness.OptimizerTypeName == OptimizerTypeOptions.RandomSearch.ToString())
                     {
                         optimizer = new RandomSearchOptimizer(parameters, iterations: Program.Config.Generations, seed: 42, maxDegreeOfParallelism: Program.Config.MaxThreads);
                     }
-                    else if (Program.Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.ParticleSwarm.ToString())
+                    else if (Program.Config.Fitness.OptimizerTypeName == OptimizerTypeOptions.ParticleSwarm.ToString())
                     {
                         optimizer = new ParticleSwarmOptimizer(parameters, maxIterations: Program.Config.Generations, numberOfParticles: Program.Config.PopulationSize,
                             seed: 42, maxDegreeOfParallelism: Program.Config.MaxThreads);
                     }
-                    else if (Program.Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Bayesian.ToString())
+                    else if (Program.Config.Fitness.OptimizerTypeName == OptimizerTypeOptions.Bayesian.ToString())
                     {
                         optimizer = new BayesianOptimizer(parameters, maxIterations: Program.Config.Generations, numberOfStartingPoints: Program.Config.PopulationSize, seed: 42);
                     }
-                    else if (Program.Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.GlobalizedBoundedNelderMead.ToString())
+                    else if (Program.Config.Fitness.OptimizerTypeName == OptimizerTypeOptions.GlobalizedBoundedNelderMead.ToString())
                     {
                         optimizer = new GlobalizedBoundedNelderMeadOptimizer(parameters, maxRestarts: Program.Config.Generations, 
                             maxIterationsPrRestart: Program.Config.PopulationSize, seed: 42, maxDegreeOfParallelism: Program.Config.MaxThreads);
                     }
-                    else if (Program.Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Genetic.ToString())
+                    else if (Program.Config.Fitness.OptimizerTypeName == OptimizerTypeOptions.Genetic.ToString())
                     {
                         throw new Exception("Genetic optimizer cannot be used with Sharpe Maximizer");
                     }
@@ -93,7 +93,7 @@ namespace Optimization
                 for (int i = 0; i < Program.Config.Genes.Count(); i++)
                 {
                     var key = Program.Config.Genes.ElementAt(i).Key;
-                    var precision = Program.Config.Genes.ElementAt(i).Precision ?? 0;
+                    var precision = Program.Config.Genes.ElementAt(i).Scale ?? 0;
                     var value = Math.Round(p[i], precision);
                     list[key] = value;
 

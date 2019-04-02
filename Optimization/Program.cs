@@ -23,6 +23,9 @@ namespace Optimization
             // init global and gene config files.
             Config = OptimizerInitializer.LoadConfigFromFile();
 
+            // debug
+            Console.WriteLine(Config.Mode);
+
             // TODO : this init is to be revised. 
             GeneFactory.Initialize(Config.Genes);
 
@@ -39,9 +42,11 @@ namespace Optimization
             
             // GA manager
             
+            /*
             Manager = new GeneManager();
             Manager.Initialize(fitness);
             Manager.Start();
+            */
 
             Console.ReadKey();
 

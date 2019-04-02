@@ -22,7 +22,6 @@
     }
   ],
   "populationSize": 24,
-  "populationSizeMaximum": 48,
   "generations": 20,
   "stagnationGenerations": 30,
   "maxThreads": 8,
