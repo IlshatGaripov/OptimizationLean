@@ -20,18 +20,31 @@ namespace Optimization
         /// </summary>
         public static void Main(string[] args)
         {
+            // init global and gene config files.
             Config = OptimizerInitializer.LoadConfigFromFile();
 
-            // Init those few variables used when joggling with App Domain features used launching the lean runner.
+            // TODO : this init is to be revised. 
+            GeneFactory.Initialize(Config.Genes);
+
+            // App Domain features used launching the lean runner.
             OptimizerAppDomainManager.Initialize();
             
-
+            
             // TODO: Should be easier to use Activator.CreateInstance? look into documentation ..
             // create a new instance of a OptimizerFitness object itself or its descendant.
             var fitness = (OptimizerFitness)Assembly.GetExecutingAssembly().CreateInstance(
                 Program.Config.FitnessTypeName,false, BindingFlags.Default, null,
                 new object[] { new FitnessFilter() }, 
                 null, null);
+            
+            // GA manager
+            
+            Manager = new GeneManager();
+            Manager.Initialize(fitness);
+            Manager.Start();
+
+            Console.ReadKey();
+
 
             /*
             if (Manager == null)
@@ -51,15 +64,6 @@ namespace Optimization
                 }
             }
             */
-
-            Manager = new GeneManager();
-
-            // here extensively used Initialize() instead of the constructor
-            Manager.Initialize(fitness);
-
-            Manager.Start();
-
-            Console.ReadKey();
         }
 
     }

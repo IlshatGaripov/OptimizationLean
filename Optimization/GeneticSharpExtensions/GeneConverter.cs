@@ -1,11 +1,12 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-//using System.Globalization;
 
 namespace Optimization
 {
-
+    /// <summary>
+    /// Converts a gene object to and from JSON.
+    /// </summary>
     public class GeneConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
@@ -20,25 +21,49 @@ namespace Optimization
                 return null;
             }
 
+            // get JObject for json
             var json = JObject.Load(reader);
 
-            var precision = json["precision"]?.Value<int?>();
+            // values that are indespensible for both int and decimal
+            var key = json["key"].Value<string>();
+            var scale = json["scale"]?.Value<int>();
+            var step = json["step"]?.Value<decimal>();
+            var fibo = json["fibonacci"]?.Value<bool>() ?? false;
 
-            GeneConfiguration gene = new GeneConfiguration
+            // determine if we are working in decimal or int notaion?
+            var minConvertedToDecimal = json["min"].Value<decimal>();
+            var maxConvertedToDecimal = json["max"].Value<decimal>();
+            var minScale = GeneFactory.DecimalScale(minConvertedToDecimal);
+            var maxScale = GeneFactory.DecimalScale(maxConvertedToDecimal);
+
+            // if any of three scales is above 0 we are working with decimals
+            if (scale > 0 || Math.Max(minScale, maxScale) > 0)
             {
-                Key = json["key"].Value<string>(),
-                MinDecimal = precision > 0 ? json["min"].Value<decimal?>() : null,
-                MaxDecimal = precision > 0 ? json["max"].Value<decimal?>() : null,
-                MinInt = precision > 0 ? null : json["min"].Value<int?>(),
-                MaxInt = precision > 0 ? null : json["max"].Value<int?>(),
-                Precision = precision, 
-                Fibonacci = json["fibonacci"]?.Value<bool>() ?? false
+                return new GeneConfiguration
+                {
+                    Key = key,
+                    MinDecimal = minConvertedToDecimal,
+                    MaxDecimal = maxConvertedToDecimal,
+                    Scale = scale,
+                    Step = step,
+                    Fibonacci = fibo
+                };
+            }
+
+            // else this is int
+            return new GeneConfiguration
+            {
+                Key = key,
+                MinInt = (int)minConvertedToDecimal,
+                MaxInt = (int)maxConvertedToDecimal,
+                Scale = scale,
+                Step = step,
+                Fibonacci = fibo
             };
 
             /*
             if (json["actual"] != null)
             {
-
                 int parsed;
                 string raw = json["actual"].Value<string>();
                 if (int.TryParse(raw, out parsed))
@@ -60,19 +85,21 @@ namespace Optimization
                 }
             }
             */
-
-            return gene;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var gene = (GeneConfiguration)value;
-
-
+            
             writer.WriteStartObject();
 
+            // key
             writer.WritePropertyName("key");
             writer.WriteValue(gene.Key);
+
+            // fibo
+            writer.WritePropertyName("fibonacci");
+            writer.WriteValue(gene.Fibonacci);
 
             if (gene.MinDecimal.HasValue)
             {
@@ -90,30 +117,20 @@ namespace Optimization
                 writer.WriteValue(gene.MaxInt);
             }
 
-            if (gene.Precision.HasValue)
+            if (gene.Scale.HasValue)
             {
-                writer.WritePropertyName("precision");
-                writer.WriteValue(gene.Precision);
+                writer.WritePropertyName("scale");
+                writer.WriteValue(gene.Scale);
             }
 
-            /*
-            if (gene.ActualInt.HasValue)
+            if (gene.Step.HasValue)
             {
-                writer.WritePropertyName("actual");
-                writer.WriteValue(gene.ActualInt);
+                writer.WritePropertyName("step");
+                writer.WriteValue(gene.Step);
             }
-            if (gene.ActualDecimal.HasValue)
-            {
-                writer.WritePropertyName("actual");
-                writer.WriteValue(gene.ActualDecimal);
-            }
-            */
 
             writer.WriteEndObject();
-
         }
 
     }
-
-
 }

@@ -90,6 +90,7 @@ namespace Optimization.Batcher
                         var pair = t.Split(':');
                         var gene = _current.Genes.SingleOrDefault(g => g.Key == pair[0].Trim());
 
+                        /*
                         if (int.TryParse(pair[1].Trim(), out var parsedInt))
                         {
                             gene.ActualInt = parsedInt;
@@ -105,6 +106,7 @@ namespace Optimization.Batcher
                                 throw new Exception($"Unable to parse optimal gene from range {_current.StartDate} {_current.EndDate}");
                             }
                         }
+                        */
                     }
                 }
             }

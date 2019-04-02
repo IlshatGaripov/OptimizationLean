@@ -66,7 +66,7 @@ namespace Optimization
         /// More information can be found here:
         /// https://docs.microsoft.com/en-us/dotnet/api/system.decimal.getbits
         /// </summary>
-        public static byte DecimalScale(decimal value)
+        public static int DecimalScale(decimal value)
         {
             /*
              * acording to the article above an alternative way to do the requested op. is:
@@ -87,7 +87,7 @@ namespace Optimization
             // generate random decimal within an interval
             if (config.MinDecimal.HasValue && config.MaxDecimal.HasValue)
             {
-                var randomDecimal = RandomBetween(config.MinDecimal.Value, config.MaxDecimal.Value, config.Precision);
+                var randomDecimal = RandomBetween(config.MinDecimal.Value, config.MaxDecimal.Value, config.Scale);
                 return new Gene(new KeyValuePair<string, object>(config.Key, randomDecimal));
             }
 

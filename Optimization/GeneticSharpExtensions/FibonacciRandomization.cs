@@ -1,13 +1,9 @@
 ﻿using GeneticSharp.Domain.Randomizations;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Optimization
 {
-
     /// <summary>
     /// Generates a random Fibonacci number within the range of 0 - 10946
     /// </summary>

@@ -79,8 +79,8 @@ namespace Optimization.Tests
         [Test()]
         public void GenerateTest()
         {
-            var config = new[] { new GeneConfiguration { Key = "slow", ActualInt = 200 }, new GeneConfiguration { Key = "take", Precision = 2, MaxDecimal= 0.06m,
-                MinDecimal = 0.04m, ActualDecimal = 0.05m } };
+            var config = new[] { new GeneConfiguration { Key = "slow"}, new GeneConfiguration { Key = "take", Precision = 2, MaxDecimal= 0.06m,
+                MinDecimal = 0.04m} };
 
             RandomizationProvider.Current = new BasicRandomization();
             GeneFactory.Initialize(config);

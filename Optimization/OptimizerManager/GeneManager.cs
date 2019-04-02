@@ -49,7 +49,7 @@ namespace Optimization
             var maxTreads = Program.Config.MaxThreads;
             _executor = new ParallelTaskExecutor
             {
-                MinThreads = 1, MaxThreads = maxTreads > 0 ? maxTreads : 8
+                MinThreads = 1, MaxThreads = maxTreads > 0 ? maxTreads : 4
             };
         }
 
@@ -65,10 +65,7 @@ namespace Optimization
 
             // list to store the chromosomes
             IList<IChromosome> chromosomes = new List<IChromosome>();
-
-            // GeneFactory generates the chromosome genes.
-            GeneFactory.Initialize(Program.Config.Genes);
-
+            
             // create chromosomes and add them to list.
             for (var i = 0; i < Program.Config.PopulationSize; i++)
             {
