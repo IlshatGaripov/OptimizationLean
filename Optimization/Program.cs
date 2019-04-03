@@ -40,14 +40,13 @@ namespace Optimization
                 new object[] { new FitnessFilter() }, 
                 null, null);
             
+
             // GA manager
             
-            /*
             Manager = new GeneManager();
             Manager.Initialize(fitness);
             Manager.Start();
-            */
-
+            
             Console.ReadKey();
 
 

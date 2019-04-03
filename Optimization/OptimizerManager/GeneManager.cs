@@ -75,16 +75,18 @@ namespace Optimization
             // create a population from the pre-defined list of chromosomes.
             _population = new PreloadPopulation(chromosomes);
 
-            // init GA params
+            // to init GA params
             var selection = new TournamentSelection();
             var crossover = Program.Config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover();
             var mutation = new UniformMutation(true);
+            var termination = new OrTermination(new FitnessStagnationTermination(Program.Config.StagnationGenerations),
+                new GenerationNumberTermination(Program.Config.Generations));
 
-            // create the GA itself 
-            var ga = new GeneticAlgorithm(_population, _fitness, selection, crossover, mutation)
+            // create the GA itself . Object of custom type contained in GeneticSharpExtensions.
+            var ga = new GeneticAlgorithmCustom(_population, _fitness, selection, crossover, mutation)
             {
                 TaskExecutor = _executor,
-                Termination = new OrTermination(new FitnessStagnationTermination(Program.Config.StagnationGenerations), new GenerationNumberTermination(Program.Config.Generations)),
+                Termination = termination,
                 Reinsertion = new ElitistReinsertion(),
                 MutationProbability = Program.Config.MutationProbability,
                 CrossoverProbability = Program.Config.CrossoverProbability
