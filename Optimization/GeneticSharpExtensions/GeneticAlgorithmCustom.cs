@@ -258,6 +258,9 @@ namespace Optimization
                     State = GeneticAlgorithmState.Resumed;
                 }
 
+                // this will return true if termination has reached by the end of current generation
+                // as instance when the GenerationNumberTermination is set to 1 (the case of brute force optimization)
+                // and generation will not evole further and the method will return;
                 if (EndCurrentGeneration())
                 {
                     return;
@@ -356,10 +359,8 @@ namespace Optimization
             {
                 var chromosomesWithoutFitness = Population.CurrentGeneration.Chromosomes.Where(c => !c.Fitness.HasValue).ToList();
 
-                for (int i = 0; i < chromosomesWithoutFitness.Count; i++)
+                foreach (var c in chromosomesWithoutFitness)
                 {
-                    var c = chromosomesWithoutFitness[i];
-
                     TaskExecutor.Add(() =>
                     {
                         RunEvaluateFitness(c);
@@ -376,8 +377,6 @@ namespace Optimization
                 TaskExecutor.Stop();
                 TaskExecutor.Clear();
             }
-
-            //Population.CurrentGeneration.Chromosomes = Population.CurrentGeneration.Chromosomes.OrderByDescending(c => c.Fitness.Value).ToList();
         }
 
         /// <summary>

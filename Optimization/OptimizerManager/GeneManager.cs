@@ -1,5 +1,4 @@
-﻿using GeneticSharp.Domain;
-using GeneticSharp.Domain.Chromosomes;
+﻿using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Crossovers;
 using GeneticSharp.Domain.Mutations;
 using GeneticSharp.Domain.Populations;
@@ -19,33 +18,46 @@ namespace Optimization
     {
         public const string Termination = "Termination Reached.";
         
-        /// <summary>
-        /// An executor.
-        /// </summary>
-        private ParallelTaskExecutor _executor;
+        //executor
+        private ITaskExecutor _executor;
 
-        /// <summary>
-        /// Population.
-        /// </summary>
         private IPopulation _population;
-
-        /// <summary>
-        /// GA fitness.
-        /// </summary>
         private OptimizerFitness _fitness;
-
-        /// <summary>
-        /// Best chromosome.
-        /// </summary>
-        private Chromosome _bestChromosome;
+        private ITermination _termination;
+        private ISelection _selection;
+        private ICrossover _crossover;
+        private IMutation _mutation;
+        private IReinsertion _reinsertion;
 
         /// <summary>
         /// Init the class variables. 
         /// </summary>
         public void Initialize(OptimizerFitness fitness)
         {
+            // fitness
             _fitness = fitness;
+
+            // params to init GA
+            _selection = new TournamentSelection();
+            _crossover = Program.Config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover();
+            _mutation = new UniformMutation(true);
+            _reinsertion = new ElitistReinsertion();
+
+            // termination
+            switch (Program.Config.Mode)
+            {
+                case OptimizationMode.BruteForce:
+                    _termination = new GenerationNumberTermination(1);
+                    break;
+                case OptimizationMode.GeneticAlgorithm:
+                    _termination = new OrTermination(new FitnessStagnationTermination(Program.Config.StagnationGenerations),
+                        new GenerationNumberTermination(Program.Config.Generations));
+                    break;
+                default:
+                    throw new Exception("Termination method could not be initialized");
+            }
             
+            // executor
             var maxTreads = Program.Config.MaxThreads;
             _executor = new ParallelTaskExecutor
             {
@@ -65,29 +77,22 @@ namespace Optimization
 
             // list to store the chromosomes
             IList<IChromosome> chromosomes = new List<IChromosome>();
-            
-            // create chromosomes and add them to list.
+
+            // create the pre defined list of chromosomes
             for (var i = 0; i < Program.Config.PopulationSize; i++)
             {
                 chromosomes.Add(new Chromosome(GeneFactory.GeneConfigArray));
             }
 
-            // create a population from the pre-defined list of chromosomes.
+            // create population off the pre-defined list
             _population = new PreloadPopulation(chromosomes);
-
-            // to init GA params
-            var selection = new TournamentSelection();
-            var crossover = Program.Config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover();
-            var mutation = new UniformMutation(true);
-            var termination = new OrTermination(new FitnessStagnationTermination(Program.Config.StagnationGenerations),
-                new GenerationNumberTermination(Program.Config.Generations));
-
-            // create the GA itself . Object of custom type contained in GeneticSharpExtensions.
-            var ga = new GeneticAlgorithmCustom(_population, _fitness, selection, crossover, mutation)
+            
+            // create the GA itself . Object of custom type (contained in GeneticSharpExtensions folder).
+            var ga = new GeneticAlgorithmCustom(_population, _fitness, _selection, _crossover, _mutation)
             {
                 TaskExecutor = _executor,
-                Termination = termination,
-                Reinsertion = new ElitistReinsertion(),
+                Termination = _termination,
+                Reinsertion = _reinsertion,
                 MutationProbability = Program.Config.MutationProbability,
                 CrossoverProbability = Program.Config.CrossoverProbability
             };
@@ -100,6 +105,9 @@ namespace Optimization
             ga.Start();
         }
 
+        /// <summary>
+        /// Handler called by the end of optimization algorithm
+        /// </summary>
         private void TerminationReached(object sender, EventArgs e)
         {
             Program.Logger.Info(Termination);
@@ -107,17 +115,27 @@ namespace Optimization
             GenerationRan(null, null);
         }
 
+        /// <summary>
+        /// Handler called at the end of next generation
+        /// </summary>
         private void GenerationRan(object sender, EventArgs e)
         {
+            /*
             //keep first iteration of alpha to maintain id
             if (_bestChromosome == null || _population.BestChromosome.Fitness > _bestChromosome?.Fitness)
             {
                 _bestChromosome = (Chromosome)_population.BestChromosome;
             }
+            */
 
+            // we don't need _bestChromosome value as _population.BestChromosome must maintain the best solution according to the interface (!)
+            // so that is a duplicate
+
+            /*
             Program.Logger.Info("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}, Id: {5}",
                 Program.Config.AlgorithmTypeName, _population.GenerationsNumber, _bestChromosome.Fitness,
                 _fitness.Name, _bestChromosome.ToKeyValueString(), _bestChromosome.Id);
+            */
         }
 
     }

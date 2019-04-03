@@ -125,8 +125,10 @@ namespace Optimization
         /// </summary>        
         public virtual void EndCurrentGeneration()
         {
-            // re writes the CurrentGeneration's Chromosomes list by taking only the best MaxSize solutions
-            CurrentGeneration.End(MaxSize);
+            // method re writes the CurrentGeneration's Chromosomes list by taking only the best MaxSize solutions
+            // we will not cut it off - keep the whole population in
+            var size = CurrentGeneration.Chromosomes.Count;
+            CurrentGeneration.End(size);
 
             if (Equals(BestChromosome, CurrentGeneration.BestChromosome)) return;
 
