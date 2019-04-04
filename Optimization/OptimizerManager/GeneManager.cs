@@ -1,5 +1,4 @@
-﻿using GeneticSharp.Domain.Chromosomes;
-using GeneticSharp.Domain.Crossovers;
+﻿using GeneticSharp.Domain.Crossovers;
 using GeneticSharp.Domain.Mutations;
 using GeneticSharp.Domain.Populations;
 using GeneticSharp.Domain.Reinsertions;
@@ -7,7 +6,6 @@ using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
 using GeneticSharp.Infrastructure.Framework.Threading;
 using System;
-using System.Collections.Generic;
 
 namespace Optimization
 {
@@ -37,22 +35,34 @@ namespace Optimization
             // fitness
             _fitness = fitness;
 
-            // params to init GA
+            // params to init GA common to different optimization modes
             _selection = new TournamentSelection();
             _crossover = Program.Config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover();
             _mutation = new UniformMutation(true);
             _reinsertion = new ElitistReinsertion();
 
-            // termination
+            // params optimization method specific 
             switch (Program.Config.Mode)
             {
                 case OptimizationMode.BruteForce:
+                {
+                    // TODO: implement population class for brute force optim.
+                    _population = new PreloadPopulation();
+
                     _termination = new GenerationNumberTermination(1);
                     break;
+                }
+
                 case OptimizationMode.GeneticAlgorithm:
-                    _termination = new OrTermination(new FitnessStagnationTermination(Program.Config.StagnationGenerations),
+                {
+                    // create population from randomly generated list
+                    _population = new PreloadPopulation();
+
+                    _termination = new OrTermination(new FitnessStagnationTermination(Program.Config.StagnationGenerations), 
                         new GenerationNumberTermination(Program.Config.Generations));
                     break;
+                }
+                    
                 default:
                     throw new Exception("Termination method could not be initialized");
             }
@@ -74,18 +84,6 @@ namespace Optimization
             {
                 throw new Exception("Executor was not initialized");
             }
-
-            // list to store the chromosomes
-            IList<IChromosome> chromosomes = new List<IChromosome>();
-
-            // create the pre defined list of chromosomes
-            for (var i = 0; i < Program.Config.PopulationSize; i++)
-            {
-                chromosomes.Add(new Chromosome(GeneFactory.GeneConfigArray));
-            }
-
-            // create population off the pre-defined list
-            _population = new PreloadPopulation(chromosomes);
             
             // create the GA itself . Object of custom type (contained in GeneticSharpExtensions folder).
             var ga = new GeneticAlgorithmCustom(_population, _fitness, _selection, _crossover, _mutation)

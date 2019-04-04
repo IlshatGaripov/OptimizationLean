@@ -11,26 +11,18 @@ namespace Optimization
     public class PreloadPopulation : PopulationBase
     {
         /// <summary>
-        /// List that stores the loaded chromosomes.
-        /// </summary>
-        private readonly IList<IChromosome> _chromosomes;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="PreloadPopulation"/> class.
         /// </summary>
-        /// <param name="chromosomes">The list of preload chromosomes.</param>
-        public PreloadPopulation(IList<IChromosome> chromosomes)
+        public PreloadPopulation()
         {
-            _chromosomes = chromosomes;
-
             // time
             CreationDate = DateTime.Now;
 
             // create generation list.
             Generations = new List<Generation>();
 
-            // generation strategy - only a single generation will be kept in population.
-            GenerationStrategy = new PerformanceGenerationStrategy();
+            // generation strategy - only a single (new) generation will be kept in population.
+            GenerationStrategy = new PerformanceGenerationStrategy(1);
         }
 
         /// <summary>
@@ -39,9 +31,29 @@ namespace Optimization
         public override void CreateInitialGeneration()
         {
             GenerationsNumber = 0;
-            
-            // create the bast class method. Chromosome validation is held inside.
-            CreateNewGeneration(_chromosomes);
+
+            var chromosomesList = GenerateChromosomesRandomly();
+
+            // calls the base class method. Chromosomes validation is held inside.
+            CreateNewGeneration(chromosomesList);
+        }
+
+        /// <summary>
+        /// Fills the chromosome list with appropriate values.
+        /// Default behavior is just generate it randomly depending on given size (config)
+        /// and GeneFactory randomization methods and GeneConfig settings
+        /// </summary>
+        public static IList<IChromosome> GenerateChromosomesRandomly()
+        {
+            var chromosomes = new List<IChromosome>();
+
+            // create the pre defined list of chromosomes
+            for (var i = 0; i < Program.Config.PopulationSize; i++)
+            {
+                chromosomes.Add(new Chromosome(GeneFactory.GeneConfigArray));
+            }
+
+            return chromosomes;
         }
     }
 }
