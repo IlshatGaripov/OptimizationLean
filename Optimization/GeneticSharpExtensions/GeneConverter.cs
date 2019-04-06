@@ -26,65 +26,50 @@ namespace Optimization
 
             // values that are indespensible for both int and decimal
             var key = json["key"].Value<string>();
-            var scale = json["scale"]?.Value<int>();
-            var step = json["step"]?.Value<decimal>();
             var fibo = json["fibonacci"]?.Value<bool>() ?? false;
 
-            // determine if we are working in decimal or int notaion?
-            var minConvertedToDecimal = json["min"].Value<decimal>();
-            var maxConvertedToDecimal = json["max"].Value<decimal>();
-            var minScale = GeneFactory.DecimalScale(minConvertedToDecimal);
-            var maxScale = GeneFactory.DecimalScale(maxConvertedToDecimal);
+            // step
+            var step = json["step"]?.Value<decimal>();
 
-            // if any of three scales is above 0 we are working with decimals
-            if (scale > 0 || Math.Max(minScale, maxScale) > 0)
+            // string representation for min-max
+            var min = json["min"].Value<string>();
+            var max = json["max"].Value<string>();
+
+            // try parse for an int - if succesful - then we are working in int notation
+            if (int.TryParse(min, out var minOutputIntResult) && int.TryParse(max, out var maxOuptputIntResult))
             {
+                // step if existent must be also of an int kind
+                if (step.HasValue)
+                {
+                    if (step % 1 != 0)
+                    {
+                        throw new Exception("Gene step must be Int; the same as min and max values");
+                    }
+                }
+
+                // return an object
                 return new GeneConfiguration
                 {
                     Key = key,
-                    MinDecimal = minConvertedToDecimal,
-                    MaxDecimal = maxConvertedToDecimal,
-                    Scale = scale,
+                    MinInt = minOutputIntResult,
+                    MaxInt = maxOuptputIntResult,
                     Step = step,
                     Fibonacci = fibo
                 };
             }
 
-            // else this is int
+            // else those are decimals
+            decimal.TryParse(min, out var minOutputDecimalResult);
+            decimal.TryParse(max, out var maxOutputDecimalResult);
+
             return new GeneConfiguration
             {
                 Key = key,
-                MinInt = (int)minConvertedToDecimal,
-                MaxInt = (int)maxConvertedToDecimal,
-                Scale = scale,
+                MinDecimal = minOutputDecimalResult,
+                MaxDecimal = maxOutputDecimalResult,
                 Step = step,
                 Fibonacci = fibo
             };
-
-            /*
-            if (json["actual"] != null)
-            {
-                int parsed;
-                string raw = json["actual"].Value<string>();
-                if (int.TryParse(raw, out parsed))
-                {
-                    gene.ActualInt = parsed;
-                }
-
-                if (!gene.ActualInt.HasValue)
-                {
-                    decimal decimalParsed;
-                    if (decimal.TryParse(raw, out decimalParsed))
-                    {
-                        gene.ActualDecimal = decimalParsed;
-                    }
-                    if (decimal.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out decimalParsed))
-                    {
-                        gene.ActualDecimal = decimalParsed;
-                    }
-                }
-            }
-            */
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -116,13 +101,7 @@ namespace Optimization
                 writer.WritePropertyName("max");
                 writer.WriteValue(gene.MaxInt);
             }
-
-            if (gene.Scale.HasValue)
-            {
-                writer.WritePropertyName("scale");
-                writer.WriteValue(gene.Scale);
-            }
-
+            
             if (gene.Step.HasValue)
             {
                 writer.WritePropertyName("step");

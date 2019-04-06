@@ -43,7 +43,7 @@ namespace Optimization
         public override Gene GenerateGene(int geneIndex)
         {
             var geneConfig = _config[geneIndex];
-            return GeneFactory.Generate(geneConfig);
+            return GeneFactory.GenerateRandom(geneConfig);
         }
 
         /// <summary>

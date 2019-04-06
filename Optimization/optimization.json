@@ -4,14 +4,12 @@
     {
       "key": "take",
       "min": 0.02,
-      "max": 0.1,
-      "scale": 2
+      "max": 0.1
     },
     {
       "key": "fast",
       "min": 6,
       "max": 48,
-      "scale": 1,
       "step": 3
     },
     {

@@ -46,19 +46,13 @@ namespace Optimization
         /// <summary>
         /// Returns random decimal within an interval.
         /// </summary>
-        public static decimal RandomBetween(decimal minValue, decimal maxValue, int? precision = null)
+        public static decimal RandomBetween(decimal minValue, decimal maxValue)
         {
             // get random double
             var value = RandomizationProvider.Current.GetDouble() * ((double)maxValue - (double)minValue) + (double)minValue;
 
-            if (precision.HasValue) return (decimal) System.Math.Round(value, precision.Value);
-
-            // else.. calculate the scale of border value and take max of two.
-            var precisionMinValue = DecimalScale(minValue);
-            var precisionMaxValue = DecimalScale(maxValue);
-            precision = Math.Max(precisionMinValue, precisionMaxValue);
-
-            return (decimal)System.Math.Round(value, precision.Value);
+            // cast back and return
+            return (decimal)value;
         }
 
         /// <summary>
@@ -76,10 +70,10 @@ namespace Optimization
         }
 
         /// <summary>
-        /// Generate gene according to GeneConfiguration.
+        /// Generate gene randomly withing acceptable boundaries set by GeneConfiguration.
         /// </summary>
         /// <param name="config">Gene configuration.</param>
-        public static Gene Generate(GeneConfiguration config)
+        public static Gene GenerateRandom(GeneConfiguration config)
         {
             // set randomization scheme.
             RandomizationProvider.Current = config.Fibonacci ? _fibonacci : _basic;
@@ -87,17 +81,18 @@ namespace Optimization
             // generate random decimal within an interval
             if (config.MinDecimal.HasValue && config.MaxDecimal.HasValue)
             {
-                var randomDecimal = RandomBetween(config.MinDecimal.Value, config.MaxDecimal.Value, config.Scale);
+                var randomDecimal = RandomBetween(config.MinDecimal.Value, config.MaxDecimal.Value);
                 return new Gene(new KeyValuePair<string, object>(config.Key, randomDecimal));
             }
 
             // if no decimal nor int values specified - there is a mistake.
             if (!config.MinInt.HasValue || !config.MaxInt.HasValue)
-                throw new Exception("Not valid gene config specification.");
+                throw new Exception("GeneFactory ~ GenerateRandom => Gene configuration is invalid");
             
             // if has int values interval - generate random int in between.
-            var randomInt = RandomBetween(config.MinInt.Value, config.MaxInt.Value);
-            return new Gene(new KeyValuePair<string, object>(config.Key, randomInt));
+            var randomInteger = RandomBetween(config.MinInt.Value, config.MaxInt.Value);
+
+            return new Gene(new KeyValuePair<string, object>(config.Key, randomInteger));
         }
 
     }

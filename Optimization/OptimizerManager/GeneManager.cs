@@ -47,7 +47,7 @@ namespace Optimization
                 case OptimizationMode.BruteForce:
                 {
                     // TODO: implement population class for brute force optim.
-                    _population = new PreloadPopulation();
+                    _population = new CartesianPopulation();
 
                     _termination = new GenerationNumberTermination(1);
                     break;

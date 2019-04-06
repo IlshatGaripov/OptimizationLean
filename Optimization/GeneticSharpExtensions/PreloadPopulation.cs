@@ -32,18 +32,18 @@ namespace Optimization
         {
             GenerationsNumber = 0;
 
-            var chromosomesList = GenerateChromosomesRandomly();
+            var chromosomesList = GenerateChromosomes();
 
             // calls the base class method. Chromosomes validation is held inside.
             CreateNewGeneration(chromosomesList);
         }
 
         /// <summary>
-        /// Fills the chromosome list with appropriate values.
-        /// Default behavior is just generate it randomly depending on given size (config)
-        /// and GeneFactory randomization methods and GeneConfig settings
+        /// Generates the chromosome list.
+        /// Default behavior is just generate it randomly. of given size specificated in config.
+        /// and using GeneFactory randomization methods and GeneConfig settings (max, min, scale).
         /// </summary>
-        public static IList<IChromosome> GenerateChromosomesRandomly()
+        protected virtual IList<IChromosome> GenerateChromosomes()
         {
             var chromosomes = new List<IChromosome>();
 
