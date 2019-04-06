@@ -89,7 +89,9 @@
     <Compile Include="Fitness\DeflatedSharpeRatioFitness.cs" />
     <Compile Include="Fitness\DualPeriodSharpeFitness.cs" />
     <Compile Include="Configuration\GeneConfiguration.cs" />
+    <Compile Include="GeneticSharpExtensions\ChromosomeCartesian.cs" />
     <Compile Include="GeneticSharpExtensions\GeneticAlgorithmCustom.cs" />
+    <Compile Include="GeneticSharpExtensions\CartesianPopulation.cs" />
     <Compile Include="GeneticSharpExtensions\PopulationBase.cs" />
     <Compile Include="GeneticSharpExtensions\GeneConverter.cs" />
     <Compile Include="GeneFactory.cs" />
