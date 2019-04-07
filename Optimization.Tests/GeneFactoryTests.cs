@@ -46,7 +46,7 @@ namespace Optimization.Tests
         [Test()]
         public void RandomBetweenPrecisionTest()
         {
-            var actual = GeneFactory.RandomBetween(1.1m, 1.2m, 1);
+            var actual = GeneFactory.RandomBetween(1.1m, 1.2m);
             Assert.IsTrue(actual >= 1.1m && actual <= 1.2m);
         }
 
@@ -56,7 +56,7 @@ namespace Optimization.Tests
             bool canBeMaximum = false;
             for (var i = 0;i < 10000;i++)
             {
-                var actual = GeneFactory.RandomBetween(1.1m, 1.2m, 1);
+                var actual = GeneFactory.RandomBetween(1.1m, 1.2m);
                 if (actual == 1.2m) { canBeMaximum = true; break; }
             }
 
@@ -69,7 +69,7 @@ namespace Optimization.Tests
             bool canBeNegative = false;
             for (var i = 0; i < 10000; i++)
             {
-                var actual = GeneFactory.RandomBetween(-1m, 1m, 0);
+                var actual = GeneFactory.RandomBetween(-1m, 1m);
                 if (actual == -1) { canBeNegative = true; break; }
             }
 
@@ -85,11 +85,11 @@ namespace Optimization.Tests
             RandomizationProvider.Current = new BasicRandomization();
             GeneFactory.Initialize(config);
 
-            var actual = GeneFactory.Generate(config[0]);
+            var actual = GeneFactory.GenerateRandom(config[0]);
             Assert.AreEqual(200, (int)((KeyValuePair<string, object>)actual.Value).Value);
 
             RandomizationProvider.Current = new BasicRandomization();
-            actual = GeneFactory.Generate(config[1]);
+            actual = GeneFactory.GenerateRandom(config[1]);
             Assert.IsTrue(decimal.TryParse(((KeyValuePair<string, object>)actual.Value).Value.ToString(), out var parsed));
             Assert.AreEqual(2, GeneFactory.DecimalScale(parsed));
 

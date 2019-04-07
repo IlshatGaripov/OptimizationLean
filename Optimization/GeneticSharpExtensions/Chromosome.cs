@@ -1,8 +1,5 @@
 ﻿using GeneticSharp.Domain.Chromosomes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Optimization
 {
@@ -54,27 +51,5 @@ namespace Optimization
         {
             return new Chromosome( _config);
         }
-
-        /// <summary>
-        /// Converts a collection of chromosome genes into string/object dictionary.
-        /// </summary>
-        public Dictionary<string, object> ToDictionary()
-        {
-            // TODO: wondering what would be logged after this expression been used?
-            return GetGenes().ToDictionary(d => ((KeyValuePair<string, object>)d.Value).Key, d => ((KeyValuePair<string, object>)d.Value).Value);
-        }
-
-        public string ToKeyValueString()
-        {
-            var output = new StringBuilder();
-            foreach (var item in this.ToDictionary())
-            {
-                output.Append(item.Key).Append(": ").Append(item.Value.ToString()).Append(", ");
-            }
-
-            return output.ToString().TrimEnd(',', ' ');
-        }
-
     }
-
 }

@@ -50,6 +50,7 @@ namespace Optimization
             {
                 var output = "";
 
+                // TODO: call new direct extension method can be applied to all ChromosomeBase type of object.
                 // convert chromosome genes to dictionary to feed the algorithm. 
                 var list = ((Chromosome)chromosome).ToDictionary();
 
@@ -126,15 +127,6 @@ namespace Optimization
 
         }
         
-        /// <summary>
-        /// Clone method used to create a copy of an Configuration object.
-        /// </summary>
-        protected static T Clone<T>(T source)
-        {
-            var serialized = JsonConvert.SerializeObject(source);
-            return JsonConvert.DeserializeObject<T>(serialized);
-        }
-
         /// <summary>
         /// Nested class to contain the fintess function results.
         /// </summary>

@@ -11,7 +11,7 @@ namespace Optimization
 
         public override double Evaluate(IChromosome chromosome)
         {
-            var dualConfig = Clone<OptimizerConfiguration>((OptimizerConfiguration)Program.Config);
+            var dualConfig = Exstensions.Clone(Program.Config);    // uses Clone method from Extensions
             var start = Program.Config.StartDate.Value;
             var end = Program.Config.EndDate.Value;
             var diff = end - start;

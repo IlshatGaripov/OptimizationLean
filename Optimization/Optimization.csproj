@@ -85,6 +85,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Exstensions.cs" />
     <Compile Include="Configuration\FitnessConfiguration.cs" />
     <Compile Include="Fitness\DeflatedSharpeRatioFitness.cs" />
     <Compile Include="Fitness\DualPeriodSharpeFitness.cs" />
