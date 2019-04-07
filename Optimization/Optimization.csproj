@@ -94,10 +94,10 @@
     <Compile Include="GeneticSharpExtensions\CartesianPopulation.cs" />
     <Compile Include="GeneticSharpExtensions\PopulationBase.cs" />
     <Compile Include="GeneticSharpExtensions\GeneConverter.cs" />
-    <Compile Include="GeneFactory.cs" />
+    <Compile Include="Common\GeneFactory.cs" />
     <Compile Include="Interfaces\IOptimizerManager.cs" />
     <Compile Include="LeanExtensions\EmptyApiHandler.cs" />
-    <Compile Include="Enums.cs" />
+    <Compile Include="Common\Enums.cs" />
     <Compile Include="Fitness\FitnessFilter.cs" />
     <Compile Include="LeanExtensions\OptimizerResultHandler.cs" />
     <Compile Include="Fitness\NFoldCrossReturnMaximizer.cs" />
@@ -107,12 +107,12 @@
     <Compile Include="OptimizerManager\MaximizerManager.cs" />
     <Compile Include="Interfaces\IFitnessFilter.cs" />
     <Compile Include="GeneticSharpExtensions\FibonacciRandomization.cs" />
-    <Compile Include="OptimizerAppDomainManager.cs" />
+    <Compile Include="Common\OptimizerAppDomainManager.cs" />
     <Compile Include="GeneticSharpExtensions\Chromosome.cs" />
     <Compile Include="OptimizerManager\GeneManager.cs" />
     <Compile Include="Configuration\IFitnessConfiguration.cs" />
     <Compile Include="Fitness\AdaptiveSharpeRatioFitness.cs" />
-    <Compile Include="OptimizerInitializer.cs" />
+    <Compile Include="Common\OptimizerInitializer.cs" />
     <Compile Include="Fitness\OptimizerFitness.cs" />
     <Compile Include="Configuration\OptimizerConfiguration.cs" />
     <Compile Include="LeanExtensions\Queuer.cs" />

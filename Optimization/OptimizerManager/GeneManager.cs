@@ -46,7 +46,7 @@ namespace Optimization
             {
                 case OptimizationMode.BruteForce:
                 {
-                    // TODO: implement population class for brute force optim.
+                    // create cartesian population
                     _population = new CartesianPopulation();
 
                     _termination = new GenerationNumberTermination(1);
@@ -55,7 +55,7 @@ namespace Optimization
 
                 case OptimizationMode.GeneticAlgorithm:
                 {
-                    // create population from randomly generated list
+                    // create random population
                     _population = new PreloadPopulation();
 
                     _termination = new OrTermination(new FitnessStagnationTermination(Program.Config.StagnationGenerations), 
