@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using GeneticSharp.Domain.Chromosomes;
 using Newtonsoft.Json;
 
 namespace Optimization
@@ -22,7 +21,7 @@ namespace Optimization
         /// <summary>
         /// Converts a collection of chromosome genes into string/object dictionary.
         /// </summary>
-        public static Dictionary<string, object> ToDictionary(this ChromosomeBase ch)
+        public static Dictionary<string, object> ToDictionary(this Chromosome ch)
         {
             var resultingDictionary = new Dictionary<string, object>();
 
@@ -40,7 +39,7 @@ namespace Optimization
         /// <summary>
         /// Returns as a string chromosome's key-value representation from ToDictionary().
         /// </summary>
-        public static string ToKeyValueString(this ChromosomeBase ch)
+        public static string ToKeyValueString(this Chromosome ch)
         {
             var output = new StringBuilder();
             foreach (var item in ch.ToDictionary())

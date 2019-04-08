@@ -4,15 +4,11 @@ using System;
 namespace Optimization
 {
     /// <summary>
-    /// Custom implementation of a chromosome class.
+    /// Base class for all custom implementations of a chromosome class.
+    /// Intermediate for ChromosomeBase (library implementation) and actual implementation.
     /// </summary>
-    public sealed class Chromosome : ChromosomeBase
+    public class Chromosome : ChromosomeBase
     {
-        /// <summary>
-        /// Array of gene configurations.
-        /// </summary>
-        private readonly GeneConfiguration[] _config;
-
         /// <summary>
         /// Unique chromosome id.
         /// </summary>
@@ -21,15 +17,9 @@ namespace Optimization
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Chromosome( GeneConfiguration[] config) : base(config.Length)
+        public Chromosome(int length) : base(length)
         {
-            _config = config;
             
-            // fill the gene array with generated values
-            for (var i = 0; i < _config.Length; i++)
-            {
-                ReplaceGene(i, GenerateGene(i));
-            }
         }
         
         /// <summary>
@@ -39,8 +29,7 @@ namespace Optimization
         /// <returns>The gene generated at the specified index.</returns>
         public override Gene GenerateGene(int geneIndex)
         {
-            var geneConfig = _config[geneIndex];
-            return GeneFactory.GenerateRandom(geneConfig);
+            throw new System.NotImplementedException();
         }
 
         /// <summary>
@@ -49,7 +38,7 @@ namespace Optimization
         /// <returns>The new chromosome.</returns>
         public override IChromosome CreateNew()
         {
-            return new Chromosome( _config);
+            throw new System.NotImplementedException();
         }
     }
 }

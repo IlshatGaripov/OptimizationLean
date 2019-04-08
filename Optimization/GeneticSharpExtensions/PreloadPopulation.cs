@@ -50,7 +50,7 @@ namespace Optimization
             // create the pre defined list of chromosomes
             for (var i = 0; i < Program.Config.PopulationSize; i++)
             {
-                chromosomes.Add(new Chromosome(GeneFactory.GeneConfigArray));
+                chromosomes.Add(new ChromosomeRandom(Program.Config.Genes.Length));
             }
 
             return chromosomes;

@@ -49,11 +49,10 @@ namespace Optimization
             try
             {
                 var output = "";
-
-                // TODO: call new direct extension method can be applied to all ChromosomeBase type of object.
-                // convert chromosome genes to dictionary to feed the algorithm. 
+                
+                // convert to dictionary
                 var list = ((Chromosome)chromosome).ToDictionary();
-
+                
                 // add one more item to the dictionary that will stand for chromosome id
                 list.Add("Id", ((Chromosome)chromosome).Id);
 

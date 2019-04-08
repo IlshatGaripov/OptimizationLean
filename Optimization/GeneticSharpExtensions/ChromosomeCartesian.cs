@@ -5,7 +5,7 @@ namespace Optimization
     /// <summary>
     /// Cromosome representation for brute force algorithm mode.
     /// </summary>
-    public sealed class ChromosomeCartesian: ChromosomeBase
+    public sealed class ChromosomeCartesian: Chromosome
     {
         /// <summary>
         /// Array of gene values.
@@ -15,7 +15,7 @@ namespace Optimization
         /// <summary>
         /// Constructor for the class. Pass a lenguth to constructor of a base class <see cref="ChromosomeBase"/>
         /// </summary>
-        public ChromosomeCartesian(object[] geneValues) :base(geneValues.Length)
+        public ChromosomeCartesian(object[] geneValues) : base(geneValues.Length)
         {
             _geneValues = geneValues;
 
@@ -33,13 +33,6 @@ namespace Optimization
         {
             return new Gene(_geneValues[geneIndex]);
         }
-
-        /// <summary>
-        /// Creates a new chromosome using the same structure of this.
-        /// </summary>
-        public override IChromosome CreateNew()
-        {
-            throw new System.NotImplementedException();
-        }
+        
     }
 }
