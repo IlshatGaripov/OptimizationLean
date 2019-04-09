@@ -31,9 +31,12 @@ namespace Optimization
             // iterate over the gene config objects
             foreach (var config in Program.Config.Genes)
             {
-                // if decimal values are specified create a list of values by increasing the previos by one step
-                // then add resulting array to the list of object arrays of possible gene values
-                if (config.MinDecimal.HasValue && config.MaxDecimal.HasValue && config.Step.HasValue)
+                // we need a step value for every gene to generate cartesian product 
+                if (!config.Step.HasValue)
+                    throw new Exception($"CartesianPopulation: Please specify the step value for {config.Key}");
+
+                // if decimal values are defined - then create a list of decimal values
+                if (config.MinDecimal.HasValue && config.MaxDecimal.HasValue)
                 {
                     var sequenceDecimal = GenerateNumberSequence(config.MinDecimal.Value, config.MinDecimal.Value,
                         config.Step.Value);
@@ -43,9 +46,9 @@ namespace Optimization
                     continue;
                 }
 
-                // if no decimal nor int values are specified in config - that is a mistake
-                if (!config.MinInt.HasValue || !config.MaxInt.HasValue || !config.Step.HasValue)
-                    throw new Exception("GridPopulation ~ GenerateChromosomes => Gene configuration is invalid");
+                // if no decimal nor int values are specified in config - there is a mistake
+                if (!config.MinInt.HasValue || !config.MaxInt.HasValue)
+                    throw new Exception($"CartesianPopulation: Please define max and min values in config for {config.Key}");
                 
                 // do the same for int if values we are working with are of int kind
                 var stepIntegerCast = (int) config.Step.Value;

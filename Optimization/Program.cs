@@ -32,7 +32,6 @@ namespace Optimization
             // App Domain features used launching the lean runner.
             OptimizerAppDomainManager.Initialize();
             
-            
             // TODO: Should be easier to use Activator.CreateInstance? look into documentation ..
             // create a new instance of a OptimizerFitness object itself or its descendant.
             var fitness = (OptimizerFitness)Assembly.GetExecutingAssembly().CreateInstance(
@@ -40,7 +39,6 @@ namespace Optimization
                 new object[] { new FitnessFilter() }, 
                 null, null);
             
-
             // GA manager
             
             Manager = new GeneManager();
