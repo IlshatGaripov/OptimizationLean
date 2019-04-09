@@ -1,5 +1,8 @@
 {
+  // MODE
   "mode": "bruteforce",
+
+  // GENES
   "genes": [
     {
       "key": "take",
@@ -19,16 +22,22 @@
       "step": 20
     }
   ],
+
+  // LEAN
+  "algorithmTypeName": "ParameterizedAlgorithm",
+  "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
+  "dataFolder": "../../../../Lean/Data",
+  "startDate": null,
+  "endDate": null,
+  //"configPath": "../../../../Lean/Launcher/config.json",
+
+  // GENETIC OPTIMIZATION
   "populationSize": 24,
   "generations": 20,
   "stagnationGenerations": 30,
   "maxThreads": 8,
-  "configPath": "../../../../Lean/Launcher/config.json",
-  "algorithmTypeName": "ParameterizedAlgorithm",
-  "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
   "onePointCrossover": "true",
   "fitnessTypeName": "Optimization.OptimizerFitness",
-  "dataFolder": "../../../../Lean/Data",
   "minimumTrades": 1,
   "enableFitnessFilter": true,
   "mutationProbability": 0.5,

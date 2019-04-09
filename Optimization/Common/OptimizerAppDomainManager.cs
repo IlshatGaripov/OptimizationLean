@@ -66,7 +66,6 @@ namespace Optimization
         /// Runs an algorithm in separate app doman and returns the results.
         /// </summary>
         /// <param name="list">Input parameters.</param>
-        /// <param name="config">Optimizer configuration.</param>
         /// <returns>Backtest statisctics in way of a dictionary.</returns>
         public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list)
         {
@@ -114,7 +113,6 @@ namespace Optimization
         /// Can be used to "russian doll" QCAlgorithm
         /// </summary>
         /// <param name="list"></param>
-        /// <param name="config"></param>
         /// <returns></returns>
         public static Tuple<AppDomain, Task<Dictionary<string, decimal>>> RunAlgorithmAsync(Dictionary<string, object> list)
         {
@@ -125,16 +123,26 @@ namespace Optimization
             return Tuple.Create(EngineContext.AppDomain, result);
         }
 
+        /// <summary>
+        /// ??
+        /// </summary>
         public static Dictionary<string, Dictionary<string, decimal>> GetResults()
         {
             return _results;
         }
 
+        /// <summary>
+        /// Get the app domain's Results property.
+        /// </summary>
         public static Dictionary<string, Dictionary<string, decimal>> GetResults(AppDomain ad)
         {
             return GetData<Dictionary<string, Dictionary<string, decimal>>>(ad, "Results");
         }
 
+        /// <summary>
+        /// Gets the App Domains property corresponding to a key.
+        /// In <see cref="CreateRunnerInAppDomain"/> we set "@Results@ property for App Domain.
+        /// </summary>
         public static T GetData<T>(AppDomain ad, string key)
         {
             return (T)ad.GetData(key);

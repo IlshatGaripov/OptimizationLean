@@ -1,57 +1,60 @@
-using Newtonsoft.Json;
-using QuantConnect.Configuration;
-using QuantConnect.Lean.Engine;
-using QuantConnect.Logging;
-using QuantConnect.Packets;
-using QuantConnect.Util;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using QuantConnect.Configuration;
+using System.ComponentModel.Composition;
+using QuantConnect.Lean.Engine;
+using QuantConnect.Logging;
+using QuantConnect.Util;
 
 namespace Optimization
 {
-    public interface IRunner
+    /// <summary>
+    /// Class responsible for running the algorithm with Lean Engine.
+    /// </summary>
+    public class Runner : MarshalByRefObject
     {
-        Dictionary<string, decimal> Run(Dictionary<string, object> items);
-    }
-
-    public class Runner : MarshalByRefObject, IRunner
-    {
-
+        /// <summary>
+        /// Custom Lean's result handler
+        /// </summary>
         private OptimizerResultHandler _resultsHandler;
+
+        /// <summary>
+        /// Unique identifier
+        /// </summary>
         private string _id;
 
-        public Dictionary<string, decimal> Run(Dictionary<string, object> items)
+        /// <summary>
+        /// Method performs necessary initialization and launches the lean engine with an algorithm.
+        /// </summary>
+        public Dictionary<string, decimal> Run(Dictionary<string, object> alorithmInputs)
         {
-            Dictionary<string, Dictionary<string, decimal>> results = OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain);
+            // take chromosome's GUID if specified to initialize id variable
+            _id = (alorithmInputs.ContainsKey("Id") ? alorithmInputs["Id"] : Guid.NewGuid().ToString("N")).ToString();
 
-            _id = (items.ContainsKey("Id") ? items["Id"] : Guid.NewGuid().ToString("N")).ToString();
-
+            // set algorithm start and end dates
             if (Program.Config.StartDate.HasValue && Program.Config.EndDate.HasValue)
             {
-                if (!items.ContainsKey("startDate")) { items.Add("startDate", Program.Config.StartDate); }
-                if (!items.ContainsKey("endDate")) { items.Add("endDate", Program.Config.EndDate); }
-            }
-
-            string jsonKey = JsonConvert.SerializeObject(items.Where(i => i.Key != "Id"));
-
-            if (results.ContainsKey(jsonKey))
-            {
-                return results[jsonKey];
-            }
-
-            //just ignore id gene
-            foreach (var pair in items.Where(i => i.Key != "Id"))
-            {
-                if (pair.Value is DateTime?)
+                if (!alorithmInputs.ContainsKey("startDate"))
                 {
-                    var cast = ((DateTime?)pair.Value);
-                    if (cast.HasValue)
-                    {
-                        Config.Set(pair.Key, cast.Value.ToString("O"));
-                    }
+                    alorithmInputs.Add("startDate", Program.Config.StartDate);
+                }
+
+                if (!alorithmInputs.ContainsKey("endDate"))
+                {
+                    alorithmInputs.Add("endDate", Program.Config.EndDate);
+                }
+            }
+
+            // set the algorithm input variables. 
+            foreach (var pair in alorithmInputs.Where(i => i.Key != "Id"))
+            {
+                // represent datetime in lean-friendly format. example: 2009-06-15
+                if (pair.Value is DateTime time)
+                {
+                    var cast = (DateTime?) time;
+                    Config.Set(pair.Key, cast.Value.ToString("O"));
                 }
                 else
                 {
@@ -59,88 +62,100 @@ namespace Optimization
                 }
             }
 
-            LaunchLean();
-
-            if (_resultsHandler.FullResults != null && _resultsHandler.FullResults.Any())
-            {
-                results.Add(jsonKey, _resultsHandler.FullResults);
-                OptimizerAppDomainManager.SetResults(AppDomain.CurrentDomain, results);
-            }
-
-            return _resultsHandler.FullResults;
-        }
-
-        private void LaunchLean()
-        {
+            // Lean settings:
             Config.Set("environment", "backtesting");
+            Config.Set("algorithm-language", "CSharp");     // omitted?
+            //override config to use custom result handler
+            Config.Set("result-handler", nameof(OptimizerResultHandler));
 
+            // Algorithm name
             if (!string.IsNullOrEmpty(Program.Config.AlgorithmTypeName))
             {
                 Config.Set("algorithm-type-name", Program.Config.AlgorithmTypeName);
             }
 
+            // Physical location of dll with an algorithm.
             if (!string.IsNullOrEmpty(Program.Config.AlgorithmLocation))
             {
                 Config.Set("algorithm-location", Path.GetFileName(Program.Config.AlgorithmLocation));
             }
 
+            // Data folder
             if (!string.IsNullOrEmpty(Program.Config.DataFolder))
             {
                 Config.Set("data-folder", Program.Config.DataFolder);
             }
 
-            if (!string.IsNullOrEmpty(Program.Config.TransactionLog))
-            {
-                var filename = Program.Config.TransactionLog;
-                filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, 
-                    Path.GetFileNameWithoutExtension(filename) + _id + Path.GetExtension(filename));
+            // log handler
+            Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>(Config.Get("log-handler", "CompositeLogHandler"));
 
-                Config.Set("transaction-log", filename);
+
+            /*
+             *    LeanEngineSystemHandlers
+             */
+            LeanEngineSystemHandlers leanEngineSystemHandlers;
+            try
+            {
+                leanEngineSystemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
+            }
+            catch (CompositionException compositionException)
+            {
+                Log.Error("Engine.Main(): Failed to load library: " + compositionException);
+                throw;
             }
 
-            //transaction-log
+            leanEngineSystemHandlers.Initialize();   // can this be omitted?
 
-            Config.Set("api-handler", nameof(EmptyApiHandler));
-            var systemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
-            systemHandlers.Initialize();
+            var job = leanEngineSystemHandlers.JobQueue.NextJob(out var assemblyPath);
 
-            //separate log uniquely named
-            var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + _id + ".txt";
-
-            using (Log.LogHandler = new FileLogHandler(logFileName, true))
+            if (job == null)
             {
-                LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
-                try
-                {
-                    //override config to use custom result handler
-                    Config.Set("backtesting.result-handler", nameof(OptimizerResultHandler));
-                    leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);
-                    _resultsHandler = (OptimizerResultHandler)leanEngineAlgorithmHandlers.Results;
-                }
-                catch (CompositionException compositionException)
-                {
-                    Log.Error("Engine.Main(): Failed to load library: " + compositionException);
-                    throw;
-                }
-
-                AlgorithmNodePacket job = systemHandlers.JobQueue.NextJob(out var algorithmPath);
-
-                try
-                {
-                    var engine = new Engine(systemHandlers, leanEngineAlgorithmHandlers, false);
-                    var algorithmManager = new AlgorithmManager(false);
-                    engine.Run(job, algorithmManager, algorithmPath);
-                }
-                finally
-                {
-                    Log.Trace("Engine.Main(): Packet removed from queue: " + job.AlgorithmId);
-
-                    // clean up resources
-                    systemHandlers.Dispose();
-                    leanEngineAlgorithmHandlers.Dispose();
-                }
+                throw new Exception("Engine.Main(): Job was null.");
             }
+
+
+            /*
+             *    LeanEngineSystemHandlers
+             */
+            LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
+            try
+            {
+                leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);
+            }
+            catch (CompositionException compositionException)
+            {
+                Log.Error("Engine.Main(): Failed to load library: " + compositionException);
+                throw;
+            }
+
+
+            /*
+             *    Engine
+             */
+            try
+            {
+                var liveMode = Config.GetBool("live-mode");
+                var algorithmManager = new AlgorithmManager(liveMode);
+                // can this be omitted?
+                leanEngineSystemHandlers.LeanManager.Initialize(leanEngineSystemHandlers, leanEngineAlgorithmHandlers, job, algorithmManager);
+                var engine = new Engine(leanEngineSystemHandlers, leanEngineAlgorithmHandlers, liveMode);
+                engine.Run(job, algorithmManager, assemblyPath);
+            }
+            finally
+            {
+                // do not Acknowledge Job, clean up resources
+                Log.Trace("Engine.Main(): Packet removed from queue: " + job.AlgorithmId);
+                leanEngineSystemHandlers.Dispose();
+                leanEngineAlgorithmHandlers.Dispose();
+                Log.LogHandler.Dispose();
+            }
+
+
+            /*
+             *    Results
+             */
+            _resultsHandler = (OptimizerResultHandler)leanEngineAlgorithmHandlers.Results;
+            return _resultsHandler.FullResults;
         }
-
     }
 }
