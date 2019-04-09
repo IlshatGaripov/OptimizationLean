@@ -29,7 +29,6 @@
   "dataFolder": "../../../../Lean/Data",
   "startDate": null,
   "endDate": null,
-  //"configPath": "../../../../Lean/Launcher/config.json",
 
   // GENETIC OPTIMIZATION
   "populationSize": 24,

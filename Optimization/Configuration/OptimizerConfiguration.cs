@@ -55,12 +55,6 @@ namespace Optimization
         public string AlgorithmTypeName { get; set; }
 
         /// <summary>
-        /// Full path to config.json
-        /// </summary>
-        [JsonProperty("configPath")]
-        public string ConfigPath { get; set; } = "../../../../Lean/Launcher/config.json";
-
-        /// <summary>
         /// 1 or 2 point crossover
         /// </summary>
         [JsonProperty("onePointCrossover")]
