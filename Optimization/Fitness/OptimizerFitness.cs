@@ -2,7 +2,6 @@ using GeneticSharp.Domain.Fitnesses;
 using System;
 using System.Collections.Generic;
 using GeneticSharp.Domain.Chromosomes;
-using Newtonsoft.Json;
 
 namespace Optimization
 {

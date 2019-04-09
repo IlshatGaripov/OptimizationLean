@@ -101,7 +101,8 @@ namespace Optimization
             ad = AppDomain.CreateDomain(name, null, _ads);
 
             // Create an instance of MarshalbyRefType in AppDomain. A proxy to the object is returned.
-            var rc = (Runner)ad.CreateInstanceAndUnwrap(typeof(Runner).Assembly.FullName, "Runner");
+            var rc = (Runner)ad.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, 
+                    typeof(Runner).FullName ?? throw new InvalidOperationException());
 
             // set @Results@ property for App Domain.
             SetResults(ad, _results);
