@@ -87,7 +87,7 @@ namespace Optimization
         /// <summary>
         /// Settings for use with the ConfiguredFitness
         /// </summary>
-        [JsonProperty("generations")]
+        [JsonProperty("fitness")]
         public FitnessConfiguration Fitness { get; set; }
 
         /// <summary>
