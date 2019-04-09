@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using System.IO.Abstractions;
+using Newtonsoft.Json.Converters;
 
 namespace Optimization
 {
@@ -45,8 +46,11 @@ namespace Optimization
             // default path
             const string path = "optimization.json";
 
+            // DateTimeFormat for proper deserialize of start and end date string to DateTime
+            var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd" };
+
             // generic version of DeserializeObject transforms text from json to specific class that holds the corresponding values.
-            return JsonConvert.DeserializeObject<OptimizerConfiguration>(File.File.ReadAllText(path));
+            return JsonConvert.DeserializeObject<OptimizerConfiguration>(File.File.ReadAllText(path), dateTimeConverter);
         }
     }
 }
