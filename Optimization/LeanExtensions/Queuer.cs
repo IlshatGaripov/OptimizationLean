@@ -23,7 +23,7 @@ namespace Optimization
 
     }
 
-    public class Queuer : MarshalByRefObject, IRunner
+    public class Queuer : MarshalByRefObject
     {
 
         private OptimizerResultHandler _resultsHandler;
