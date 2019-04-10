@@ -23,9 +23,6 @@ namespace Optimization
             // init global and gene config files.
             Config = OptimizerInitializer.LoadConfigFromFile();
 
-            // debug
-            Console.WriteLine(Config.Mode);
-
             // TODO : this init is to be revised. 
             GeneFactory.Initialize(Config.Genes);
 

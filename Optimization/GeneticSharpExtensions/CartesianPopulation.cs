@@ -38,7 +38,7 @@ namespace Optimization
                 // if decimal values are defined - then create a list of decimal values
                 if (config.MinDecimal.HasValue && config.MaxDecimal.HasValue)
                 {
-                    var sequenceDecimal = GenerateNumberSequence(config.MinDecimal.Value, config.MinDecimal.Value,
+                    var sequenceDecimal = GenerateNumberSequence(config.MinDecimal.Value, config.MaxDecimal.Value,
                         config.Step.Value);
                     
                     inputGeneValuesContainer.Add(sequenceDecimal.ToArray());
