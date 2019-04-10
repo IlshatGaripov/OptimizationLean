@@ -33,17 +33,23 @@ namespace Optimization
             // take chromosome's GUID if specified to initialize id variable
             _id = (alorithmInputs.ContainsKey("Id") ? alorithmInputs["Id"] : Guid.NewGuid().ToString("N")).ToString();
 
+            // get current AppDomain for the Thread executing this
+            var currentAppDomain = AppDomain.CurrentDomain;
+
+            // obtain a global program config through the property
+            var globlalConfig = (OptimizerConfiguration)currentAppDomain.GetData("Configuration");
+
             // set algorithm start and end dates
-            if (Program.Config.StartDate.HasValue && Program.Config.EndDate.HasValue)
+            if (globlalConfig.StartDate.HasValue && globlalConfig.EndDate.HasValue)
             {
                 if (!alorithmInputs.ContainsKey("startDate"))
                 {
-                    alorithmInputs.Add("startDate", Program.Config.StartDate);
+                    alorithmInputs.Add("startDate", globlalConfig.StartDate);
                 }
 
                 if (!alorithmInputs.ContainsKey("endDate"))
                 {
-                    alorithmInputs.Add("endDate", Program.Config.EndDate);
+                    alorithmInputs.Add("endDate", globlalConfig.EndDate);
                 }
             }
 
@@ -69,21 +75,21 @@ namespace Optimization
             Config.Set("result-handler", nameof(OptimizerResultHandler));
 
             // Algorithm name
-            if (!string.IsNullOrEmpty(Program.Config.AlgorithmTypeName))
+            if (!string.IsNullOrEmpty(globlalConfig.AlgorithmTypeName))
             {
-                Config.Set("algorithm-type-name", Program.Config.AlgorithmTypeName);
+                Config.Set("algorithm-type-name", globlalConfig.AlgorithmTypeName);
             }
 
             // Physical location of dll with an algorithm.
-            if (!string.IsNullOrEmpty(Program.Config.AlgorithmLocation))
+            if (!string.IsNullOrEmpty(globlalConfig.AlgorithmLocation))
             {
-                Config.Set("algorithm-location", Path.GetFileName(Program.Config.AlgorithmLocation));
+                Config.Set("algorithm-location", Path.GetFileName(globlalConfig.AlgorithmLocation));
             }
 
             // Data folder
-            if (!string.IsNullOrEmpty(Program.Config.DataFolder))
+            if (!string.IsNullOrEmpty(globlalConfig.DataFolder))
             {
-                Config.Set("data-folder", Program.Config.DataFolder);
+                Config.Set("data-folder", globlalConfig.DataFolder);
             }
 
             // log handler

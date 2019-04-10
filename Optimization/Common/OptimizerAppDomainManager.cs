@@ -40,8 +40,74 @@ namespace Optimization
             return ads;
         }
 
+        /// <summary>
+        /// Runs an algorithm in separate app doman and returns the results.
+        /// </summary>
+        /// <param name="list">Input parameters.</param>
+        /// <returns>Backtest statisctics in way of a dictionary.</returns>
+        public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list)
+        {
+            var rc = CreateRunnerInAppDomain(out var ad);
 
-        //TODO: Resharper suggests this method has never been used ?? Can it be deleted?
+            var result = rc.Run(list);
+
+            /*
+            lock (_resultsLocker)
+            {
+                foreach (var item in GetResults(ad))
+                {
+                    if (!_results.ContainsKey(item.Key))
+                    {
+                        _results.Add(item.Key, item.Value);
+                    }
+                }
+            }
+            */
+
+            // unload an App Domain and assembly.
+            AppDomain.Unload(ad);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a lean algorithm runner in a new app domain
+        /// </summary>
+        /// <returns>a proxy to an object in newly created App Domain</returns>
+        private static Runner CreateRunnerInAppDomain(out AppDomain ad)
+        {
+            // TODO: DO we need to create new appDomain every time we run an algorithm. Can AD be a common for all runners?
+            // Create the second AppDomain.
+            var name = Guid.NewGuid().ToString("x");
+            ad = AppDomain.CreateDomain(name, null, _ads);
+
+            // Create an instance of MarshalbyRefType in AppDomain. A proxy to the object is returned.
+            var rc = (Runner)ad.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, 
+                    typeof(Runner).FullName ?? throw new InvalidOperationException());
+
+            // create a clone of global config file and pass it to app domain as property
+            var cloneConfig = Exstensions.Clone(Program.Config);
+            ad.SetData("Configuration", cloneConfig);
+
+            return rc;
+        }
+
+        /// <summary>
+        /// Can be used to "russian doll" QCAlgorithm
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static Tuple<AppDomain, Task<Dictionary<string, decimal>>> RunAlgorithmAsync(Dictionary<string, object> list)
+        {
+            var runner = CreateRunnerInAppDomain(out EngineContext.AppDomain);
+
+            var result = Task.Run(() => runner.Run(list));
+
+            return Tuple.Create(EngineContext.AppDomain, result);
+        }
+
+
+        //TODO: Resharper suggests this method has never been used ?? 
         /*
         /// <summary>
         /// ..
@@ -63,69 +129,7 @@ namespace Optimization
         */
 
         /// <summary>
-        /// Runs an algorithm in separate app doman and returns the results.
-        /// </summary>
-        /// <param name="list">Input parameters.</param>
-        /// <returns>Backtest statisctics in way of a dictionary.</returns>
-        public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list)
-        {
-            var rc = CreateRunnerInAppDomain(out var ad);
-
-            var result = rc.Run(list);
-
-            lock (_resultsLocker)
-            {
-                foreach (var item in GetResults(ad))
-                {
-                    if (!_results.ContainsKey(item.Key))
-                    {
-                        _results.Add(item.Key, item.Value);
-                    }
-                }
-            }
-
-            // unload an App Domain and assembly.
-            AppDomain.Unload(ad);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Creates a lean algorithm runner in a new app domain
-        /// </summary>
-        /// <returns>a proxy to an object in newly created App Domain</returns>
-        private static Runner CreateRunnerInAppDomain(out AppDomain ad)
-        {
-            // Create the second AppDomain.
-            var name = Guid.NewGuid().ToString("x");
-            ad = AppDomain.CreateDomain(name, null, _ads);
-
-            // Create an instance of MarshalbyRefType in AppDomain. A proxy to the object is returned.
-            var rc = (Runner)ad.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, 
-                    typeof(Runner).FullName ?? throw new InvalidOperationException());
-
-            // set @Results@ property for App Domain.
-            SetResults(ad, _results);
-
-            return rc;
-        }
-
-        /// <summary>
-        /// Can be used to "russian doll" QCAlgorithm
-        /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        public static Tuple<AppDomain, Task<Dictionary<string, decimal>>> RunAlgorithmAsync(Dictionary<string, object> list)
-        {
-            var runner = CreateRunnerInAppDomain(out EngineContext.AppDomain);
-
-            var result = Task.Run(() => runner.Run(list));
-
-            return Tuple.Create(EngineContext.AppDomain, result);
-        }
-
-        /// <summary>
-        /// ??
+        /// Get the results dictionary.
         /// </summary>
         public static Dictionary<string, Dictionary<string, decimal>> GetResults()
         {
