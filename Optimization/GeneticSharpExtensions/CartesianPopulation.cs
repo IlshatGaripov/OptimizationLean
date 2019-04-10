@@ -8,17 +8,8 @@ namespace Optimization
     /// <summary>
     /// Population for brute force optimization.
     /// </summary>
-    public class CartesianPopulation : PreloadPopulation
+    public sealed class CartesianPopulation : PopulationBase
     {
-        /// <summary>
-        /// Empty constructor. Redundant.
-        /// Just to emphasize there is a base class contrcutor that is called to init some important vars.
-        /// </summary>
-        public CartesianPopulation() : base()
-        {
-
-        }
-
         /// <summary>
         /// Creates a population for brute force optimization mode.
         /// All possible combinations (within bounds of acceptable values specified in optimization config) are generated

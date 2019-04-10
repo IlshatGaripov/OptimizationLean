@@ -50,6 +50,9 @@ namespace Optimization
                     _population = new CartesianPopulation();
 
                     _termination = new GenerationNumberTermination(1);
+
+                    // use linear for debugging purposes
+                    _executor = new LinearTaskExecutor();
                     break;
                 }
 
@@ -60,19 +63,21 @@ namespace Optimization
 
                     _termination = new OrTermination(new FitnessStagnationTermination(Program.Config.StagnationGenerations), 
                         new GenerationNumberTermination(Program.Config.Generations));
+
+                    // executor
+                    var maxTreads = Program.Config.MaxThreads;
+                    _executor = new ParallelTaskExecutor
+                    {
+                        MinThreads = 1,
+                        MaxThreads = maxTreads > 0 ? maxTreads : 4
+                    };
+
                     break;
                 }
                     
                 default:
                     throw new Exception("Termination method could not be initialized");
             }
-            
-            // executor
-            var maxTreads = Program.Config.MaxThreads;
-            _executor = new ParallelTaskExecutor
-            {
-                MinThreads = 1, MaxThreads = maxTreads > 0 ? maxTreads : 4
-            };
         }
 
         /// <summary>

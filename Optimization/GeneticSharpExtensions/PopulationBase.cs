@@ -43,6 +43,21 @@ namespace Optimization
         */
 
         /// <summary>
+        /// Constructor. General for all derived class. Performing general (common for inherited behavior) initialization.
+        /// </summary>
+        protected PopulationBase()
+        {
+            // time
+            CreationDate = DateTime.Now;
+
+            // create generation list.
+            Generations = new List<Generation>();
+
+            // generation strategy - only a single (new) generation will be kept in population.
+            GenerationStrategy = new PerformanceGenerationStrategy(1);
+        }
+
+        /// <summary>
         /// Occurs when best chromosome changed.
         /// </summary>
         public event EventHandler BestChromosomeChanged;
@@ -102,7 +117,19 @@ namespace Optimization
         /// <summary>
         /// Creates the initial generation.
         /// </summary>
-        public abstract void CreateInitialGeneration();
+        public virtual void CreateInitialGeneration()
+        {
+            GenerationsNumber = 0;
+            var chromosomesList = GenerateChromosomes();
+            // calls the base class method. Chromosomes validation is held inside.
+            CreateNewGeneration(chromosomesList);
+        }
+
+        /// <summary>
+        /// Generates a list of chromosomes to used to create the inital generation.
+        /// See <see cref="CreateInitialGeneration"/>
+        /// </summary>
+        protected virtual IList<IChromosome> GenerateChromosomes() => throw new System.NotImplementedException();
 
         /// <summary>
         /// Creates a new generation.

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -25,12 +26,10 @@ namespace Optimization
         {
             var resultingDictionary = new Dictionary<string, object>();
 
-            // iterate over the chormosome genes
-            var genes = ch.GetGenes();
-            for (var index = 0; index < genes.Length; index++)
+            for (var index = 0; index < ch.Length; index++)
             {
                 // take the key from global config file
-                resultingDictionary.Add(Program.Config.Genes[index].Key, genes[index].Value);
+                resultingDictionary.Add(Program.Config.Genes[index].Key, ch.GetGene(index).Value);
             }
 
             return resultingDictionary;

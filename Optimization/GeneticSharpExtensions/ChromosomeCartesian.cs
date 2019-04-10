@@ -20,7 +20,7 @@ namespace Optimization
             _geneValues = geneValues;
 
             // fill the gene array with generated values
-            for (var i = 0; i < geneValues.Length; i++)
+            for (var i = 0; i < Length; i++)
             {
                 ReplaceGene(i, GenerateGene(i));
             }
