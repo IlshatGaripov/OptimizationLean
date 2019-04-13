@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using QuantConnect.Configuration;
 using System.ComponentModel.Composition;
+using QuantConnect.Configuration;
 using QuantConnect.Lean.Engine;
 using QuantConnect.Logging;
 using QuantConnect.Util;
@@ -53,6 +52,7 @@ namespace Optimization
                 }
             }
 
+            /*
             // set the algorithm input variables. 
             foreach (var pair in alorithmInputs.Where(i => i.Key != "Id"))
             {
@@ -67,6 +67,7 @@ namespace Optimization
                     Config.Set(pair.Key, pair.Value.ToString());
                 }
             }
+            */
 
             // Lean settings:
             Config.Set("environment", "backtesting");
