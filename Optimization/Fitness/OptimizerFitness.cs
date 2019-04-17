@@ -1,7 +1,7 @@
-using GeneticSharp.Domain.Fitnesses;
 using System;
 using System.Collections.Generic;
 using GeneticSharp.Domain.Chromosomes;
+using GeneticSharp.Domain.Fitnesses;
 
 namespace Optimization
 {
@@ -57,12 +57,17 @@ namespace Optimization
 
                 foreach (var item in list)
                 {
-                    output += item.Key + ": " + item.Value.ToString() + ", ";
+                    output += item.Key + ": " + item.Value + ", ";
                 }
 
+                // Algorithm start and end dates
                 if (Program.Config.StartDate.HasValue && Program.Config.EndDate.HasValue)
                 {
                     output += $"Start: {Program.Config.StartDate}, End: {Program.Config.EndDate}, ";
+
+                    // set algorithm start and end dates
+                    list.Add("startDate", Program.Config.StartDate);
+                    list.Add("endDate", Program.Config.EndDate);
                 }
 
                 // run the algorithm - core functionality.
@@ -111,7 +116,7 @@ namespace Optimization
             fitness.Value = ratio;
 
             // what is a fitness fitness for? 
-            fitness.Fitness = (double)(System.Math.Max(ratio, ErrorRatio) + 10) * Scale;
+            fitness.Fitness = (double)(Math.Max(ratio, ErrorRatio) + 10) * Scale;
 
             return fitness;
         }

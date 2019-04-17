@@ -48,9 +48,6 @@
     <Reference Include="QuantConnect.Common">
       <HintPath>..\..\Lean\Common\bin\Debug\QuantConnect.Common.dll</HintPath>
     </Reference>
-    <Reference Include="QuantConnect.Configuration">
-      <HintPath>..\..\Lean\Configuration\bin\Debug\QuantConnect.Configuration.dll</HintPath>
-    </Reference>
     <Reference Include="QuantConnect.Lean.Engine">
       <HintPath>..\..\Lean\Engine\bin\Debug\QuantConnect.Lean.Engine.dll</HintPath>
     </Reference>
@@ -157,6 +154,10 @@
     <ProjectReference Include="..\..\GeneticSharp\src\GeneticSharp.Infrastructure.Framework\GeneticSharp.Infrastructure.Framework.csproj">
       <Project>{14130612-ff14-4df4-8829-27c0e85e09f0}</Project>
       <Name>GeneticSharp.Infrastructure.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Configuration\QuantConnect.Configuration.csproj">
+      <Project>{0aeb4ea3-28c8-476e-89fd-926f06590b4c}</Project>
+      <Name>QuantConnect.Configuration</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

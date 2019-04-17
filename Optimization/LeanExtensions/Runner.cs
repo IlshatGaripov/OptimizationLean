@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.ComponentModel.Composition;
+using System.Linq;
 using QuantConnect.Configuration;
 using QuantConnect.Lean.Engine;
 using QuantConnect.Logging;
@@ -25,7 +26,7 @@ namespace Optimization
         private string _id;
 
         /// <summary>
-        /// Method performs necessary initialization and launches the lean engine with an algorithm.
+        /// Method performs necessary initialization and starts and algorithm inside Lean Engine.
         /// </summary>
         public Dictionary<string, decimal> Run(Dictionary<string, object> alorithmInputs)
         {
@@ -36,23 +37,9 @@ namespace Optimization
             var currentAppDomain = AppDomain.CurrentDomain;
 
             // obtain a global program config through the property
-            var globlalConfig = (OptimizerConfiguration)currentAppDomain.GetData("Configuration");
+            var globalConfigCopy = (OptimizerConfiguration)currentAppDomain.GetData("Configuration");
 
-            // set algorithm start and end dates
-            if (globlalConfig.StartDate.HasValue && globlalConfig.EndDate.HasValue)
-            {
-                if (!alorithmInputs.ContainsKey("startDate"))
-                {
-                    alorithmInputs.Add("startDate", globlalConfig.StartDate);
-                }
-
-                if (!alorithmInputs.ContainsKey("endDate"))
-                {
-                    alorithmInputs.Add("endDate", globlalConfig.EndDate);
-                }
-            }
-
-            /*
+            
             // set the algorithm input variables. 
             foreach (var pair in alorithmInputs.Where(i => i.Key != "Id"))
             {
@@ -67,30 +54,30 @@ namespace Optimization
                     Config.Set(pair.Key, pair.Value.ToString());
                 }
             }
-            */
 
             // Lean settings:
             Config.Set("environment", "backtesting");
             Config.Set("algorithm-language", "CSharp");     // omitted?
+
             //override config to use custom result handler
             Config.Set("result-handler", nameof(OptimizerResultHandler));
 
             // Algorithm name
-            if (!string.IsNullOrEmpty(globlalConfig.AlgorithmTypeName))
+            if (!string.IsNullOrEmpty(globalConfigCopy.AlgorithmTypeName))
             {
-                Config.Set("algorithm-type-name", globlalConfig.AlgorithmTypeName);
+                Config.Set("algorithm-type-name", globalConfigCopy.AlgorithmTypeName);
             }
 
             // Physical location of dll with an algorithm.
-            if (!string.IsNullOrEmpty(globlalConfig.AlgorithmLocation))
+            if (!string.IsNullOrEmpty(globalConfigCopy.AlgorithmLocation))
             {
-                Config.Set("algorithm-location", Path.GetFileName(globlalConfig.AlgorithmLocation));
+                Config.Set("algorithm-location", Path.GetFileName(globalConfigCopy.AlgorithmLocation));
             }
 
             // Data folder
-            if (!string.IsNullOrEmpty(globlalConfig.DataFolder))
+            if (!string.IsNullOrEmpty(globalConfigCopy.DataFolder))
             {
-                Config.Set("data-folder", globlalConfig.DataFolder);
+                Config.Set("data-folder", globalConfigCopy.DataFolder);
             }
 
             // log handler
