@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace Optimization
 {
@@ -13,6 +13,8 @@ namespace Optimization
         private static AppDomainSetup _ads;
         private static Dictionary<string, Dictionary<string, decimal>> _results;
         private static object _resultsLocker;
+        private static string _callingDomainName;
+        private static string _exeAssembly;
 
         /// <summary>
         /// Startup method
@@ -29,6 +31,13 @@ namespace Optimization
         /// </summary>
         private static AppDomainSetup SetupAppDomain()
         {
+            _callingDomainName = Thread.GetDomain().FriendlyName;
+            //Console.WriteLine(callingDomainName);
+
+            // Get and display the full name of the EXE assembly.
+            _exeAssembly = Assembly.GetEntryAssembly().FullName;
+            //Console.WriteLine(exeAssembly);
+
             var ads = new AppDomainSetup
             {
                 ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
@@ -70,19 +79,19 @@ namespace Optimization
             return result;
         }
 
+        // TODO: DO we need to create new appDomain every time we run an algorithm. Can AD be a common for all runners?
         /// <summary>
         /// Creates a lean algorithm runner in a new app domain
         /// </summary>
         /// <returns>a proxy to an object in newly created App Domain</returns>
         private static Runner CreateRunnerInAppDomain(out AppDomain ad)
         {
-            // TODO: DO we need to create new appDomain every time we run an algorithm. Can AD be a common for all runners?
             // Create the second AppDomain.
             var name = Guid.NewGuid().ToString("x");
             ad = AppDomain.CreateDomain(name, null, _ads);
 
             // Create an instance of MarshalbyRefType in AppDomain. A proxy to the object is returned.
-            var rc = (Runner)ad.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, 
+            var rc = (Runner)ad.CreateInstanceAndUnwrap(_exeAssembly, 
                     typeof(Runner).FullName ?? throw new InvalidOperationException());
 
             // create a clone of global config file and pass it to app domain as property
@@ -92,6 +101,10 @@ namespace Optimization
             return rc;
         }
 
+
+
+        //TODO: Resharper suggests this method has never been used ?? 
+        /*
         /// <summary>
         /// Can be used to "russian doll" QCAlgorithm
         /// </summary>
@@ -106,9 +119,6 @@ namespace Optimization
             return Tuple.Create(EngineContext.AppDomain, result);
         }
 
-
-        //TODO: Resharper suggests this method has never been used ?? 
-        /*
         /// <summary>
         /// ..
         /// </summary>
@@ -127,6 +137,7 @@ namespace Optimization
             return rc;
         }
         */
+
 
         /// <summary>
         /// Get the results dictionary.

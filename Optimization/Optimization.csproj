@@ -7,7 +7,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Optimization</RootNamespace>
     <AssemblyName>Optimization</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
@@ -45,47 +45,36 @@
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.4.5\lib\net45\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="QuantConnect.Common">
-      <HintPath>..\..\Lean\Common\bin\Debug\QuantConnect.Common.dll</HintPath>
+    <Reference Include="SharpLearning.Common.Interfaces, Version=0.31.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpLearning.Common.Interfaces.0.31.1\lib\net461\SharpLearning.Common.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="QuantConnect.Lean.Engine">
-      <HintPath>..\..\Lean\Engine\bin\Debug\QuantConnect.Lean.Engine.dll</HintPath>
+    <Reference Include="SharpLearning.Containers, Version=0.31.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpLearning.Containers.0.31.1\lib\net461\SharpLearning.Containers.dll</HintPath>
     </Reference>
-    <Reference Include="QuantConnect.Logging">
-      <HintPath>..\..\Lean\Logging\bin\Debug\QuantConnect.Logging.dll</HintPath>
+    <Reference Include="SharpLearning.DecisionTrees, Version=0.31.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpLearning.DecisionTrees.0.31.1\lib\net461\SharpLearning.DecisionTrees.dll</HintPath>
     </Reference>
-    <Reference Include="SharpLearning.Common.Interfaces, Version=0.30.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpLearning.Common.Interfaces.0.30.0\lib\net461\SharpLearning.Common.Interfaces.dll</HintPath>
+    <Reference Include="SharpLearning.InputOutput, Version=0.31.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpLearning.InputOutput.0.31.1\lib\net461\SharpLearning.InputOutput.dll</HintPath>
     </Reference>
-    <Reference Include="SharpLearning.Containers, Version=0.30.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpLearning.Containers.0.30.0\lib\net461\SharpLearning.Containers.dll</HintPath>
+    <Reference Include="SharpLearning.Optimization, Version=0.31.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpLearning.Optimization.0.31.1\lib\net461\SharpLearning.Optimization.dll</HintPath>
     </Reference>
-    <Reference Include="SharpLearning.CrossValidation, Version=0.29.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpLearning.CrossValidation.0.29.0\lib\net461\SharpLearning.CrossValidation.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpLearning.DecisionTrees, Version=0.30.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpLearning.DecisionTrees.0.30.0\lib\net461\SharpLearning.DecisionTrees.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpLearning.InputOutput, Version=0.30.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpLearning.InputOutput.0.30.0\lib\net461\SharpLearning.InputOutput.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpLearning.Metrics, Version=0.29.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpLearning.Metrics.0.29.0\lib\net461\SharpLearning.Metrics.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpLearning.Optimization, Version=0.30.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpLearning.Optimization.0.30.0\lib\net461\SharpLearning.Optimization.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpLearning.RandomForest, Version=0.30.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpLearning.RandomForest.0.30.0\lib\net461\SharpLearning.RandomForest.dll</HintPath>
+    <Reference Include="SharpLearning.RandomForest, Version=0.31.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpLearning.RandomForest.0.31.1\lib\net461\SharpLearning.RandomForest.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.IO.Abstractions, Version=2.0.0.144, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.Abstractions.2.0.0.144\lib\net40\System.IO.Abstractions.dll</HintPath>
     </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Exstensions.cs" />
+    <Compile Include="Common\OptimizerAppDomainManager.cs" />
     <Compile Include="Configuration\FitnessConfiguration.cs" />
     <Compile Include="Fitness\DeflatedSharpeRatioFitness.cs" />
     <Compile Include="Fitness\DualPeriodSharpeFitness.cs" />
@@ -106,11 +95,10 @@
     <Compile Include="Fitness\NFoldCrossSharpeMaximizer.cs" />
     <Compile Include="Fitness\NestedCrossSharpeMaximizer.cs" />
     <Compile Include="Fitness\SharpeMaximizer.cs" />
-    <Compile Include="LeanExtensions\Runner.cs" />
+    <Compile Include="Common\Runner.cs" />
     <Compile Include="OptimizerManager\MaximizerManager.cs" />
     <Compile Include="Interfaces\IFitnessFilter.cs" />
     <Compile Include="GeneticSharpExtensions\FibonacciRandomization.cs" />
-    <Compile Include="Common\OptimizerAppDomainManager.cs" />
     <Compile Include="GeneticSharpExtensions\Chromosome.cs" />
     <Compile Include="OptimizerManager\GeneManager.cs" />
     <Compile Include="Configuration\IFitnessConfiguration.cs" />
@@ -119,11 +107,10 @@
     <Compile Include="Fitness\OptimizerFitness.cs" />
     <Compile Include="Configuration\OptimizerConfiguration.cs" />
     <Compile Include="LeanExtensions\Queuer.cs" />
-    <Compile Include="LeanExtensions\StatisticsAdapter.cs" />
+    <Compile Include="Common\StatisticsAdapter.cs" />
     <Compile Include="GeneticSharpExtensions\PreloadPopulation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LeanExtensions\RunnerOld.cs" />
     <Compile Include="Fitness\CompoundingAnnualReturnFitness.cs" />
     <Compile Include="Fitness\ConfiguredFitness.cs" />
   </ItemGroup>
@@ -155,10 +142,36 @@
       <Project>{14130612-ff14-4df4-8829-27c0e85e09f0}</Project>
       <Name>GeneticSharp.Infrastructure.Framework</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Common\QuantConnect.csproj">
+      <Project>{2545c0b4-fabb-49c9-8dd1-9ad7ee23f86b}</Project>
+      <Name>QuantConnect</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Lean\Configuration\QuantConnect.Configuration.csproj">
       <Project>{0aeb4ea3-28c8-476e-89fd-926f06590b4c}</Project>
       <Name>QuantConnect.Configuration</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Engine\QuantConnect.Lean.Engine.csproj">
+      <Project>{12156f46-d07e-4e3d-ad2b-7409e82ab62f}</Project>
+      <Name>QuantConnect.Lean.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Logging\QuantConnect.Logging.csproj">
+      <Project>{01911409-86be-4e7d-9947-df714138610d}</Project>
+      <Name>QuantConnect.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Messaging\QuantConnect.Messaging.csproj">
+      <Project>{f2e90e2d-ba25-40e2-b39a-0ba31e68f7f8}</Project>
+      <Name>QuantConnect.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Queues\QuantConnect.Queues.csproj">
+      <Project>{d6633172-1368-4df6-9444-825c3e00c819}</Project>
+      <Name>QuantConnect.Queues</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <Import Project="..\packages\Accord.3.8.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.8.0\build\Accord.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Accord.3.8.0\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.8.0\build\Accord.targets'))" />
+  </Target>
 </Project>

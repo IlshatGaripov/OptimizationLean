@@ -9,7 +9,7 @@ using QuantConnect.Logging;
 using QuantConnect.Util;
 
 namespace Optimization
-{
+{ 
     /// <summary>
     /// Class responsible for running the algorithm with Lean Engine.
     /// </summary>
@@ -20,8 +20,9 @@ namespace Optimization
         /// </summary>
         private OptimizerResultHandler _resultsHandler;
 
+
         /// <summary>
-        /// Unique identifier
+        /// Unique identifier. Well it's actually not in use currently.
         /// </summary>
         private string _id;
 
@@ -39,7 +40,7 @@ namespace Optimization
             // obtain a global program config through the property
             var globalConfigCopy = (OptimizerConfiguration)currentAppDomain.GetData("Configuration");
 
-            
+
             // set the algorithm input variables. 
             foreach (var pair in alorithmInputs.Where(i => i.Key != "Id"))
             {
@@ -80,13 +81,12 @@ namespace Optimization
                 Config.Set("data-folder", globalConfigCopy.DataFolder);
             }
 
-            // log handler
+
+            // Log handler
             Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>(Config.Get("log-handler", "CompositeLogHandler"));
 
 
-            /*
-             *    LeanEngineSystemHandlers
-             */
+            // LeanEngineSystemHandlers
             LeanEngineSystemHandlers leanEngineSystemHandlers;
             try
             {
@@ -108,9 +108,7 @@ namespace Optimization
             }
 
 
-            /*
-             *    LeanEngineSystemHandlers
-             */
+            // LeanEngineSystemHandlers
             LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
             try
             {
@@ -123,9 +121,7 @@ namespace Optimization
             }
 
 
-            /*
-             *    Engine
-             */
+            //  Engine
             try
             {
                 var liveMode = Config.GetBool("live-mode");
@@ -144,12 +140,10 @@ namespace Optimization
                 Log.LogHandler.Dispose();
             }
 
-
-            /*
-             *    Results
-             */
+            //  Results
             _resultsHandler = (OptimizerResultHandler)leanEngineAlgorithmHandlers.Results;
             return _resultsHandler.FullResults;
         }
     }
+
 }

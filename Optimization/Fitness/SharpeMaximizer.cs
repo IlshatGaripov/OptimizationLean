@@ -5,7 +5,6 @@ using System.Text;
 using GeneticSharp.Domain.Chromosomes;
 using SharpLearning.Optimization;
 using System.Runtime.CompilerServices;
-using QuantConnect.Configuration;
 
 namespace Optimization
 {
@@ -47,7 +46,9 @@ namespace Optimization
                     }
                     else if (Program.Config.Fitness.OptimizerTypeName == OptimizerTypeOptions.Bayesian.ToString())
                     {
+                        /*
                         optimizer = new BayesianOptimizer(parameters, maxIterations: Program.Config.Generations, numberOfStartingPoints: Program.Config.PopulationSize, seed: 42);
+                        */
                     }
                     else if (Program.Config.Fitness.OptimizerTypeName == OptimizerTypeOptions.GlobalizedBoundedNelderMead.ToString())
                     {
