@@ -5,31 +5,25 @@
   // GENES
   "genes": [
     {
-      "key": "fast",
-      "min": 6,
-      "max": 12,
-      "step": 3
+      "key": "consolidatorPeriod",
+      "min": 60,
+      "max": 120,
+      "step": 60
     },
     {
-      "key": "slow",
-      "min": 48,
-      "max": 90,
-      "step": 20
-    },
-    {
-      "key": "take",
-      "min": 0.03,
-      "max": 0.05,
-      "step": 0.01
+      "key": "bollingerMultiplier",
+      "min": 1.8,
+      "max": 2.5,
+      "step": 0.3
     }
   ],
 
   // LEAN
   "startDate": "2017-01-02",
   "endDate": "2018-01-02",
-  "algorithmTypeName": "ParameterizedAlgorithm",
+  "algorithmTypeName": "SuperTrendAlgorithm",
   "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
-  "dataFolder": "../../../../Lean/Data",
+  "dataFolder": "C:/Users/sterling/Google Drive/Data",
 
   // GENETIC OPTIMIZATION
   "populationSize": 24,

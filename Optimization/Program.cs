@@ -20,16 +20,12 @@ namespace Optimization
         /// </summary>
         public static void Main(string[] args)
         {
-            // init global and gene config files.
-            Config = OptimizerInitializer.LoadConfigFromFile();
+            // TODO : revise all this initialization. guess can be made more compact!
 
+            Config = OptimizerInitializer.LoadConfigFromFile();   // init global and gene config files.
             OptimizerInitializer.Initialize();
-
-            // TODO : this init is to be revised. 
             GeneFactory.Initialize(Config.Genes);
-
-            // App Domain features used launching the lean runner.
-            OptimizerAppDomainManager.Initialize();
+            OptimizerAppDomainManager.Initialize();    // App Domain settings to use when run lean's algoritihm
 
             try
             {
@@ -50,9 +46,9 @@ namespace Optimization
             {
                 Console.WriteLine(e);
             }
-            
-            Console.ReadKey();
 
+            NLog.LogManager.Shutdown();   // shutdown the logger
+            Console.ReadKey();
 
             /*
             if (Manager == null)

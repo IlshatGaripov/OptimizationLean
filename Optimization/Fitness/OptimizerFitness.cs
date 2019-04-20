@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Fitnesses;
 
@@ -47,47 +48,44 @@ namespace Optimization
         {
             try
             {
-                var output = "";
-                
-                // convert to dictionary
-                var list = ((Chromosome)chromosome).ToDictionary();
-                
-                // add one more item to the dictionary that will stand for chromosome id
-                list.Add("Id", ((Chromosome)chromosome).Id);
+                // == FIRST PART ==
+                var outputBeforeTheRun = string.Empty;
+                var chromosomeCasted = (Chromosome) chromosome;
 
-                foreach (var item in list)
-                {
-                    output += item.Key + ": " + item.Value + ", ";
-                }
+                // convert to dictionary and add "id" item
+                var list = chromosomeCasted.ToDictionary();
+
+                // id
+                list.Add("Id", chromosomeCasted.Id);
+                //outputBeforeTheRun += $"Chromosome Id: {chromosomeCasted.Id}{Environment.NewLine}";
+
+                // log everything except id
+                outputBeforeTheRun = list.Where(i => i.Key != "Id").Aggregate(outputBeforeTheRun, (current, item) => 
+                    current + item.Key + ": " + item.Value + ", ");
 
                 // Algorithm start and end dates
                 if (Program.Config.StartDate.HasValue && Program.Config.EndDate.HasValue)
                 {
-                    output += $"Start: {Program.Config.StartDate}, End: {Program.Config.EndDate}, ";
-
                     // set algorithm start and end dates
                     list.Add("startDate", Program.Config.StartDate);
                     list.Add("endDate", Program.Config.EndDate);
                 }
 
-                // run the algorithm - core functionality.
-                var result = OptimizerAppDomainManager.RunAlgorithm(list);
+                // log the result before an experiment (backtest)
+                Program.Logger.Info(outputBeforeTheRun);
 
-                if (result == null)
-                {
-                    // do we need additional logging when result is null ?? 
-                    // Program.Logger ..
+                // == SECOND PART ==
+                var result = OptimizerAppDomainManager.RunAlgorithm(list);   // run the algorithm
 
-                    return 0;
-                }
+                var outputResult = string.Empty;
+                outputResult += $"Drawdown = {result["Drawdown"]} TotalNumberOfTrades = {result["TotalNumberOfTrades"]}";
 
+                // calculate fitness and concat the results to an output string
                 var fitness = CalculateFitness(result);
+                outputResult += $" Fitness.Value({Name}) = {fitness.Value}";
 
-                output += $"{Name}: {fitness.Value}";
-
-                // log final output
-                Program.Logger.Info(output);
-
+                // log final output and return the result of evalution
+                Program.Logger.Info(outputResult);
                 return fitness.Fitness;
             }
             catch (Exception ex)
@@ -105,17 +103,14 @@ namespace Optimization
             var fitness = new FitnessResult();
             var ratio = result["SharpeRatio"];
 
-            // if there is an isignificant result by applying filter
+            // if there is an isignificant result revealed by appying a filter
             if (Filter != null && !Filter.IsSuccess(result, this))
             {
                 // then assign a ratio the default error value  
                 ratio = ErrorRatio;
             }
 
-            // otherwise fitness value is ratio
             fitness.Value = ratio;
-
-            // what is a fitness fitness for? 
             fitness.Fitness = (double)(Math.Max(ratio, ErrorRatio) + 10) * Scale;
 
             return fitness;
@@ -141,7 +136,7 @@ namespace Optimization
             public decimal Value { get; set; }
 
             /// <summary>
-            /// The scaled or adjused fitness
+            /// The scaled or adjused measurement
             /// </summary>
             public double Fitness { get; set; }
         }

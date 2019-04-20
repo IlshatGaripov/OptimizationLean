@@ -20,7 +20,6 @@ namespace Optimization
         /// </summary>
         private OptimizerResultHandler _resultsHandler;
 
-
         /// <summary>
         /// Unique identifier. Well it's actually not in use currently.
         /// </summary>
@@ -40,7 +39,6 @@ namespace Optimization
             // obtain a global program config through the property
             var globalConfigCopy = (OptimizerConfiguration)currentAppDomain.GetData("Configuration");
 
-
             // set the algorithm input variables. 
             foreach (var pair in alorithmInputs.Where(i => i.Key != "Id"))
             {
@@ -56,12 +54,10 @@ namespace Optimization
                 }
             }
 
-            // Lean settings:
+            // Lean general settings:
             Config.Set("environment", "backtesting");
             Config.Set("algorithm-language", "CSharp");     // omitted?
-
-            //override config to use custom result handler
-            Config.Set("result-handler", nameof(OptimizerResultHandler));
+            Config.Set("result-handler", nameof(OptimizerResultHandler));   //override default result handler
 
             // Algorithm name
             if (!string.IsNullOrEmpty(globalConfigCopy.AlgorithmTypeName))
@@ -81,10 +77,10 @@ namespace Optimization
                 Config.Set("data-folder", globalConfigCopy.DataFolder);
             }
 
-
-            // Log handler
-            Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>(Config.Get("log-handler", "CompositeLogHandler"));
-
+            Log.LogHandler = new CompositeLogHandler(
+                new ConsoleLogHandler(), 
+                new FileLogHandler("C:/Users/sterling/Desktop/logLean.txt")
+                );
 
             // LeanEngineSystemHandlers
             LeanEngineSystemHandlers leanEngineSystemHandlers;
@@ -107,7 +103,6 @@ namespace Optimization
                 throw new Exception("Engine.Main(): Job was null.");
             }
 
-
             // LeanEngineSystemHandlers
             LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
             try
@@ -120,8 +115,7 @@ namespace Optimization
                 throw;
             }
 
-
-            //  Engine
+            // Engine
             try
             {
                 var liveMode = Config.GetBool("live-mode");
