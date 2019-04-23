@@ -258,9 +258,9 @@ namespace Optimization
                     State = GeneticAlgorithmState.Resumed;
                 }
 
-                // this will return true if termination has reached by the end of current generation
-                // as instance when the GenerationNumberTermination is set to 1 (the case of brute force optimization)
-                // and generation will not evole further and the method will return;
+                // this will return true if termination has reached at the end of current generation
+                // as instance, when the GenerationNumberTermination is set to 1 (the case of brute force optimization)
+                // generation must not evolve further and the method will return;
                 if (EndCurrentGeneration())
                 {
                     return;

@@ -2,6 +2,12 @@
   // MODE
   "mode": "bruteforce",
 
+  // COMMON SETTINGS
+  "maxThreads": 8,
+  "fitnessTypeName": "Optimization.OptimizerFitness",
+  "minimumTrades": 1,
+  "enableFitnessFilter": true,
+
   // GENES
   "genes": [
     {
@@ -29,11 +35,7 @@
   "populationSize": 24,
   "generations": 20,
   "stagnationGenerations": 30,
-  "maxThreads": 8,
   "onePointCrossover": "true",
-  "fitnessTypeName": "Optimization.OptimizerFitness",
-  "minimumTrades": 1,
-  "enableFitnessFilter": true,
   "mutationProbability": 0.5,
   "crossoverProbability": 0.75,
   "fitness": {

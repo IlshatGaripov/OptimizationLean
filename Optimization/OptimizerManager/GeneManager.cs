@@ -41,6 +41,12 @@ namespace Optimization
             _mutation = new UniformMutation(true);
             _reinsertion = new ElitistReinsertion();
 
+            // executor
+            _executor = new ParallelTaskExecutor
+            {
+                MaxThreads = Program.Config.MaxThreads > 0 ? Program.Config.MaxThreads : 4
+            };
+
             // params optimization method specific 
             switch (Program.Config.Mode)
             {
@@ -51,8 +57,6 @@ namespace Optimization
 
                     _termination = new GenerationNumberTermination(1);
 
-                    // use linear for debugging purposes
-                    _executor = new LinearTaskExecutor();
                     break;
                 }
 
@@ -63,14 +67,6 @@ namespace Optimization
 
                     _termination = new OrTermination(new FitnessStagnationTermination(Program.Config.StagnationGenerations), 
                         new GenerationNumberTermination(Program.Config.Generations));
-
-                    // executor
-                    var maxTreads = Program.Config.MaxThreads;
-                    _executor = new ParallelTaskExecutor
-                    {
-                        MinThreads = 1,
-                        MaxThreads = maxTreads > 0 ? maxTreads : 4
-                    };
 
                     break;
                 }

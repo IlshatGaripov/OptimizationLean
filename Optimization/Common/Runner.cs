@@ -77,10 +77,15 @@ namespace Optimization
                 Config.Set("data-folder", globalConfigCopy.DataFolder);
             }
 
-            Log.LogHandler = new CompositeLogHandler(
-                new ConsoleLogHandler(), 
-                new FileLogHandler("C:/Users/sterling/Desktop/logLean.txt")
-                );
+            //separate log uniquely named
+            var dirPath = $"C:/Users/sterling/Desktop/logs/{DateTime.Now:yyyy-MM-dd}/leanLogs/";
+            var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + _id + ".txt";
+            var filePath = String.Concat(dirPath, logFileName);
+
+            // create directory if not exist
+            System.IO.Directory.CreateDirectory(dirPath);
+
+            Log.LogHandler = new FileLogHandler(filePath);
 
             // LeanEngineSystemHandlers
             LeanEngineSystemHandlers leanEngineSystemHandlers;

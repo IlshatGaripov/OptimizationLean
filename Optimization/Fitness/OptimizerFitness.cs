@@ -13,6 +13,8 @@ namespace Optimization
     /// <remarks>Default behaviour will nullify fitness for negative return</remarks>
     public class OptimizerFitness : IFitness
     {
+        private static readonly object Obj = new object();
+
         /// <summary>
         /// Name. Virtual.
         /// </summary>
@@ -48,20 +50,18 @@ namespace Optimization
         {
             try
             {
-                // == FIRST PART ==
-                var outputBeforeTheRun = string.Empty;
-                var chromosomeCasted = (Chromosome) chromosome;
+                // == OUTPUT 1 ==
+                var outputBeforeRun = string.Empty;
+                var chromosomeCasted = (Chromosome)chromosome;
 
                 // convert to dictionary and add "id" item
                 var list = chromosomeCasted.ToDictionary();
+                var paramsString = "~ " + list.Aggregate(outputBeforeRun, (current, item) =>
+                    current + item.Key + ": " + item.Value + " |");
 
-                // id
                 list.Add("Id", chromosomeCasted.Id);
-                //outputBeforeTheRun += $"Chromosome Id: {chromosomeCasted.Id}{Environment.NewLine}";
-
-                // log everything except id
-                outputBeforeTheRun = list.Where(i => i.Key != "Id").Aggregate(outputBeforeTheRun, (current, item) => 
-                    current + item.Key + ": " + item.Value + ", ");
+                outputBeforeRun += $"Send for backtest Chromosome Id: {chromosomeCasted.Id} w.params:{Environment.NewLine}";
+                outputBeforeRun += paramsString;
 
                 // Algorithm start and end dates
                 if (Program.Config.StartDate.HasValue && Program.Config.EndDate.HasValue)
@@ -71,21 +71,30 @@ namespace Optimization
                     list.Add("endDate", Program.Config.EndDate);
                 }
 
-                // log the result before an experiment (backtest)
-                Program.Logger.Info(outputBeforeTheRun);
-
-                // == SECOND PART ==
+                lock (Obj)
+                {
+                    // log the result before an experiment (backtest)
+                    Program.Logger.Info(outputBeforeRun);
+                }
+                
+                // Calculate
                 var result = OptimizerAppDomainManager.RunAlgorithm(list);   // run the algorithm
 
-                var outputResult = string.Empty;
-                outputResult += $"Drawdown = {result["Drawdown"]} TotalNumberOfTrades = {result["TotalNumberOfTrades"]}";
-
+                // == OUTPUT 2 ==
+                var outputResult = $"PRINT results for Chromosome Id: {chromosomeCasted.Id} w.params:{Environment.NewLine}";
+                outputResult += paramsString + Environment.NewLine;
+                
                 // calculate fitness and concat the results to an output string
                 var fitness = CalculateFitness(result);
-                outputResult += $" Fitness.Value({Name}) = {fitness.Value}";
+                outputResult += $"~ Fitness.Value({Name}) = {fitness.Value} ";
+                outputResult += $"Drawdown = {Math.Round(result["Drawdown"], 2)} TotalNumberOfTrades = {result["TotalNumberOfTrades"]}";
 
-                // log final output and return the result of evalution
-                Program.Logger.Info(outputResult);
+                lock (Obj)
+                {
+                    // log final output and return the result of evalution
+                    Program.Logger.Info(outputResult);
+                }
+
                 return fitness.Fitness;
             }
             catch (Exception ex)
