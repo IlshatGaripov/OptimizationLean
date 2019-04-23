@@ -6,7 +6,7 @@ namespace Optimization
     /// <summary>
     /// Population initialized with pre-defined list of chromosomes.
     /// </summary>
-    public sealed class PreloadPopulation : PopulationBase
+    public sealed class PopulationRandom : PopulationBase
     {
         /// <summary>
         /// Generates the chromosome list.

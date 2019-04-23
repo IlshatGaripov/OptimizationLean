@@ -53,7 +53,7 @@ namespace Optimization
                 case OptimizationMode.BruteForce:
                 {
                     // create cartesian population
-                    _population = new CartesianPopulation();
+                    _population = new PopulationCartesian();
 
                     _termination = new GenerationNumberTermination(1);
 
@@ -63,7 +63,7 @@ namespace Optimization
                 case OptimizationMode.GeneticAlgorithm:
                 {
                     // create random population
-                    _population = new PreloadPopulation();
+                    _population = new PopulationRandom();
 
                     _termination = new OrTermination(new FitnessStagnationTermination(Program.Config.StagnationGenerations), 
                         new GenerationNumberTermination(Program.Config.Generations));

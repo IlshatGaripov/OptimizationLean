@@ -8,7 +8,7 @@ namespace Optimization
     /// <summary>
     /// Population for brute force optimization.
     /// </summary>
-    public sealed class CartesianPopulation : PopulationBase
+    public sealed class PopulationCartesian : PopulationBase
     {
         /// <summary>
         /// Creates a population for brute force optimization mode.

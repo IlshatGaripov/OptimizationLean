@@ -82,7 +82,7 @@
     <Compile Include="GeneticSharpExtensions\ChromosomeCartesian.cs" />
     <Compile Include="GeneticSharpExtensions\ChromosomeRandom.cs" />
     <Compile Include="GeneticSharpExtensions\GeneticAlgorithmCustom.cs" />
-    <Compile Include="GeneticSharpExtensions\CartesianPopulation.cs" />
+    <Compile Include="GeneticSharpExtensions\PopulationCartesian.cs" />
     <Compile Include="GeneticSharpExtensions\PopulationBase.cs" />
     <Compile Include="GeneticSharpExtensions\GeneConverter.cs" />
     <Compile Include="Common\GeneFactory.cs" />
@@ -108,7 +108,7 @@
     <Compile Include="Configuration\OptimizerConfiguration.cs" />
     <Compile Include="LeanExtensions\Queuer.cs" />
     <Compile Include="Common\StatisticsAdapter.cs" />
-    <Compile Include="GeneticSharpExtensions\PreloadPopulation.cs" />
+    <Compile Include="GeneticSharpExtensions\PopulationRandom.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Fitness\CompoundingAnnualReturnFitness.cs" />
