@@ -41,11 +41,8 @@ namespace Optimization
         /// <summary>
         /// Loads values from JSON text file to a special class holding the config values.
         /// </summary>
-        public static OptimizerConfiguration LoadConfigFromFile()
+        public static OptimizerConfiguration LoadConfigFromFile(string path)
         {
-            // default path
-            const string path = "optimization.json";
-
             // DateTimeFormat for proper deserialize of start and end date string to DateTime
             var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd" };
 

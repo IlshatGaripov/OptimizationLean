@@ -255,3 +255,4 @@ Charts/
 /.vs/config/applicationhost.config
 *.bak
 /Optimization.Example/SuperTrendAlgorithm.cs
+/Optimization/optimization_local.json

@@ -22,10 +22,15 @@ namespace Optimization
         {
             // TODO : revise all this initialization. guess can be made more compact!
 
-            Config = OptimizerInitializer.LoadConfigFromFile();   // init global and gene config files.
+            // init global and gene config files.
+            Config = OptimizerInitializer.LoadConfigFromFile("optimization_local.json");
+
             OptimizerInitializer.Initialize();
+
             GeneFactory.Initialize(Config.Genes);
-            OptimizerAppDomainManager.Initialize();    // App Domain settings to use when run lean's algoritihm
+
+            // App Domain setup to run Lean.
+            OptimizerAppDomainManager.Initialize();    
 
             try
             {

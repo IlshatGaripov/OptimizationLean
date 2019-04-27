@@ -131,5 +131,35 @@ namespace Optimization
         /// </summary>
         [JsonProperty("transactionLog")]
         public string TransactionLog { get; set; }
+
+        /// <summary>
+        /// Azure Batch acc name.
+        /// </summary>
+        [JsonProperty("batchAccountName")]
+        public string BatchAccountName { get; set; }
+
+        /// <summary>
+        /// Azure Batch acc key.
+        /// </summary>
+        [JsonProperty("batchAccountKey")]
+        public string BatchAccountKey { get; set; }
+
+        /// <summary>
+        /// Azure Batch acc url.
+        /// </summary>
+        [JsonProperty("batchAccountUrl")]
+        public string BatchAccountUrl { get; set; }
+
+        /// <summary>
+        /// Azure Storage acc name.
+        /// </summary>
+        [JsonProperty("storageAccountName")]
+        public string StorageAccountName { get; set; }
+
+        /// <summary>
+        /// Azure Storage acc key.
+        /// </summary>
+        [JsonProperty("storageAccountKey")]
+        public string StorageAccountKey { get; set; }
     }
 }
