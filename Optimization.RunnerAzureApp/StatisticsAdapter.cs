@@ -1,8 +1,8 @@
-﻿using QuantConnect.Statistics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using QuantConnect.Statistics;
 
-namespace Optimization
+namespace Optimization.RunnerAzureApp
 {
     public class StatisticsAdapter
     {

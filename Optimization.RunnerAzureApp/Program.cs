@@ -1,11 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Optimization.RunnerAzureApp
 {
-    class Program
+    internal class Program
     {
         static void Main(string[] args)
         {
+            if (args.Length % 2 != 0)
+            {
+                throw new ArgumentException("Must be even number of arguments = key & value");
+            }
+
             // list to store values be passed to the runner
             var inputs = new Dictionary<string, string>();
 ;

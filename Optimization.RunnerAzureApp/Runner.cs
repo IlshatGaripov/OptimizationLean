@@ -41,7 +41,6 @@ namespace Optimization.RunnerAzureApp
             Config.Set("environment", "backtesting");
             Config.Set("algorithm-language", "CSharp");     // omitted?
             Config.Set("result-handler", nameof(OptimizerResultHandler));   //override default result handler
-            Config.Set("data-folder", "Data/");
 
             // separate log uniquely named for each backtest
             var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + id + ".txt";

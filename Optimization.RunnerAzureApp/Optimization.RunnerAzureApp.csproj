@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1F3FA3D8-E592-4055-A23A-E33A6A7534A6}</ProjectGuid>
+    <ProjectGuid>{9AFA923F-845E-4EC2-BF26-A7748AB05356}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Optimization.RunnerAzureApp</RootNamespace>
     <AssemblyName>Optimization.RunnerAzureApp</AssemblyName>
@@ -117,6 +117,10 @@
     <ProjectReference Include="..\..\Lean\Queues\QuantConnect.Queues.csproj">
       <Project>{d6633172-1368-4df6-9444-825c3e00c819}</Project>
       <Name>QuantConnect.Queues</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Optimization.Example\Optimization.Example.csproj">
+      <Project>{b6177ec4-9c73-4420-b20d-47a69bb9bcf9}</Project>
+      <Name>Optimization.Example</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
