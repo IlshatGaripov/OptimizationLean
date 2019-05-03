@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Azure.Batch;
+using Microsoft.Azure.Batch.Auth;
 using Microsoft.Azure.Batch.Common;
 
 namespace Optimization
@@ -11,17 +13,85 @@ namespace Optimization
     /// </summary>
     public static class AzureBatchManager
     {
+        // Timer
+        private static Stopwatch _timer = new Stopwatch();
+
         // Pool and Job constants
         private const string PoolId = "RunnerOptimaPool";
         private const int DedicatedNodeCount = 0;
         private const int LowPriorityNodeCount = 2;
         private const string PoolVmSize = "STANDARD_A1_v2";
-        private const string JobId = "RunnerOptimaJob";
+
+        // Make JobId public as it will be accessed from other classes to queue the new tasks.
+        public const string JobId = "RunnerOptimaJob";
 
         // Application package Id and version
         private const string AppPackageId = "Runner";
         private const string AppPackageVersion = "1";
 
+        // Batch client
+        public static BatchClient BatchClient;
+
+
+        /// <summary>
+        /// Deploy Batch resourses for cloud computing. Open a batch client.
+        /// </summary>
+        /// <returns>A <see cref="System.Threading.Tasks.Task"/> object that represents the asynchronous operation.</returns>
+        private static async Task DeployAsync()
+        {
+            Console.WriteLine("Azure Batch resources deployment start: {0}", DateTime.Now);
+            Console.WriteLine();
+            _timer = Stopwatch.StartNew();
+
+            var batchAccountUrl = Program.Config.BatchAccountUrl;
+            var batchAccountName = Program.Config.BatchAccountName;
+            var batchAccountKey = Program.Config.BatchAccountKey;
+
+            // Create a Batch client and authenticate with shared key credentials.
+            // The Batch client allows the app to interact with the Batch service.
+            BatchSharedKeyCredentials sharedKeyCredentials = new BatchSharedKeyCredentials(batchAccountUrl, batchAccountName, batchAccountKey);
+
+            BatchClient = BatchClient.Open(sharedKeyCredentials);
+
+            // Create the Batch pool, if not exist, which contains the compute nodes that execute the tasks.
+            await CreatePoolIfNotExistAsync(BatchClient, PoolId);
+
+            // Create the job that runs the tasks.
+            await CreateJobAsync(BatchClient, JobId, PoolId);
+        }
+
+        /// <summary>
+        /// Clean up Batch resources. Dispose a batch client.
+        /// </summary>
+        /// <returns>A <see cref="System.Threading.Tasks.Task"/> object that represents the asynchronous operation.</returns>
+        private static async Task DisposeAsync()
+        {
+            // Print out timing info
+            _timer.Stop();
+            Console.WriteLine();
+            Console.WriteLine("Sample end: {0}", DateTime.Now);
+            Console.WriteLine("Elapsed time: {0}", _timer.Elapsed);
+
+            // Clean up Batch resources (if the user so chooses)
+            Console.WriteLine();
+            Console.Write("Delete job? [yes] no: ");
+            string response = Console.ReadLine()?.ToLower();
+            if (response != "n" && response != "no")
+            {
+                await BatchClient.JobOperations.DeleteJobAsync(JobId);
+            }
+
+            Console.Write("Delete pool? [yes] no: ");
+            response = Console.ReadLine()?.ToLower();
+            if (response != "n" && response != "no")
+            {
+                await BatchClient.PoolOperations.DeletePoolAsync(PoolId);
+            }
+
+            // Dispose a batch client.
+            BatchClient?.Dispose();
+
+        }
 
         /// <summary>
         /// Creates the Batch pool.
