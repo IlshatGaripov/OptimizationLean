@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.IO;
 using System.Linq;
-using Microsoft.Azure.Batch;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
 using QuantConnect.Configuration;
 using QuantConnect.Lean.Engine;
 using QuantConnect.Logging;
@@ -28,22 +24,19 @@ namespace Optimization.RunnerAzureApp
         /// </summary>
         public static Dictionary<string, decimal> Run(Dictionary<string, string> inputs)
         {
-            // chromosome's GUID 
-            var id = (inputs.ContainsKey("Id") ? inputs["Id"] : Guid.NewGuid().ToString("N")).ToString();
-            
             // set the algorithm input variables. 
             foreach (var pair in inputs.Where(i => i.Key != "Id"))
             {
                 Config.Set(pair.Key, pair.Value);
             }
 
-            // general Lean settings:
+            // General settings:
             Config.Set("environment", "backtesting");
             Config.Set("algorithm-language", "CSharp");     // omitted?
             Config.Set("result-handler", nameof(OptimizerResultHandler));   //override default result handler
 
-            // separate log uniquely named for each backtest
-            var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + id + ".txt";
+            // The Logs
+            var logFileName = Config.Get("log-file");
             Log.LogHandler = new FileLogHandler(logFileName);
 
             // LeanEngineSystemHandlers
@@ -98,63 +91,9 @@ namespace Optimization.RunnerAzureApp
                 Log.LogHandler.Dispose();
             }
 
-            // Copy logs
-            CopyLogFileToTheStorage(inputs["storageAccountName"], inputs["storageAccountKey"], logFileName);
-
             // Results
             ResultHandler = (OptimizerResultHandler)leanEngineAlgorithmHandlers.Results;
             return ResultHandler.FullResults;
-        }
-
-        /// <summary>
-        /// Copies Lean log file to storage container.
-        /// </summary>
-        /// <param name="storageAccountName">The name of the Storage Account</param>
-        /// <param name="storageAccountKey">The key of the Storage Account</param>
-        /// <param name="fileName">Name of the log file to upload to Storage.</param>
-        /// <returns></returns>
-        public static ResourceFile CopyLogFileToTheStorage(string storageAccountName, string storageAccountKey, string fileName)
-        {
-            // Construct the Storage account connection string
-            string storageConnectionString =
-                $"DefaultEndpointsProtocol=https;AccountName={storageAccountName};AccountKey={storageAccountKey}";
-
-            // Retrieve the storage account
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
-
-            // Create the blob client
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-
-            // Use the blob client to create the input container in Azure Storage 
-            const string containerName = "lean-log";
-
-            Console.WriteLine("Uploading file {0} to container [{1}]...", fileName, containerName);
-
-            string blobName = Path.GetFileName(fileName);
-            var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
-
-            // Container
-            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
-            container.CreateIfNotExistsAsync().Wait();
-
-            // Copy to the storage blob
-            CloudBlockBlob blobData = container.GetBlockBlobReference(blobName);
-            blobData.UploadFromFileAsync(filePath).Wait();
-
-            // Set the expiry time and permissions for the blob shared access signature. In this case, no start time is specified,
-            // so the shared access signature becomes valid immediately
-            SharedAccessBlobPolicy sasConstraints = new SharedAccessBlobPolicy
-            {
-                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(2),
-                Permissions = SharedAccessBlobPermissions.Read
-            };
-
-            
-            // Construct the SAS URL for blob
-            string sasBlobToken = blobData.GetSharedAccessSignature(sasConstraints);
-            string blobSasUri = $"{blobData.Uri}{sasBlobToken}";
-
-            return new ResourceFile(blobSasUri, blobName);
         }
     }
 }
