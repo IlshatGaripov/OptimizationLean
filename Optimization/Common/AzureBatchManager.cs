@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Batch;
 using Microsoft.Azure.Batch.Auth;
 using Microsoft.Azure.Batch.Common;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Optimization
 {
@@ -15,6 +17,9 @@ namespace Optimization
     {
         // Timer
         private static Stopwatch _timer = new Stopwatch();
+
+        // Output container
+        private const string OutputContainerName = "output";
 
         // Pool and Job constants
         private const string PoolId = "RunnerOptimaPool";
@@ -32,6 +37,9 @@ namespace Optimization
         // Batch client
         public static BatchClient BatchClient;
 
+        // Sas for output container where results of backtests (evaluations) will be stored
+        public static string OutputContainerSasUrl;
+
 
         /// <summary>
         /// Deploy Batch resourses for cloud computing. Open a batch client.
@@ -42,6 +50,8 @@ namespace Optimization
             Console.WriteLine("Azure Batch resources deployment start: {0}", DateTime.Now);
             Console.WriteLine();
             _timer = Stopwatch.StartNew();
+
+            // == BATCH CLIENT ==
 
             var batchAccountUrl = Program.Config.BatchAccountUrl;
             var batchAccountName = Program.Config.BatchAccountName;
@@ -58,6 +68,25 @@ namespace Optimization
 
             // Create the job that runs the tasks.
             await CreateJobAsync(BatchClient, JobId, PoolId);
+
+
+            // == STORAGE ==
+
+            // Construct the Storage account connection string
+            string storageConnectionString = String.Format("DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1}",
+                Program.Config.StorageAccountName, Program.Config.StorageAccountKey);
+
+            // Retrieve the storage account
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+
+            // Create the blob client, for use in obtaining references to blob storage containers
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            await CreateContainerIfNotExistAsync(blobClient, OutputContainerName);
+
+            // Obtain a shared access signature that provides write access to the output container to which
+            // the tasks will upload their output.
+            OutputContainerSasUrl = GetContainerSasUrl(blobClient, OutputContainerName, SharedAccessBlobPermissions.Write);
         }
 
         /// <summary>
@@ -172,6 +201,50 @@ namespace Optimization
             job.PoolInformation = new PoolInformation { PoolId = poolId };
 
             await job.CommitAsync();
+        }
+
+        /// <summary>
+        /// Creates a container with the specified name in Blob storage, unless a container with that name already exists.
+        /// </summary>
+        /// <param name="blobClient">A <see cref="CloudBlobClient"/>.</param>
+        /// <param name="containerName">The name for the new container.</param>
+
+        private static async Task CreateContainerIfNotExistAsync(CloudBlobClient blobClient, string containerName)
+        {
+            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
+
+            // delete first to clean up contained files and then create
+            await container.DeleteIfExistsAsync();
+            await container.CreateIfNotExistsAsync();
+
+            Console.WriteLine("Creating container [{0}].", containerName);
+        }
+
+        /// <summary>
+        /// Returns a shared access signature (SAS) URL providing the specified
+        ///  permissions to the specified container. The SAS URL provided is valid for 2 hours from
+        ///  the time this method is called. The container must already exist in Azure Storage.
+        /// </summary>
+        /// <param name="blobClient">A <see cref="CloudBlobClient"/>.</param>
+        /// <param name="containerName">The name of the container for which a SAS URL will be obtained.</param>
+        /// <param name="permissions">The permissions granted by the SAS URL.</param>
+        /// <returns>A SAS URL providing the specified access to the container.</returns>
+        private static string GetContainerSasUrl(CloudBlobClient blobClient, string containerName, SharedAccessBlobPermissions permissions)
+        {
+            // Set the expiry time and permissions for the container access signature. In this case, no start time is specified,
+            // so the shared access signature becomes valid immediately. Expiration is in 2 hours.
+            SharedAccessBlobPolicy sasConstraints = new SharedAccessBlobPolicy
+            {
+                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(2),
+                Permissions = permissions
+            };
+
+            // Generate the shared access signature on the container, setting the constraints directly on the signature
+            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
+            string sasContainerToken = container.GetSharedAccessSignature(sasConstraints);
+
+            // Return the URL string for the container, including the SAS token
+            return String.Format("{0}{1}", container.Uri, sasContainerToken);
         }
     }
 }
