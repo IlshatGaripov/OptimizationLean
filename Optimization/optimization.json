@@ -31,12 +31,14 @@
   "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
   "dataFolder": "C:/Users/sterling/Google Drive/Data",
 
-  // AZURE CRED
+  // AZURE
   "batchAccountName": "",
   "batchAccountKey": "",
   "batchAccountUrl": "",
   "storageAccountName": "",
   "storageAccountKey": "",
+  "dedicatedComputeNodes": 0,
+  "lowPriorityComputeNodes": 2,
 
   // GENETIC OPTIMIZATION
   "populationSize": 24,

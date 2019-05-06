@@ -23,16 +23,14 @@ namespace Optimization
 
         // Pool and Job constants
         private const string PoolId = "RunnerOptimaPool";
-        private const int DedicatedNodeCount = 0;
-        private const int LowPriorityNodeCount = 2;
         private const string PoolVmSize = "STANDARD_A1_v2";
 
         // Make JobId public as it will be accessed from other classes to queue the new tasks.
         public const string JobId = "RunnerOptimaJob";
 
         // Application package Id and version
-        private const string AppPackageId = "Runner";
-        private const string AppPackageVersion = "1";
+        public const string AppPackageId = "Runner";
+        public const string AppPackageVersion = "1";
 
         // Batch client
         public static BatchClient BatchClient;
@@ -150,8 +148,8 @@ namespace Optimization
                 // modify its properties.
                 pool = batchClient.PoolOperations.CreatePool(
                     poolId: poolId,
-                    targetDedicatedComputeNodes: DedicatedNodeCount,
-                    targetLowPriorityComputeNodes: LowPriorityNodeCount,
+                    targetDedicatedComputeNodes: Program.Config.DedicatedNodeCount,
+                    targetLowPriorityComputeNodes: Program.Config.LowPriorityNodeCount,
                     virtualMachineSize: PoolVmSize,
                     virtualMachineConfiguration: virtualMachineConfiguration);
 
@@ -200,7 +198,22 @@ namespace Optimization
             job.Id = jobId;
             job.PoolInformation = new PoolInformation { PoolId = poolId };
 
-            await job.CommitAsync();
+            try
+            {
+                await job.CommitAsync();
+            }
+            catch (BatchException be)
+            {
+                // Accept the specific error code PoolExists as that is expected if the pool already exists
+                if (be.RequestInformation?.BatchError?.Code == BatchErrorCodeStrings.JobExists)
+                {
+                    Console.WriteLine("Job {0} already exists. I will delete it. Launch again in a minute", jobId);
+                    await batchClient.JobOperations.DeleteJobAsync(JobId);
+
+                }
+
+                throw; // Any other exception is unexpected
+            }
         }
 
         /// <summary>

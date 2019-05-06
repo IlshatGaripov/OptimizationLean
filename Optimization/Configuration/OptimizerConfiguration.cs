@@ -161,5 +161,17 @@ namespace Optimization
         /// </summary>
         [JsonProperty("storageAccountKey")]
         public string StorageAccountKey { get; set; }
+
+        /// <summary>
+        /// Dedicated compute nodes.
+        /// </summary>
+        [JsonProperty("dedicatedComputeNodes")]
+        public int DedicatedNodeCount { get; set; }
+
+        /// <summary>
+        /// Low-priority compute nodes.
+        /// </summary>
+        [JsonProperty("lowPriorityComputeNodes")]
+        public int LowPriorityNodeCount { get; set; }
     }
 }
