@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Fitnesses;
 using Microsoft.Azure.Batch;
 using Microsoft.Azure.Batch.Common;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Newtonsoft.Json.Linq;
 
 namespace Optimization
 {
@@ -112,7 +115,9 @@ namespace Optimization
                 cloudTask
             };
 
+            // Azure Cloud objects
             var batchClient = AzureBatchManager.BatchClient;
+            var blobClient = AzureBatchManager.BlobClient;
             var jobId = AzureBatchManager.JobId;
 
             // Call BatchClient.JobOperations.AddTask() to add the tasks as a collection to a queue
@@ -121,7 +126,10 @@ namespace Optimization
             // Monitor for a task 01 to complete. Timeout is set to 20 minutes. 
             await MonitorSpecificTaskToCompleteAsync(batchClient, jobId, taskId, TimeSpan.FromMinutes(20));
 
-            return 0;
+            var fitness = await ObtainResultFromTheBlob(blobClient, AzureBatchManager.OutputContainerName, 
+                @"results\" + resultsOutputFile);
+
+            return fitness;
         }
 
         /// <summary>
@@ -171,6 +179,49 @@ namespace Optimization
             {
                 Console.WriteLine($"{taskId} reached state Completed.");
             }
+        }
+
+
+        /// <summary>
+        /// Obtains final statistics from an output blob and calculate the chromosome fitness
+        /// </summary>
+        /// <param name="blobClient">A CloudBlobClient object.</param>
+        /// <param name="containerName">Name of container.</param>
+        /// <param name="blobName">Name of a file, blob.</param>
+        private static async Task<double> ObtainResultFromTheBlob(CloudBlobClient blobClient, string containerName, string blobName)
+        {
+            Console.WriteLine("Download blob file {0} from container [{1}]...", blobName, containerName);
+
+            // Container
+            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
+            CloudBlockBlob blobData = container.GetBlockBlobReference(blobName);
+
+            // Obtain the result from an output file
+            using (var memoryStream = new MemoryStream())
+            using (var streamReader = new StreamReader(memoryStream))
+            {
+                await blobData.DownloadToStreamAsync(memoryStream);
+
+                // Read from stream to a string
+                memoryStream.Position = 0;
+                var statistics = streamReader.ReadToEnd();
+
+                // Calculate fitness
+                return CalculateFitness(statistics);
+            }
+        }
+
+        /// <summary>
+        /// Calculates the chromosome fitness using some kind of metric. in the simplest case we will use Sharp Ratio.
+        /// </summary>
+        /// <param name="statistics">Json string containing statistics</param>
+        private static double CalculateFitness(string statistics)
+        {
+            // Calculate Sharp Ratio
+            var jsonObject = JObject.Parse(statistics);
+            var sharpRatio = jsonObject.Value<double>("SharpeRatio");
+
+            return sharpRatio;
         }
 
     }

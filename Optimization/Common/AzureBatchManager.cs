@@ -19,7 +19,7 @@ namespace Optimization
         private static Stopwatch _timer = new Stopwatch();
 
         // Output container
-        private const string OutputContainerName = "output";
+        public const string OutputContainerName = "output";
 
         // Pool and Job constants
         private const string PoolId = "RunnerOptimaPool";
@@ -32,8 +32,9 @@ namespace Optimization
         public const string AppPackageId = "Runner";
         public const string AppPackageVersion = "1";
 
-        // Batch client
+        // Batch client and 
         public static BatchClient BatchClient;
+        public static CloudBlobClient BlobClient;
 
         // Sas for output container where results of backtests (evaluations) will be stored
         public static string OutputContainerSasUrl;
@@ -78,13 +79,13 @@ namespace Optimization
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
 
             // Create the blob client, for use in obtaining references to blob storage containers
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+            BlobClient = storageAccount.CreateCloudBlobClient();
 
-            await CreateContainerIfNotExistAsync(blobClient, OutputContainerName);
+            await CreateContainerIfNotExistAsync(BlobClient, OutputContainerName);
 
             // Obtain a shared access signature that provides write access to the output container to which
             // the tasks will upload their output.
-            OutputContainerSasUrl = GetContainerSasUrl(blobClient, OutputContainerName, SharedAccessBlobPermissions.Write);
+            OutputContainerSasUrl = GetContainerSasUrl(BlobClient, OutputContainerName, SharedAccessBlobPermissions.Write);
         }
 
         /// <summary>
