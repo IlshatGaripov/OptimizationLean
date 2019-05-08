@@ -1,9 +1,10 @@
 {
   // MODE
-  "mode": "bruteforce",
+  "optimization-mode": "bruteforce",
+  "execution-mode": "azure",
+  "max-threads": 100,
 
   // COMMON SETTINGS
-  "maxThreads": 8,
   "fitnessTypeName": "Optimization.OptimizerFitness",
   "minimumTrades": 1,
   "enableFitnessFilter": true,

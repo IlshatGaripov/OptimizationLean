@@ -41,38 +41,47 @@ namespace Optimization
             _mutation = new UniformMutation(true);
             _reinsertion = new ElitistReinsertion();
 
-            // executor
-            _executor = new ParallelTaskExecutor
-            {
-                MaxThreads = Program.Config.MaxThreads > 0 ? Program.Config.MaxThreads : 4
-            };
+            // Executor
+            var maxThreads = Program.Config.MaxThreads > 0 ? Program.Config.MaxThreads : 8;
 
-            // params optimization method specific 
-            switch (Program.Config.Mode)
+            switch (Program.Config.ExecutionMode)
+            {
+                case ExecutionMode.Linear:
+                    _executor = new LinearTaskExecutor();
+                    break;
+                case ExecutionMode.Parallel:
+                    _executor = new ParallelTaskExecutor { MaxThreads = maxThreads };
+                    break;
+                case ExecutionMode.Azure:
+                    _executor = new TaskExecutorAzure { MaxThreads = maxThreads };
+                    break;
+                default:
+                    throw new Exception("Executor initialization failed");
+            }
+
+            // Optimization mode
+            switch (Program.Config.OptimizationMode)
             {
                 case OptimizationMode.BruteForce:
                 {
                     // create cartesian population
                     _population = new PopulationCartesian();
-
                     _termination = new GenerationNumberTermination(1);
 
                     break;
                 }
-
                 case OptimizationMode.GeneticAlgorithm:
                 {
                     // create random population
                     _population = new PopulationRandom();
-
-                    _termination = new OrTermination(new FitnessStagnationTermination(Program.Config.StagnationGenerations), 
+                    _termination = new OrTermination(
+                        new FitnessStagnationTermination(Program.Config.StagnationGenerations), 
                         new GenerationNumberTermination(Program.Config.Generations));
 
                     break;
                 }
-                    
                 default:
-                    throw new Exception("Termination method could not be initialized");
+                    throw new Exception("Optimization mode specific objects were not initialized");
             }
         }
 

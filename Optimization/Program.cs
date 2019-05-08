@@ -20,16 +20,16 @@ namespace Optimization
         /// </summary>
         public static void Main(string[] args)
         {
-            // TODO : revise all this initialization. guess can be made more compact!
-
-            // init global and gene config files.
+            // Load JSON from configuration to class object
             Config = OptimizerInitializer.LoadConfigFromFile("optimization_local.json");
 
+            // TODO: revise 1!
             OptimizerInitializer.Initialize();
 
+            // TODO: revise 2!
             GeneFactory.Initialize(Config.Genes);
 
-            // App Domain setup to run Lean.
+            // Configure App Domain settings which will be used if computing performed on the local machine
             OptimizerAppDomainManager.Initialize();    
 
             try
@@ -42,37 +42,18 @@ namespace Optimization
                     null, null);
 
                 // GA manager
-
                 Manager = new GeneManager();
                 Manager.Initialize(fitness);
                 Manager.Start();
+
+                // In the end
+                NLog.LogManager.Shutdown();   // shutdown the logger
+                Console.ReadKey(); 
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-
-            NLog.LogManager.Shutdown();   // shutdown the logger
-            Console.ReadKey();
-
-            /*
-            if (Manager == null)
-            {
-                if (((IList) new[]
-                {
-                    typeof(SharpeMaximizer), typeof(NFoldCrossReturnMaximizer), typeof(NestedCrossSharpeMaximizer),
-                    typeof(NestedCrossSharpeMaximizer)
-                }).Contains(fitness?.GetType()))
-                {
-                    Manager = new MaximizerManager();
-                }
-                else
-                {
-                    // this is default
-                    Manager = new GeneManager();
-                }
-            }
-            */
         }
 
     }

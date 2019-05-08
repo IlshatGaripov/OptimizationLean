@@ -12,11 +12,24 @@ namespace Optimization
     public class OptimizerConfiguration
     {
         /// <summary>
-        /// Optimization mode - genetic / brute-force
+        /// Optimization mode - genetic/ brute-force
         /// </summary>
-        [JsonProperty("mode")]
+        [JsonProperty("optimization-mode")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public OptimizationMode Mode { get; set; }
+        public OptimizationMode OptimizationMode { get; set; }
+
+        /// <summary>
+        /// Execution mode - linear/ parallel/ azure
+        /// </summary>
+        [JsonProperty("execution-mode")]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ExecutionMode ExecutionMode { get; set; }
+
+        /// <summary>
+        /// Number of parallel backtests
+        /// </summary>
+        [JsonProperty("max-threads")]
+        public int MaxThreads { get; set; } = 8;
 
         /// <summary>
         /// The settings to generate gene values
@@ -41,12 +54,6 @@ namespace Optimization
         /// </summary>
         [JsonProperty("stagnationGenerations")]
         public int StagnationGenerations { get; set; } = 10;
-
-        /// <summary>
-        /// Number of parallel backtests
-        /// </summary>
-        [JsonProperty("maxThreads")]
-        public int MaxThreads { get; set; } = 8;
 
         /// <summary>
         /// Override config.json setting

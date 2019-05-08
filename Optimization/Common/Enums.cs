@@ -15,4 +15,11 @@
         GeneticAlgorithm,
         BruteForce
     }
+
+    public enum ExecutionMode
+    {
+        Linear,
+        Parallel,
+        Azure
+    }
 }

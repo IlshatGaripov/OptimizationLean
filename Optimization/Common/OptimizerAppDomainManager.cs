@@ -35,7 +35,7 @@ namespace Optimization
             //Console.WriteLine(callingDomainName);
 
             // Get and display the full name of the EXE assembly.
-            _exeAssembly = Assembly.GetEntryAssembly().FullName;
+            _exeAssembly = Assembly.GetEntryAssembly()?.FullName;
             //Console.WriteLine(exeAssembly);
 
             var ads = new AppDomainSetup

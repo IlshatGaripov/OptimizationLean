@@ -44,7 +44,7 @@ namespace Optimization
         /// Deploy Batch resourses for cloud computing. Open a batch client.
         /// </summary>
         /// <returns>A <see cref="System.Threading.Tasks.Task"/> object that represents the asynchronous operation.</returns>
-        private static async Task DeployAsync()
+        public static async Task DeployAsync()
         {
             Console.WriteLine("Azure Batch resources deployment start: {0}", DateTime.Now);
             Console.WriteLine();
@@ -92,7 +92,7 @@ namespace Optimization
         /// Clean up Batch resources. Dispose a batch client.
         /// </summary>
         /// <returns>A <see cref="System.Threading.Tasks.Task"/> object that represents the asynchronous operation.</returns>
-        private static async Task DisposeAsync()
+        public static async Task FinalizeAsync()
         {
             // Print out timing info
             _timer.Stop();

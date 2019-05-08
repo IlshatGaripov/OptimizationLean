@@ -43,7 +43,11 @@ namespace Optimization
         /// <returns>True if successfully finished. False otherwise.</returns>
         public override bool Start()
         {
+            // Set Thread Pool to guarantee the required number of threads
             SetThreadPoolConfig(out int minWorker, out int minIOC, out int maxWorker, out int maxIOC);
+
+            // Deploy Batch resources that will be used for computation and storage
+            AzureBatchManager.DeployAsync().Wait();
 
             CancellationTokenSource = new CancellationTokenSource();
 
@@ -84,6 +88,9 @@ namespace Optimization
             base.Stop();
             CancellationTokenSource?.Cancel();
             IsRunning = false;
+
+            // Clean up Batch resources
+            AzureBatchManager.FinalizeAsync().Wait();
         }
 
         /// <summary>
