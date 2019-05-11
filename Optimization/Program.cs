@@ -44,11 +44,14 @@ namespace Optimization
 
                 // In the end
                 NLog.LogManager.Shutdown();   // shutdown the logger
+
+                Console.WriteLine("Press ENTER to exit the program");
                 Console.ReadKey(); 
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                Console.ReadKey();
             }
         }
 

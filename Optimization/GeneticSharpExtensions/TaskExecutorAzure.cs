@@ -74,7 +74,6 @@ namespace Optimization
             }
             finally
             {
-                CancellationTokenSource?.Dispose();
                 ResetThreadPoolConfig(minWorker, minIOC, maxWorker, maxIOC);
                 IsRunning = false;
             }
@@ -86,8 +85,11 @@ namespace Optimization
         public override void Stop()
         {
             base.Stop();
-            CancellationTokenSource?.Cancel();
             IsRunning = false;
+
+            //  Cancel and Dispose on CancellationTokenSource
+            CancellationTokenSource?.Cancel();
+            CancellationTokenSource?.Dispose();
 
             // Clean up Batch resources
             AzureBatchManager.FinalizeAsync().Wait();

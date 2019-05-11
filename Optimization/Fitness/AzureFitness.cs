@@ -151,8 +151,6 @@ namespace Optimization
             {
                 // Waiting for the task to get to state Completed
                 await monitor.WhenAll(monitoredCloudTasks, TaskState.Completed, timeout);
-
-                Console.WriteLine($"{taskId} reached state Completed within the timeout periods.");
             }
             catch (Exception e)
             {

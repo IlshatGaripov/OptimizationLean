@@ -168,7 +168,9 @@ namespace Optimization
                     }
                 };
 
-                await pool.CommitAsync();
+                // Commit in blocking fashion. To make sure pool has been created when Job
+                // associated with a pool will be created.
+                pool.Commit();
             }
             catch (BatchException be)
             {
@@ -228,7 +230,6 @@ namespace Optimization
             CloudBlobContainer container = blobClient.GetContainerReference(containerName);
 
             // delete first to clean up contained files and then create
-            await container.DeleteIfExistsAsync();
             await container.CreateIfNotExistsAsync();
 
             Console.WriteLine("Creating container [{0}].", containerName);
