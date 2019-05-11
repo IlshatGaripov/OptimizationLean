@@ -6,6 +6,7 @@ using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
 using GeneticSharp.Infrastructure.Framework.Threading;
 using System;
+using GeneticSharp.Domain.Fitnesses;
 
 namespace Optimization
 {
@@ -20,7 +21,7 @@ namespace Optimization
         private ITaskExecutor _executor;
 
         private IPopulation _population;
-        private OptimizerFitness _fitness;
+        private IFitness _fitness;
         private ITermination _termination;
         private ISelection _selection;
         private ICrossover _crossover;
@@ -30,7 +31,7 @@ namespace Optimization
         /// <summary>
         /// Init the class variables. 
         /// </summary>
-        public void Initialize(OptimizerFitness fitness)
+        public void Initialize(IFitness fitness)
         {
             // fitness
             _fitness = fitness;

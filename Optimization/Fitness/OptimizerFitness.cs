@@ -23,7 +23,7 @@ namespace Optimization
         /// <summary>
         /// Filter used to sort out insignificant values.
         /// </summary>
-        public IFitnessFilter Filter { get; set; }
+        public IFitnessFilter Filter { get; set; } = new FitnessFilter();
 
         /// <summary>
         /// The scale used to calculate the normalized value of fitness. Can be overriden is child class.
@@ -34,14 +34,6 @@ namespace Optimization
         /// Default value for insignificat result of evaluation.
         /// </summary>
         protected const decimal ErrorRatio = -10;
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public OptimizerFitness(IFitnessFilter filter = null)
-        {
-            Filter = filter;
-        }
 
         /// <summary>
         /// Evaluates the chromosome's fitness.

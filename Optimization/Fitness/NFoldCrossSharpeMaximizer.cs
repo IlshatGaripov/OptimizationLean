@@ -11,7 +11,7 @@ namespace Optimization
     {
         private readonly int _folds = 2;
         
-        public NFoldCrossSharpeMaximizer( IFitnessFilter filter) : base(filter)
+        public NFoldCrossSharpeMaximizer() 
         {
             var folds = Program.Config.Fitness?.Folds ?? 2;
             if (folds > 0)

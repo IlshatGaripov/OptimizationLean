@@ -14,10 +14,6 @@ namespace Optimization
 
         private double _previousFitness = (double)ErrorRatio;
 
-        public AdaptiveSharpeRatioFitness(IFitnessFilter filter) : base( filter)
-        {
-        }
-
         public override double Evaluate(IChromosome chromosome)
         {
             var fitness = EvaluateBase(chromosome);

@@ -16,7 +16,7 @@ namespace Optimization
         private ConditionalWeakTable<OptimizerResult, string> _resultIndex;
         private const double ErrorFitness = 1.01;
 
-        public SharpeMaximizer(IFitnessFilter filter) : base( filter)
+        public SharpeMaximizer()
         {
             _resultIndex = new ConditionalWeakTable<OptimizerResult, string>();
             Name = "Sharpe";

@@ -4,7 +4,7 @@
   "execution-mode": "azure",
   "max-threads": 100,
 
-  // COMMON SETTINGS
+  // FITNESS
   "fitnessTypeName": "Optimization.OptimizerFitness",
   "minimumTrades": 1,
   "enableFitnessFilter": true,

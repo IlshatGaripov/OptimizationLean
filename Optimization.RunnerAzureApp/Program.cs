@@ -7,7 +7,7 @@ namespace Optimization.RunnerAzureApp
 {
     internal class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             if (args.Length % 2 != 0)
             {
@@ -16,7 +16,7 @@ namespace Optimization.RunnerAzureApp
 
             // list to store values be passed to the runner
             var inputs = new Dictionary<string, string>();
-;
+
             for (var i = 0; i < args.Length; i+=2)
             {
                 inputs.Add(args[i], args[i+1]);

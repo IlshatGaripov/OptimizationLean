@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Reflection;
+using GeneticSharp.Domain.Fitnesses;
 using NLog;
 
 namespace Optimization
@@ -29,17 +29,13 @@ namespace Optimization
             // TODO: revise 2!
             GeneFactory.Initialize(Config.Genes);
 
-            // Configure App Domain settings which will be used if computing performed on the local machine
+            // Configure App Domain settings that are used if computing is made on the local machine
             OptimizerAppDomainManager.Initialize();    
 
             try
             {
-                // TODO: Should be easier to use Activator.CreateInstance? look into documentation ..
-                // create a new instance of a OptimizerFitness object itself or its descendant.
-                var fitness = (OptimizerFitness)Assembly.GetExecutingAssembly().CreateInstance(
-                    Program.Config.FitnessTypeName, false, BindingFlags.Default, null,
-                    new object[] { new FitnessFilter() },
-                    null, null);
+                var fitnessTypeString = Config.FitnessTypeName;
+                var fitness = (IFitness)Activator.CreateInstance(Type.GetType(fitnessTypeString) ?? throw new InvalidOperationException());
 
                 // GA manager
                 Manager = new GeneManager();

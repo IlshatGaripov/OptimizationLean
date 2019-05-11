@@ -25,8 +25,7 @@ namespace Optimization
         public double Evaluate(IChromosome chromosome)
         {
 
-            // all the code is wrapper in async method . Execute it in async fashion to obtain a result.
-
+            // All functionality is wrapped in async method. Execute it to obtain a result.
             return EvaluateAsync(chromosome).GetAwaiter().GetResult();
         }
 

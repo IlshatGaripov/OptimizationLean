@@ -1,4 +1,6 @@
-﻿namespace Optimization
+﻿using GeneticSharp.Domain.Fitnesses;
+
+namespace Optimization
 {
     /// <summary>
     /// ...
@@ -8,7 +10,7 @@
         /// <summary>
         /// ...
         /// </summary>
-        void Initialize(OptimizerFitness fitness);
+        void Initialize(IFitness fitness);
 
         /// <summary>
         /// ...
