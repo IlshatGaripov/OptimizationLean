@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Azure.Batch;
 using Microsoft.Azure.Batch.Auth;
@@ -20,6 +21,9 @@ namespace Optimization
 
         // Output container
         public const string OutputContainerName = "output";
+
+        // Recourses containter
+        public const string RecoursesContainerName = "data";
 
         // Pool and Job constants
         private const string PoolId = "RunnerOptimaPool";
@@ -51,7 +55,6 @@ namespace Optimization
             _timer = Stopwatch.StartNew();
 
             // == BATCH CLIENT ==
-
             var batchAccountUrl = Program.Config.BatchAccountUrl;
             var batchAccountName = Program.Config.BatchAccountName;
             var batchAccountKey = Program.Config.BatchAccountKey;
@@ -59,18 +62,9 @@ namespace Optimization
             // Create a Batch client and authenticate with shared key credentials.
             // The Batch client allows the app to interact with the Batch service.
             BatchSharedKeyCredentials sharedKeyCredentials = new BatchSharedKeyCredentials(batchAccountUrl, batchAccountName, batchAccountKey);
-
             BatchClient = BatchClient.Open(sharedKeyCredentials);
 
-            // Create the Batch pool, if not exist, which contains the compute nodes that execute the tasks.
-            await CreatePoolIfNotExistAsync(BatchClient, PoolId);
-
-            // Create the job that runs the tasks.
-            await CreateJobAsync(BatchClient, JobId, PoolId);
-
-
             // == STORAGE ==
-
             // Construct the Storage account connection string
             string storageConnectionString = String.Format("DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1}",
                 Program.Config.StorageAccountName, Program.Config.StorageAccountKey);
@@ -81,11 +75,19 @@ namespace Optimization
             // Create the blob client, for use in obtaining references to blob storage containers
             BlobClient = storageAccount.CreateCloudBlobClient();
 
-            await CreateContainerIfNotExistAsync(BlobClient, OutputContainerName);
+            // == CREATES ==
+            // Create the Batch pool, if not exist, which contains the compute nodes that execute the tasks.
+            await CreatePoolIfNotExistAsync(BatchClient, PoolId);
 
+            // Create the job that runs the tasks.
+            await CreateJobAsync(BatchClient, JobId, PoolId);
+
+            // Creat an OutPut Container
             // Obtain a shared access signature that provides write access to the output container to which
             // the tasks will upload their output.
+            await CreateContainerIfNotExistAsync(BlobClient, OutputContainerName);
             OutputContainerSasUrl = GetContainerSasUrl(BlobClient, OutputContainerName, SharedAccessBlobPermissions.Write);
+
         }
 
         /// <summary>
@@ -119,6 +121,7 @@ namespace Optimization
             // Dispose a batch client.
             BatchClient?.Dispose();
 
+            // Delete containers
         }
 
         /// <summary>
@@ -128,7 +131,6 @@ namespace Optimization
         /// <param name="poolId">ID of the CloudPool object to create.</param>
         private static async Task CreatePoolIfNotExistAsync(BatchClient batchClient, string poolId)
         {
-            CloudPool pool = null;
             try
             {
                 Console.WriteLine("Creating pool [{0}]...", poolId);
@@ -147,7 +149,7 @@ namespace Optimization
                 // Create an unbound pool. No pool is actually created in the Batch service until we call
                 // CloudPool.Commit(). This CloudPool instance is therefore considered "unbound," and we can
                 // modify its properties.
-                pool = batchClient.PoolOperations.CreatePool(
+                var pool = batchClient.PoolOperations.CreatePool(
                     poolId: poolId,
                     targetDedicatedComputeNodes: Program.Config.DedicatedNodeCount,
                     targetLowPriorityComputeNodes: Program.Config.LowPriorityNodeCount,
@@ -155,10 +157,6 @@ namespace Optimization
                     virtualMachineConfiguration: virtualMachineConfiguration);
 
                 // Specify the application and version to install on the compute nodes
-                // This assumes that a Windows 64-bit zipfile of ffmpeg has been added to Batch account
-                // with Application Id of "ffmpeg" and Version of "3.4".
-                // Download the zipfile https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-3.4-win64-static.zip
-                // to upload as application package
                 pool.ApplicationPackageReferences = new List<ApplicationPackageReference>
                 {
                     new ApplicationPackageReference
@@ -168,9 +166,10 @@ namespace Optimization
                     }
                 };
 
-                // Commit in blocking fashion. To make sure pool has been created when Job
-                // associated with a pool will be created.
-                pool.Commit();
+                // Commit in blocking fashion. To make sure pool has been created before Job
+                // associated with a pool is submitted.
+                //pool.Commit();
+                await pool.CommitAsync();
             }
             catch (BatchException be)
             {
@@ -194,25 +193,45 @@ namespace Optimization
         /// <param name="poolId">ID of the CloudPool object in which to create the job.</param>
         private static async Task CreateJobAsync(BatchClient batchClient, string jobId, string poolId)
         {
-
             Console.WriteLine("Creating job [{0}]...", jobId);
 
             CloudJob job = batchClient.JobOperations.CreateJob();
             job.Id = jobId;
             job.PoolInformation = new PoolInformation { PoolId = poolId };
 
+            // Set Job Preparation task to upload with algorithm dll to every pool node that will execute the task
+            // Create container first where do upload dll.
+            await CreateContainerIfNotExistAsync(BlobClient, RecoursesContainerName);
+
+            // Upload the dll file to newly created container
+            var dllReference =
+                await UploadResourceFileToContainerAsync(BlobClient, RecoursesContainerName, Program.Config.AlgorithmLocation);
+
+            // This is data that will be processed by each Prep. Task on the nodes
+            List<ResourceFile> inputFiles = new List<ResourceFile> { dllReference };
+
+            var preparationTask =
+                new JobPreparationTask 
+                {
+                    // Just a random cmd line as without cmd commiting a job will return an error
+                    CommandLine = "cmd /c echo %AZ_BATCH_NODE_ID% > %AZ_BATCH_JOB_PREP_WORKING_DIR%\\start_message.txt",
+                    ResourceFiles = inputFiles
+                };
+
+            job.JobPreparationTask = preparationTask;
+
+            // Commit the Job
             try
             {
                 await job.CommitAsync();
             }
             catch (BatchException be)
             {
-                // Accept the specific error code PoolExists as that is expected if the pool already exists
+                // Catch specific error code JobExists as that is expected if the job already exists
                 if (be.RequestInformation?.BatchError?.Code == BatchErrorCodeStrings.JobExists)
                 {
                     Console.WriteLine("Job {0} already exists. I will delete it. Launch again in a minute", jobId);
                     await batchClient.JobOperations.DeleteJobAsync(JobId);
-
                 }
 
                 throw; // Any other exception is unexpected
@@ -227,14 +246,14 @@ namespace Optimization
 
         private static async Task CreateContainerIfNotExistAsync(CloudBlobClient blobClient, string containerName)
         {
+            Console.WriteLine("Creating container [{0}].", containerName);
+
             CloudBlobContainer container = blobClient.GetContainerReference(containerName);
 
             // delete first to clean up contained files and then create
             await container.CreateIfNotExistsAsync();
-
-            Console.WriteLine("Creating container [{0}].", containerName);
         }
-
+        
         /// <summary>
         /// Returns a shared access signature (SAS) URL providing the specified
         ///  permissions to the specified container. The SAS URL provided is valid for 2 hours from
@@ -259,7 +278,41 @@ namespace Optimization
             string sasContainerToken = container.GetSharedAccessSignature(sasConstraints);
 
             // Return the URL string for the container, including the SAS token
-            return String.Format("{0}{1}", container.Uri, sasContainerToken);
+            return $"{container.Uri}{sasContainerToken}";
         }
+
+        /// <summary>
+        /// Uploads the specified file to the specified blob container.
+        /// </summary>
+        /// <param name="blobClient">A <see cref="CloudBlobClient"/>.</param>
+        /// <param name="containerName">The name of the blob storage container to which the file should be uploaded.</param>
+        /// <param name="filePath">The full path to the file to upload to Storage.</param>
+        /// <returns>A ResourceFile object representing the file in blob storage.</returns>
+        private static async Task<ResourceFile> UploadResourceFileToContainerAsync(CloudBlobClient blobClient, string containerName, string filePath)
+        {
+            Console.WriteLine("Uploading file {0} to container [{1}]...", filePath, containerName);
+
+            string blobName = Path.GetFileName(filePath);
+            //var fileStream = System.IO.File.OpenRead(filePath);
+
+            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
+            CloudBlockBlob blobData = container.GetBlockBlobReference(blobName);
+            await blobData.UploadFromFileAsync(filePath);
+
+            // Set the expiry time and permissions for the blob shared access signature. In this case, no start time is specified,
+            // so the shared access signature becomes valid immediately
+            SharedAccessBlobPolicy sasConstraints = new SharedAccessBlobPolicy
+            {
+                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(2),
+                Permissions = SharedAccessBlobPermissions.Read
+            };
+
+            // Construct the SAS URL for blob
+            string sasBlobToken = blobData.GetSharedAccessSignature(sasConstraints);
+            string blobSasUri = $"{blobData.Uri}{sasBlobToken}";
+
+            return ResourceFile.FromUrl(blobSasUri, blobName);
+        }
+
     }
 }

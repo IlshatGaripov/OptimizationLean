@@ -28,7 +28,7 @@ namespace Optimization.Tests
 
                 EndDate = new DateTime(2001, 1, 3)
             };
-            _unit = new Wrapper(Mock.Of<IFitnessFilter>());
+            _unit = new Wrapper();
             OptimizerAppDomainManager.Initialize();
         }
 
@@ -92,7 +92,7 @@ namespace Optimization.Tests
         {
             double _previous = 0.5;
 
-            public Wrapper( IFitnessFilter filter) : base( filter)
+            public Wrapper( ) : base( )
             {
             }
 

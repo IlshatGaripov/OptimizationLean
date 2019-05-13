@@ -58,7 +58,8 @@ namespace Optimization
             runnerInputArguments += $"algorithm-type-name {Program.Config.AlgorithmTypeName} ";
 
             // -- 3 -- Add algorithm dll and data folder locations
-            runnerInputArguments += $"algorithm-location {appPath}\\Debug\\Optimization.Example.dll ";
+            var dllFileName = Path.GetFileName(Program.Config.AlgorithmLocation);
+            runnerInputArguments += $"algorithm-location %AZ_BATCH_JOB_PREP_WORKING_DIR%\\{dllFileName} ";
             runnerInputArguments += $"data-folder {appPath}\\Debug\\Data\\ ";
 
             // -- 4 -- Algorithm start and end dates
@@ -204,7 +205,10 @@ namespace Optimization
                 var statistics = streamReader.ReadToEnd();
 
                 // Calculate fitness
-                return CalculateFitness(statistics);
+                var fitness = CalculateFitness(statistics);
+                Console.WriteLine($"Fitness is: {fitness}");
+
+                return fitness;
             }
         }
 
