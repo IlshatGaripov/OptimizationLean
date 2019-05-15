@@ -17,7 +17,7 @@ namespace Optimization.Tests
 
         public OptimizerFitnessTests()
         {
-            _unit = new Wrapper( new FitnessFilter());
+            _unit = new Wrapper();
         }
 
         [TestCase(1, 12, 0.22, 0.5)]
@@ -46,7 +46,7 @@ namespace Optimization.Tests
         private class Wrapper : OptimizerFitness
         {
 
-            public Wrapper(IFitnessFilter filter) : base(filter)
+            public Wrapper() : base()
             {
             }
 

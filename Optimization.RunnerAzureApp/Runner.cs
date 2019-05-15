@@ -24,18 +24,18 @@ namespace Optimization.RunnerAzureApp
         /// </summary>
         public static Dictionary<string, decimal> Run(Dictionary<string, string> inputs)
         {
-            // set the algorithm input variables. 
+            // Set the algorithm input variables
             foreach (var pair in inputs.Where(i => i.Key != "Id"))
             {
                 Config.Set(pair.Key, pair.Value);
             }
 
-            // General settings:
+            // Common settings:
             Config.Set("environment", "backtesting");
             Config.Set("algorithm-language", "CSharp");     // omitted?
             Config.Set("result-handler", nameof(OptimizerResultHandler));   //override default result handler
 
-            // The Logs
+            // Log file location
             var logFileName = Config.Get("log-file");
             Log.LogHandler = new FileLogHandler(logFileName);
 
