@@ -46,9 +46,6 @@ namespace Optimization
             // Set Thread Pool to guarantee the required number of threads
             SetThreadPoolConfig(out int minWorker, out int minIOC, out int maxWorker, out int maxIOC);
 
-            // Deploy Batch resources that will be used for computation and storage
-            AzureBatchManager.DeployAsync().Wait();
-
             CancellationTokenSource = new CancellationTokenSource();
 
             try
@@ -91,8 +88,6 @@ namespace Optimization
             CancellationTokenSource?.Cancel();
             CancellationTokenSource?.Dispose();
 
-            // Clean up Batch resources
-            AzureBatchManager.FinalizeAsync().Wait();
         }
 
         /// <summary>

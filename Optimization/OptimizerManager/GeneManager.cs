@@ -50,12 +50,20 @@ namespace Optimization
                 case ExecutionMode.Linear:
                     _executor = new LinearTaskExecutor();
                     break;
+
                 case ExecutionMode.Parallel:
                     _executor = new ParallelTaskExecutor { MaxThreads = maxThreads };
                     break;
+
                 case ExecutionMode.Azure:
+                {
+                    // Deploy Batch resources that will be used for computation and storage
+                    AzureBatchManager.DeployAsync().Wait();
+
                     _executor = new TaskExecutorAzure { MaxThreads = maxThreads };
                     break;
+                }
+                    
                 default:
                     throw new Exception("Executor initialization failed");
             }
@@ -119,9 +127,12 @@ namespace Optimization
         /// </summary>
         private void TerminationReached(object sender, EventArgs e)
         {
+            GenerationRan(null, null);
+
             Program.Logger.Info(Termination);
 
-            GenerationRan(null, null);
+            // Clean up Batch resources
+            AzureBatchManager.FinalizeAsync().Wait();
         }
 
         /// <summary>
