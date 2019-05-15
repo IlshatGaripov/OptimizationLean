@@ -23,7 +23,7 @@ namespace Optimization
         public const string OutputContainerName = "output";
 
         // Recourses containter
-        public const string RecoursesContainerName = "data";
+        public const string DllContainerName = "dll";
 
         // Pool and Job constants
         private const string PoolId = "RunnerOptimaPool";
@@ -122,6 +122,8 @@ namespace Optimization
             BatchClient?.Dispose();
 
             // Delete containers
+            await DeleteContainerIfExistAsync(BlobClient, OutputContainerName);
+            await DeleteContainerIfExistAsync(BlobClient, DllContainerName);
         }
 
         /// <summary>
@@ -201,11 +203,11 @@ namespace Optimization
 
             // Set Job Preparation task to upload with algorithm dll to every pool node that will execute the task
             // Create container first where do upload dll.
-            await CreateContainerIfNotExistAsync(BlobClient, RecoursesContainerName);
+            await CreateContainerIfNotExistAsync(BlobClient, DllContainerName);
 
             // Upload the dll file to newly created container
             var dllReference =
-                await UploadResourceFileToContainerAsync(BlobClient, RecoursesContainerName, Program.Config.AlgorithmLocation);
+                await UploadResourceFileToContainerAsync(BlobClient, DllContainerName, Program.Config.AlgorithmLocation);
 
             // This is data that will be processed by each Prep. Task on the nodes
             List<ResourceFile> inputFiles = new List<ResourceFile> { dllReference };
@@ -243,7 +245,6 @@ namespace Optimization
         /// </summary>
         /// <param name="blobClient">A <see cref="CloudBlobClient"/>.</param>
         /// <param name="containerName">The name for the new container.</param>
-
         private static async Task CreateContainerIfNotExistAsync(CloudBlobClient blobClient, string containerName)
         {
             Console.WriteLine("Creating container [{0}].", containerName);
@@ -253,7 +254,22 @@ namespace Optimization
             // delete first to clean up contained files and then create
             await container.CreateIfNotExistsAsync();
         }
-        
+
+        /// <summary>
+        /// Deletes a container with the specified name in Blob storage, if a container with that name exists.
+        /// </summary>
+        /// <param name="blobClient">A <see cref="CloudBlobClient"/>.</param>
+        /// <param name="containerName">The name for the new container.</param>
+        private static async Task DeleteContainerIfExistAsync(CloudBlobClient blobClient, string containerName)
+        {
+            Console.WriteLine("Deleting container [{0}].", containerName);
+
+            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
+
+            // delete first to clean up contained files and then create
+            await container.DeleteIfExistsAsync();
+        }
+
         /// <summary>
         /// Returns a shared access signature (SAS) URL providing the specified
         ///  permissions to the specified container. The SAS URL provided is valid for 2 hours from
