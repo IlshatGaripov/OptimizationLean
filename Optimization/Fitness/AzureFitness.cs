@@ -17,6 +17,8 @@ namespace Optimization
     /// </summary>
     class AzureFitness: IFitness
     {
+        private static readonly object Obj = new object();
+
         /// <summary>
         /// Performs the evaluation against the specified chromosome.
         /// </summary>
@@ -129,6 +131,16 @@ namespace Optimization
             var fitness = await ObtainResultFromTheBlob(blobClient, AzureBatchManager.OutputContainerName, 
                 @"results\" + resultsOutputFile);
 
+
+            // Display results to Console 
+            var inputParameters = geneKeyValues.Aggregate(string.Empty, (current, item) =>
+                                   current + item.Key + ": " + item.Value + " ");
+
+            lock (Obj)
+            {
+                Console.WriteLine($"IN: [{inputParameters}] FIT: {fitness}");
+            }
+            
             return fitness;
         }
 
@@ -173,10 +185,6 @@ namespace Optimization
             {
                 Console.WriteLine($"{taskId} failed.");
             }
-            else
-            {
-                Console.WriteLine($"{taskId} reached state Completed.");
-            }
         }
 
 
@@ -188,8 +196,6 @@ namespace Optimization
         /// <param name="blobName">Name of a file, blob.</param>
         private static async Task<double> ObtainResultFromTheBlob(CloudBlobClient blobClient, string containerName, string blobName)
         {
-            Console.WriteLine("Download blob file {0} from container [{1}]...", blobName, containerName);
-
             // Container
             CloudBlobContainer container = blobClient.GetContainerReference(containerName);
             CloudBlockBlob blobData = container.GetBlockBlobReference(blobName);
@@ -205,10 +211,7 @@ namespace Optimization
                 var statistics = streamReader.ReadToEnd();
 
                 // Calculate fitness
-                var fitness = CalculateFitness(statistics);
-                Console.WriteLine($"Fitness is: {fitness}");
-
-                return fitness;
+                return CalculateFitness(statistics);
             }
         }
 

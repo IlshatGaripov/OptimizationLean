@@ -131,8 +131,11 @@ namespace Optimization
 
             Program.Logger.Info(Termination);
 
-            // Clean up Batch resources
-            AzureBatchManager.FinalizeAsync().Wait();
+            if (Program.Config.ExecutionMode == ExecutionMode.Azure)
+            {
+                // Clean up Batch resources
+                AzureBatchManager.FinalizeAsync().Wait();
+            }
         }
 
         /// <summary>
