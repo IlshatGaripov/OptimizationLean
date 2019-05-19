@@ -8,6 +8,7 @@ using Microsoft.Azure.Batch.Auth;
 using Microsoft.Azure.Batch.Common;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.File;
 
 namespace Optimization
 {
@@ -19,11 +20,10 @@ namespace Optimization
         // Timer
         private static Stopwatch _timer = new Stopwatch();
 
-        // Output container
+        // Blob and File container names
         public const string OutputContainerName = "output";
-
-        // Recourses containter
         public const string DllContainerName = "dll";
+        public const string DataFileShareName = "data";
 
         // Pool and Job constants
         private const string PoolId = "RunnerOptimaPool";
@@ -36,9 +36,10 @@ namespace Optimization
         public const string AppPackageId = "Runner";
         public const string AppPackageVersion = "1";
 
-        // Batch client and 
+        // Clents: Batch, Blob, File
         public static BatchClient BatchClient;
         public static CloudBlobClient BlobClient;
+        public static CloudFileClient FileClient;
 
         // Sas for output container where results of backtests (evaluations) will be stored
         public static string OutputContainerSasUrl;
@@ -72,8 +73,11 @@ namespace Optimization
             // Retrieve the storage account
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
 
-            // Create the blob client, for use in obtaining references to blob storage containers
+            // Create the blob client, to reference the blob storage containers
             BlobClient = storageAccount.CreateCloudBlobClient();
+
+            // Create File Client, to access Azure Files
+            FileClient = storageAccount.CreateCloudFileClient();
 
             // == CREATES ==
             // Create the Batch pool, if not exist, which contains the compute nodes that execute the tasks.
@@ -300,7 +304,7 @@ namespace Optimization
         /// <summary>
         /// Uploads the specified file to the specified blob container.
         /// </summary>
-        /// <param name="blobClient">A <see cref="CloudBlobClient"/>.</param>
+        /// <param name="blobClient">Blob client<see cref="CloudBlobClient"/>.</param>
         /// <param name="containerName">The name of the blob storage container to which the file should be uploaded.</param>
         /// <param name="filePath">The full path to the file to upload to Storage.</param>
         /// <returns>A ResourceFile object representing the file in blob storage.</returns>
@@ -328,6 +332,69 @@ namespace Optimization
             string blobSasUri = $"{blobData.Uri}{sasBlobToken}";
 
             return ResourceFile.FromUrl(blobSasUri, blobName);
+        }
+
+        /// <summary>
+        /// Method uploads an up to date data required for experiment - bars/ticks - from Lean data folder to Azure File Share
+        /// </summary>
+        /// <param name="fileClient">Azure File client</param>
+        /// <returns></returns>
+        private static async Task UploadDataToCloudFileStorage(CloudFileClient fileClient)
+        {
+            // Create share if not exist
+            CloudFileShare cloudFileShare = fileClient.GetShareReference(DataFileShareName);
+            await cloudFileShare.CreateIfNotExistsAsync();
+
+            // Get reference to root directory
+            CloudFileDirectory rootDirectory = cloudFileShare.GetRootDirectoryReference();
+
+            // Copy the local folder contents to root directory
+            await CopyFolderToFileShare(cloudFileShare, Program.Config.DataFolder, rootDirectory);
+
+        }
+
+        /// <summary>
+        /// Copies directory from local folder to File Share
+        /// </summary>
+        /// <param name="fileShare"></param>
+        /// <param name="localFolder">Path to a local folder to copy</param>
+        /// <param name="cloudFolder">Folder in CloudFileShare to copy the local folder to</param>
+        public static async Task CopyFolderToFileShare(CloudFileShare fileShare, string localFolder, CloudFileDirectory cloudFolder)
+        {
+            CloudFile cloudFile = null;    // Cloud File variable
+
+            try
+            {
+                foreach (string file in Directory.GetFiles(localFolder))
+                {
+                    // Get file name
+                    var fileName = Path.GetFileName(file);
+
+                    // Set a reference to the file.
+                    cloudFile = cloudFolder.GetFileReference(fileName);
+
+                    // If file does not exist - i.e. this is a new zip entry in local data folder -
+                    // Upload from the local file to the file share in azure.
+                    if (!cloudFile.Exists())
+                    {
+                        await cloudFile.UploadFromFileAsync(file);
+                    }
+                }
+
+                foreach (string dir in Directory.GetDirectories(localFolder))
+                {
+                    // Create the corresponding directory within a current file share dir  ..
+                    
+
+                    // Recursively repeat
+                    CopyFolderToFileShare(fileShare, dir);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
 
     }
