@@ -79,7 +79,10 @@ namespace Optimization
             // Create File Client, to access Azure Files
             FileClient = storageAccount.CreateCloudFileClient();
 
-            // == CREATES ==
+            // == CREATES AND UPLOADS ==
+            // Upload historical data from data folder to Cloud File Share
+            await UploadHistoricalDataToCloudFileShareAsync(FileClient);
+
             // Create the Batch pool, if not exist, which contains the compute nodes that execute the tasks.
             await CreatePoolIfNotExistAsync(BatchClient, PoolId);
 
@@ -339,8 +342,11 @@ namespace Optimization
         /// </summary>
         /// <param name="fileClient">Azure File client</param>
         /// <returns></returns>
-        private static async Task UploadDataToCloudFileStorage(CloudFileClient fileClient)
+        private static async Task UploadHistoricalDataToCloudFileShareAsync(CloudFileClient fileClient)
         {
+            // Start timer to check how long it takes to upload all the zip files
+            Stopwatch uploadTimer = Stopwatch.StartNew();
+
             // Create share if not exist
             CloudFileShare cloudFileShare = fileClient.GetShareReference(DataFileShareName);
             await cloudFileShare.CreateIfNotExistsAsync();
@@ -351,6 +357,11 @@ namespace Optimization
             // Copy the local folder contents to root directory
             await CopyFolderToFileShare(cloudFileShare, Program.Config.DataFolder, rootDirectory);
 
+            // Print out timing info
+            uploadTimer.Stop();
+            Console.WriteLine();
+            Console.WriteLine("Data Upload Compeleted at: {0}", DateTime.Now);
+            Console.WriteLine("Operation took time: {0}", uploadTimer.Elapsed);
         }
 
         /// <summary>
@@ -361,8 +372,6 @@ namespace Optimization
         /// <param name="cloudFolder">Folder in CloudFileShare to copy the local folder to</param>
         public static async Task CopyFolderToFileShare(CloudFileShare fileShare, string localFolder, CloudFileDirectory cloudFolder)
         {
-            CloudFile cloudFile = null;    // Cloud File variable
-
             try
             {
                 foreach (string file in Directory.GetFiles(localFolder))
@@ -371,7 +380,7 @@ namespace Optimization
                     var fileName = Path.GetFileName(file);
 
                     // Set a reference to the file.
-                    cloudFile = cloudFolder.GetFileReference(fileName);
+                    var cloudFile = cloudFolder.GetFileReference(fileName);    // Cloud File variable
 
                     // If file does not exist - i.e. this is a new zip entry in local data folder -
                     // Upload from the local file to the file share in azure.
@@ -383,11 +392,21 @@ namespace Optimization
 
                 foreach (string dir in Directory.GetDirectories(localFolder))
                 {
-                    // Create the corresponding directory within a current file share dir  ..
-                    
+                    // Get the last part of current directory name
+                    // Note: that this won't work if the path ends in a '\'
+                    var lastPartOfDirectoryName = Path.GetFileName(dir);
 
-                    // Recursively repeat
-                    CopyFolderToFileShare(fileShare, dir);
+                    // Create a sub-directory corresponding to dir inside a current file share directory
+                    var cloudSubFolder = cloudFolder.GetDirectoryReference(lastPartOfDirectoryName);
+
+                    // If not exist
+                    if (!cloudSubFolder.Exists())
+                    {
+                        await cloudSubFolder.CreateIfNotExistsAsync();
+                    }
+
+                    // Recursively repeat for dir
+                    await CopyFolderToFileShare(fileShare, dir, cloudSubFolder);
                 }
             }
             catch (Exception ex)
