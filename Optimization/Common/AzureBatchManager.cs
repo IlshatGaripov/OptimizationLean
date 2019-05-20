@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Batch;
 using Microsoft.Azure.Batch.Auth;
@@ -183,7 +184,7 @@ namespace Optimization
             catch (BatchException be)
             {
                 // Accept the specific error code PoolExists as that is expected if the pool already exists
-                if (be.RequestInformation?.BatchError?.Code == BatchErrorCodeStrings.PoolExists)
+                if (be.RequestInformation.BatchError.Code == BatchErrorCodeStrings.PoolExists)
                 {
                     Console.WriteLine("The pool {0} already existed when we tried to create it", poolId);
                 }
@@ -372,6 +373,79 @@ namespace Optimization
         /// <param name="cloudFolder">Folder in CloudFileShare to copy the local folder to</param>
         public static async Task CopyFolderToFileShare(CloudFileShare fileShare, string localFolder, CloudFileDirectory cloudFolder)
         {
+            // list all cloud share file
+            var rootDirectory = fileShare.GetRootDirectoryReference();
+            var cloudFileShareFiles = new List<string>();
+
+            // execute a method in recursive way to retrieve all inner files
+            ListCloudFileShareFiles(rootDirectory, ref cloudFileShareFiles);
+
+            // list local data folder files
+            var dataFolder = Program.Config.DataFolder;
+            var dataFolderFilesFullPath = Directory.GetFiles(Program.Config.DataFolder, "*", SearchOption.AllDirectories).ToList();
+
+            // little preparation for to compare the list with the cloud files 
+            var dataFolderFilesComparativePath =
+                dataFolderFilesFullPath.Select(i => i.Replace(dataFolder, "").Replace("\\", "/").ToLower()).ToList();
+
+            // find difference between two folders, these files need to be uploaded to cloud share to appropriate folders
+            var fileDifference = dataFolderFilesComparativePath.Except(cloudFileShareFiles.Select(i => i.Replace("/data","")));
+
+            // will be copying straight away - if folder does not exist exception will be thrown - we'll catch it and create the missing folder
+            // checking if folder exist (or file exist) is time consuming and files to copy can be lots of.
+            // we can not afford to check folder existance every time
+            foreach (var file in fileDifference)
+            {
+                var fileName = file.Split('/').Last();
+                var uriAddLine = file.Replace($"/{fileName}", "");    // file - name = path
+
+                // see https://docs.microsoft.com/ru-ru/dotnet/api/microsoft.azure.storage.file.cloudfiledirectory?view=azure-dotnet
+                // :
+                var cloudDirectory = new CloudFileDirectory(new Uri(fileShare.Uri + uriAddLine), FileClient.Credentials);
+                
+                Console.WriteLine($"Trying to copy: {file}");
+
+                try
+                {
+                    var cloudFileReference = cloudDirectory.GetFileReference(fileName);    // Cloud File variable
+                    await cloudFileReference.UploadFromFileAsync(Program.Config.DataFolder + file);
+                    Console.WriteLine($"File uploaded: {file}");
+
+                }
+                catch (StorageException se)
+                {
+                    if (se.RequestInformation.ErrorCode == "ParentNotFound")
+                    {
+                        try
+                        {
+                            await cloudDirectory.CreateIfNotExistsAsync();
+                            Console.WriteLine($"ParentNotFound. Create Folder: << {cloudDirectory.Uri.LocalPath} >>");
+
+                            var cloudFileReference = cloudDirectory.GetFileReference(fileName);    // Cloud File variable
+                            await cloudFileReference.UploadFromFileAsync(Program.Config.DataFolder + file);
+                            Console.WriteLine($"File uploaded: {file}");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            throw;
+                        }
+
+                    }
+                    else
+                    {
+
+                        throw;
+                    }
+
+                }
+            }
+
+
+            Console.WriteLine("Continue?");
+            Console.ReadKey();
+
+            /*
             try
             {
                 foreach (string file in Directory.GetFiles(localFolder))
@@ -413,6 +487,33 @@ namespace Optimization
             {
                 Console.WriteLine(ex.Message);
                 throw;
+            }
+            */
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="outputList"></param>
+        public static void ListCloudFileShareFiles(IListFileItem list, ref List<string> outputList)
+        {
+            var fileDirectory = (CloudFileDirectory)list;
+            var fileList = fileDirectory.ListFilesAndDirectories();
+
+            // Iterate over all files/directories in the folder
+            foreach (var listItem in fileList)
+            {
+                // listItem can be of CloudFileDirectory
+                if (listItem.GetType() == typeof(CloudFileDirectory))
+                {
+                    ListCloudFileShareFiles(listItem, ref outputList);
+                }
+                // or CloudFile type
+                if (listItem.GetType() == typeof(CloudFile))
+                {
+                    outputList.Add(listItem.Uri.LocalPath);
+                }
             }
         }
 
