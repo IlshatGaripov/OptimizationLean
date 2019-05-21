@@ -25,6 +25,7 @@ namespace Optimization
         public const string OutputContainerName = "output";
         public const string DllContainerName = "dll";
         public const string DataFileShareName = "data";
+        public const string DataNetDrive = "R:";
 
         // Pool and Job constants
         private const string PoolId = "RunnerOptimaPool";
@@ -45,10 +46,13 @@ namespace Optimization
         // Sas for output container where results of backtests (evaluations) will be stored
         public static string OutputContainerSasUrl;
 
+        // File Share
+        private static CloudFileShare _dataFileShare;
+
 
         /// <summary>
         /// Deploy Batch resourses for cloud computing. Open a batch client.
-        /// </summary>
+        /// </summary> 
         /// <returns>A <see cref="System.Threading.Tasks.Task"/> object that represents the asynchronous operation.</returns>
         public static async Task DeployAsync()
         {
@@ -91,11 +95,10 @@ namespace Optimization
             await CreateJobAsync(BatchClient, JobId, PoolId);
 
             // Creat an OutPut Container
-            // Obtain a shared access signature that provides write access to the output container to which
-            // the tasks will upload their output.
+            // Obtain a shared access signature that provides write access to the output
+            // container where tasks will upload their output.
             await CreateContainerIfNotExistAsync(BlobClient, OutputContainerName);
             OutputContainerSasUrl = GetContainerSasUrl(BlobClient, OutputContainerName, SharedAccessBlobPermissions.Write);
-
         }
 
         /// <summary>
@@ -176,9 +179,7 @@ namespace Optimization
                     }
                 };
 
-                // Commit in blocking fashion. To make sure pool has been created before Job
-                // associated with a pool is submitted.
-                //pool.Commit();
+                // Commit async
                 await pool.CommitAsync();
             }
             catch (BatchException be)
@@ -220,11 +221,15 @@ namespace Optimization
             // This is data that will be processed by each Prep. Task on the nodes
             List<ResourceFile> inputFiles = new List<ResourceFile> { dllReference };
 
+            string fileShareNetString = $"\\\\{_dataFileShare.Uri.Host}\\{_dataFileShare.Name}";
+
             var preparationTask =
                 new JobPreparationTask 
                 {
-                    // Just a random cmd line as without cmd commiting a job will return an error
-                    CommandLine = "cmd /c echo %AZ_BATCH_NODE_ID% > %AZ_BATCH_JOB_PREP_WORKING_DIR%\\start_message.txt",
+                    // Map Azure file share to Azure Nodes
+                    CommandLine = $"cmd /c net use {DataNetDrive} {fileShareNetString} " +
+                                  $"/user:Azure\\{Program.Config.StorageAccountName} {Program.Config.StorageAccountKey}",
+
                     ResourceFiles = inputFiles
                 };
 
@@ -238,7 +243,7 @@ namespace Optimization
             catch (BatchException be)
             {
                 // Catch specific error code JobExists as that is expected if the job already exists
-                if (be.RequestInformation?.BatchError?.Code == BatchErrorCodeStrings.JobExists)
+                if (be.RequestInformation.BatchError.Code == BatchErrorCodeStrings.JobExists)
                 {
                     Console.WriteLine("Job {0} already exists. I will delete it. Launch again in a minute", jobId);
                     await batchClient.JobOperations.DeleteJobAsync(JobId);
@@ -317,7 +322,6 @@ namespace Optimization
             Console.WriteLine("Uploading file {0} to container [{1}]...", filePath, containerName);
 
             string blobName = Path.GetFileName(filePath);
-            //var fileStream = System.IO.File.OpenRead(filePath);
 
             CloudBlobContainer container = blobClient.GetContainerReference(containerName);
             CloudBlockBlob blobData = container.GetBlockBlobReference(blobName);
@@ -350,11 +354,11 @@ namespace Optimization
             Console.WriteLine("Synchronize Data with FileShare. time: {0}", DateTime.Now);
 
             // Create share if not exist
-            CloudFileShare cloudFileShare = fileClient.GetShareReference(DataFileShareName);
-            await cloudFileShare.CreateIfNotExistsAsync();
+            _dataFileShare = fileClient.GetShareReference(DataFileShareName);
+            await _dataFileShare.CreateIfNotExistsAsync();
 
             // list all cloud share file
-            var rootDirectory = cloudFileShare.GetRootDirectoryReference();
+            var rootDirectory = _dataFileShare.GetRootDirectoryReference();
             var cloudFileShareFiles = new List<string>();
 
             // execute a method in recursive way to retrieve all inner files
@@ -382,14 +386,13 @@ namespace Optimization
 
                 // see https://docs.microsoft.com/ru-ru/dotnet/api/microsoft.azure.storage.file.cloudfiledirectory?view=azure-dotnet
                 // :
-                var cloudDirectory = new CloudFileDirectory(new Uri(cloudFileShare.Uri + uriAddLine), FileClient.Credentials);
+                var cloudDirectory = new CloudFileDirectory(new Uri(_dataFileShare.Uri + uriAddLine), FileClient.Credentials);
 
                 try
                 {
                     var cloudFileReference = cloudDirectory.GetFileReference(fileName);    // Cloud File variable
                     await cloudFileReference.UploadFromFileAsync(Program.Config.DataFolder + file);
                     Console.WriteLine($"File uploaded: {file}");
-
                 }
                 catch (StorageException se)
                 {
