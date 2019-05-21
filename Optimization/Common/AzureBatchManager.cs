@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Batch;
 using Microsoft.Azure.Batch.Auth;
 using Microsoft.Azure.Batch.Common;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.File;
 
 namespace Optimization
 {
@@ -19,11 +21,10 @@ namespace Optimization
         // Timer
         private static Stopwatch _timer = new Stopwatch();
 
-        // Output container
+        // Blob and File container names
         public const string OutputContainerName = "output";
-
-        // Recourses containter
         public const string DllContainerName = "dll";
+        public const string DataFileShareName = "data";
 
         // Pool and Job constants
         private const string PoolId = "RunnerOptimaPool";
@@ -36,9 +37,10 @@ namespace Optimization
         public const string AppPackageId = "Runner";
         public const string AppPackageVersion = "1";
 
-        // Batch client and 
+        // Clents: Batch, Blob, File
         public static BatchClient BatchClient;
         public static CloudBlobClient BlobClient;
+        public static CloudFileClient FileClient;
 
         // Sas for output container where results of backtests (evaluations) will be stored
         public static string OutputContainerSasUrl;
@@ -72,10 +74,16 @@ namespace Optimization
             // Retrieve the storage account
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
 
-            // Create the blob client, for use in obtaining references to blob storage containers
+            // Create the blob client, to reference the blob storage containers
             BlobClient = storageAccount.CreateCloudBlobClient();
 
-            // == CREATES ==
+            // Create File Client, to access Azure Files
+            FileClient = storageAccount.CreateCloudFileClient();
+
+            // == CREATES AND UPLOADS ==
+            // Upload historical data from data folder to Cloud File Share
+            await SynchronizeHistoricalDataWithFileShareAsync(FileClient);
+
             // Create the Batch pool, if not exist, which contains the compute nodes that execute the tasks.
             await CreatePoolIfNotExistAsync(BatchClient, PoolId);
 
@@ -176,7 +184,7 @@ namespace Optimization
             catch (BatchException be)
             {
                 // Accept the specific error code PoolExists as that is expected if the pool already exists
-                if (be.RequestInformation?.BatchError?.Code == BatchErrorCodeStrings.PoolExists)
+                if (be.RequestInformation.BatchError.Code == BatchErrorCodeStrings.PoolExists)
                 {
                     Console.WriteLine("The pool {0} already existed when we tried to create it", poolId);
                 }
@@ -300,7 +308,7 @@ namespace Optimization
         /// <summary>
         /// Uploads the specified file to the specified blob container.
         /// </summary>
-        /// <param name="blobClient">A <see cref="CloudBlobClient"/>.</param>
+        /// <param name="blobClient">Blob client<see cref="CloudBlobClient"/>.</param>
         /// <param name="containerName">The name of the blob storage container to which the file should be uploaded.</param>
         /// <param name="filePath">The full path to the file to upload to Storage.</param>
         /// <returns>A ResourceFile object representing the file in blob storage.</returns>
@@ -328,6 +336,136 @@ namespace Optimization
             string blobSasUri = $"{blobData.Uri}{sasBlobToken}";
 
             return ResourceFile.FromUrl(blobSasUri, blobName);
+        }
+
+        /// <summary>
+        /// Method uploads an up to date data required for experiment - bars/ticks - from Lean data folder to Azure File Share
+        /// </summary>
+        /// <param name="fileClient">Azure File client</param>
+        /// <returns></returns>
+        private static async Task SynchronizeHistoricalDataWithFileShareAsync(CloudFileClient fileClient)
+        {
+            // Start timer to check how long it takes to upload all the zip files
+            Stopwatch uploadTimer = Stopwatch.StartNew();
+            Console.WriteLine("Synchronize Data with FileShare. time: {0}", DateTime.Now);
+
+            // Create share if not exist
+            CloudFileShare cloudFileShare = fileClient.GetShareReference(DataFileShareName);
+            await cloudFileShare.CreateIfNotExistsAsync();
+
+            // list all cloud share file
+            var rootDirectory = cloudFileShare.GetRootDirectoryReference();
+            var cloudFileShareFiles = new List<string>();
+
+            // execute a method in recursive way to retrieve all inner files
+            ListCloudFileShareFiles(rootDirectory, ref cloudFileShareFiles);
+
+            // list local data folder files
+            var dataFolder = Program.Config.DataFolder;
+            var dataFolderFilesFullPath = Directory.GetFiles(Program.Config.DataFolder, "*", SearchOption.AllDirectories).ToList();
+
+            // little preparation for to compare the list with the cloud files 
+            var dataFolderFilesComparativePath =
+                dataFolderFilesFullPath.Select(i => i.Replace(dataFolder, "").Replace("\\", "/").ToLower()).ToList();
+
+            // find difference between two folders, these files need to be uploaded to cloud share to appropriate folders
+            var fileDifference = dataFolderFilesComparativePath.Except(cloudFileShareFiles.Select(i => i.Replace("/data", "")));
+
+            // We will be copying the files straight away - as if the folder they need to be placed to exist -
+            // if folder does not exist an exception will be thrown - we are going to catch it and then create a missing folder.
+            // To check whether a folder exists for every file to copy can be very time consuming as folder.Exists() takes time.
+            // we can not afford to check folder existance at every iteration, most probably folder does already exist.
+            foreach (var file in fileDifference)
+            {
+                var fileName = file.Split('/').Last();
+                var uriAddLine = file.Replace($"/{fileName}", "");    // file - name = path
+
+                // see https://docs.microsoft.com/ru-ru/dotnet/api/microsoft.azure.storage.file.cloudfiledirectory?view=azure-dotnet
+                // :
+                var cloudDirectory = new CloudFileDirectory(new Uri(cloudFileShare.Uri + uriAddLine), FileClient.Credentials);
+
+                try
+                {
+                    var cloudFileReference = cloudDirectory.GetFileReference(fileName);    // Cloud File variable
+                    await cloudFileReference.UploadFromFileAsync(Program.Config.DataFolder + file);
+                    Console.WriteLine($"File uploaded: {file}");
+
+                }
+                catch (StorageException se)
+                {
+                    if (se.RequestInformation.ErrorCode == "ParentNotFound")
+                    {
+                        try
+                        {
+                            // See what folders in a branch are missing and create
+                            var folderTree = new List<CloudFileDirectory> { cloudDirectory };
+                            var parent = cloudDirectory.Parent;
+
+                            while (!parent.Exists())
+                            {
+                                folderTree.Add(parent);
+                                parent = parent.Parent;
+                            }
+
+                            // Now create folder in reverse order
+                            folderTree.Reverse();
+
+                            foreach (var folder in folderTree)
+                            {
+                                await folder.CreateIfNotExistsAsync();
+                                Console.WriteLine($"Created Folder: {folder.Uri.LocalPath}");
+                            }
+
+                            // Finally copy a file
+                            var cloudFileReference = cloudDirectory.GetFileReference(fileName);    // Cloud File variable
+                            await cloudFileReference.UploadFromFileAsync(Program.Config.DataFolder + file);
+                            Console.WriteLine($"File uploaded after 2nd attempt: {file}");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            throw;
+                        }
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+            
+            // Print out timing info
+            uploadTimer.Stop();
+            Console.WriteLine();
+            Console.WriteLine("Synchronization Compeleted at: {0}", DateTime.Now);
+            Console.WriteLine("Operation took time: {0}", uploadTimer.Elapsed);
+            Console.WriteLine();
+        }
+
+        /// <summary>
+        /// Lists all files that are located inside a given cloud file directory.
+        /// Searches in base folder and subfolders.
+        /// </summary>
+        /// <param name="fileDirectory">Directory to search inside</param>
+        /// <param name="outputList">List that will maintain a local path of all files contained in <see cref="fileDirectory"/></param>
+        public static void ListCloudFileShareFiles(CloudFileDirectory fileDirectory, ref List<string> outputList)
+        {
+            var fileList = fileDirectory.ListFilesAndDirectories();
+
+            // Iterate over all files/directories in the folder
+            foreach (var listItem in fileList)
+            {
+                // listItem can be of CloudFileDirectory
+                if (listItem.GetType() == typeof(CloudFileDirectory))
+                {
+                    ListCloudFileShareFiles((CloudFileDirectory)listItem, ref outputList);
+                }
+                // or CloudFile type
+                if (listItem.GetType() == typeof(CloudFile))
+                {
+                    outputList.Add(listItem.Uri.LocalPath);
+                }
+            }
         }
 
     }
