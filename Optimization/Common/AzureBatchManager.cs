@@ -56,7 +56,7 @@ namespace Optimization
         /// <returns>A <see cref="System.Threading.Tasks.Task"/> object that represents the asynchronous operation.</returns>
         public static async Task DeployAsync()
         {
-            Console.WriteLine("Azure Batch resources deployment start: {0}", DateTime.Now);
+            Console.WriteLine("Optimization / Azure Start: {0}", DateTime.Now);
             Console.WriteLine();
             _timer = Stopwatch.StartNew();
 
@@ -88,17 +88,17 @@ namespace Optimization
             // Upload historical data from data folder to Cloud File Share
             await SynchronizeHistoricalDataWithFileShareAsync(FileClient);
 
+            // Creat Containers: OutPut Container (where tasks will upload results) and Container for Algorithm DLL
+            // Obtain a shared access signature that provides write access to the output
+            await CreateContainerIfNotExistAsync(BlobClient, DllContainerName);
+            await CreateContainerIfNotExistAsync(BlobClient, OutputContainerName);
+            OutputContainerSasUrl = GetContainerSasUrl(BlobClient, OutputContainerName, SharedAccessBlobPermissions.Write);
+
             // Create the Batch pool, if not exist, which contains the compute nodes that execute the tasks.
             await CreatePoolIfNotExistAsync(BatchClient, PoolId);
 
             // Create the job that runs the tasks.
             await CreateJobAsync(BatchClient, JobId, PoolId);
-
-            // Creat an OutPut Container
-            // Obtain a shared access signature that provides write access to the output
-            // container where tasks will upload their output.
-            await CreateContainerIfNotExistAsync(BlobClient, OutputContainerName);
-            OutputContainerSasUrl = GetContainerSasUrl(BlobClient, OutputContainerName, SharedAccessBlobPermissions.Write);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace Optimization
             // Print out timing info
             _timer.Stop();
             Console.WriteLine();
-            Console.WriteLine("Sample end: {0}", DateTime.Now);
+            Console.WriteLine("Optimization / Azure End: {0}", DateTime.Now);
             Console.WriteLine("Elapsed time: {0}", _timer.Elapsed);
 
             // Clean up Batch resources (if the user so chooses)
@@ -211,9 +211,7 @@ namespace Optimization
             job.PoolInformation = new PoolInformation { PoolId = poolId };
 
             // Set Job Preparation task to upload with algorithm dll to every pool node that will execute the task
-            // Create container first where do upload dll.
-            await CreateContainerIfNotExistAsync(BlobClient, DllContainerName);
-
+            
             // Upload the dll file to newly created container
             var dllReference =
                 await UploadResourceFileToContainerAsync(BlobClient, DllContainerName, Program.Config.AlgorithmLocation);
@@ -221,16 +219,20 @@ namespace Optimization
             // This is data that will be processed by each Prep. Task on the nodes
             List<ResourceFile> inputFiles = new List<ResourceFile> { dllReference };
 
-            string fileShareNetString = $"\\\\{_dataFileShare.Uri.Host}\\{_dataFileShare.Name}";
+            // Commands
+            string fileShareUncPath = $"\\\\{_dataFileShare.Uri.Host}\\{_dataFileShare.Name}";
+            string cmdMapNetDrive = $"net use {DataNetDrive} {fileShareUncPath} " +
+                                  $"/user:Azure\\{Program.Config.StorageAccountName} {Program.Config.StorageAccountKey}";
+            string cmdRobocopy = $"robocopy {DataNetDrive} %AZ_BATCH_NODE_SHARED_DIR%\\Data /E";
 
+            // Prep task
             var preparationTask =
-                new JobPreparationTask 
+                new JobPreparationTask
                 {
-                    // Map Azure file share to Azure Nodes
-                    CommandLine = $"cmd /c net use {DataNetDrive} {fileShareNetString} " +
-                                  $"/user:Azure\\{Program.Config.StorageAccountName} {Program.Config.StorageAccountKey}",
-
-                    ResourceFiles = inputFiles
+                    // Map Azure file share to node drive and copy the content to shared directory
+                    CommandLine = $"cmd /c {cmdMapNetDrive} && {cmdRobocopy}",
+                    ResourceFiles = inputFiles,
+                    WaitForSuccess = true
                 };
 
             job.JobPreparationTask = preparationTask;
@@ -320,6 +322,7 @@ namespace Optimization
         private static async Task<ResourceFile> UploadResourceFileToContainerAsync(CloudBlobClient blobClient, string containerName, string filePath)
         {
             Console.WriteLine("Uploading file {0} to container [{1}]...", filePath, containerName);
+            Console.WriteLine();
 
             string blobName = Path.GetFileName(filePath);
 
@@ -351,7 +354,7 @@ namespace Optimization
         {
             // Start timer to check how long it takes to upload all the zip files
             Stopwatch uploadTimer = Stopwatch.StartNew();
-            Console.WriteLine("Synchronize Data with FileShare. time: {0}", DateTime.Now);
+            Console.WriteLine("Synchronize Data <-> FileShare. time: {0}", DateTime.Now);
 
             // Create share if not exist
             _dataFileShare = fileClient.GetShareReference(DataFileShareName);
@@ -439,8 +442,7 @@ namespace Optimization
             
             // Print out timing info
             uploadTimer.Stop();
-            Console.WriteLine();
-            Console.WriteLine("Synchronization Compeleted at: {0}", DateTime.Now);
+            Console.WriteLine("Synchronization <-> Compelete. time: {0}", DateTime.Now);
             Console.WriteLine("Operation took time: {0}", uploadTimer.Elapsed);
             Console.WriteLine();
         }
