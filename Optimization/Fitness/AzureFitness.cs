@@ -62,7 +62,7 @@ namespace Optimization
             // -- 3 -- Add algorithm dll and data folder locations
             var dllFileName = Path.GetFileName(Program.Config.AlgorithmLocation);
             runnerInputArguments += $"algorithm-location %AZ_BATCH_JOB_PREP_WORKING_DIR%\\{dllFileName} ";
-            runnerInputArguments += $"data-folder {appPath}\\Debug\\Data\\ ";
+            runnerInputArguments += $"data-folder %AZ_BATCH_NODE_SHARED_DIR%\\Data ";
 
             // -- 4 -- Algorithm start and end dates
             if (Program.Config.StartDate.HasValue && Program.Config.EndDate.HasValue)
