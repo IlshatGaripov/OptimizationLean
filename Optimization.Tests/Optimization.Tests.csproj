@@ -71,8 +71,6 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="ConfiguredFitnessTests.cs" />
-    <Compile Include="DualPeriodSharpeFitnessTests.cs" />
     <Compile Include="GeneConverterTests.cs" />
     <Compile Include="GeneFactoryTests.cs" />
     <Compile Include="GeneManagerTests.cs" />

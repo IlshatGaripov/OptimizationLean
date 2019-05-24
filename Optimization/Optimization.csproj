@@ -98,7 +98,6 @@
     <Compile Include="Common\OptimizerAppDomainManager.cs" />
     <Compile Include="Configuration\FitnessConfiguration.cs" />
     <Compile Include="Fitness\AzureFitness.cs" />
-    <Compile Include="Fitness\DualPeriodSharpeFitness.cs" />
     <Compile Include="Configuration\GeneConfiguration.cs" />
     <Compile Include="GeneticSharpExtensions\ChromosomeCartesian.cs" />
     <Compile Include="GeneticSharpExtensions\ChromosomeRandom.cs" />
@@ -130,7 +129,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Fitness\CompoundingAnnualReturnFitness.cs" />
-    <Compile Include="Fitness\ConfiguredFitness.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

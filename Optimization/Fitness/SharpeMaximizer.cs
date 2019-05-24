@@ -8,12 +8,11 @@ using System.Runtime.CompilerServices;
 
 namespace Optimization
 {
-
     public class SharpeMaximizer : OptimizerFitness
     {
         public virtual string ScoreKey { get; set; } = "SharpeRatio";
         public IChromosome Best { get; set; }
-        private ConditionalWeakTable<OptimizerResult, string> _resultIndex;
+        private readonly ConditionalWeakTable<OptimizerResult, string> _resultIndex;
         private const double ErrorFitness = 1.01;
 
         public SharpeMaximizer()
@@ -109,10 +108,10 @@ namespace Optimization
                 var score = GetScore(list);
                 var fitness = CalculateFitness(score);
 
-                output.AppendFormat("{0}: {1}", Name, fitness.Value.ToString("0.##"));
+                output.AppendFormat("{0}: {1}", Name, fitness.ToString("0.##"));
                 Program.Logger.Info(output);
 
-                var result = new OptimizerResult(p, fitness.Fitness);
+                var result = new OptimizerResult(p, fitness);
                 _resultIndex.Add(result, id);
                 return result;
             }
@@ -152,26 +151,11 @@ namespace Optimization
             return destination;
         }
 
-        protected override FitnessResult CalculateFitness(Dictionary<string, decimal> result)
+        protected override double CalculateFitness(Dictionary<string, decimal> result)
         {
-            var ratio = result[ScoreKey];
-
-            if (Filter != null && !Filter.IsSuccess(result, this))
-            {
-                ratio = ErrorRatio;                
-            }
-
-            return new FitnessResult
-            {
-                Value = ratio,
-                Fitness = 1 - ((double)ratio / 1000)
-            };
+            return (double)result[ScoreKey];
         }
 
-        public override double GetAdjustedFitness(double? fitness)
-        {
-            return ((fitness ?? ErrorFitness) - 1) * 1000 * -1;
-        }
     }
     
 }
