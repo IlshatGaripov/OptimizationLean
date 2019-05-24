@@ -98,7 +98,6 @@
     <Compile Include="Common\OptimizerAppDomainManager.cs" />
     <Compile Include="Configuration\FitnessConfiguration.cs" />
     <Compile Include="Fitness\AzureFitness.cs" />
-    <Compile Include="Fitness\DeflatedSharpeRatioFitness.cs" />
     <Compile Include="Fitness\DualPeriodSharpeFitness.cs" />
     <Compile Include="Configuration\GeneConfiguration.cs" />
     <Compile Include="GeneticSharpExtensions\ChromosomeCartesian.cs" />
@@ -124,10 +123,8 @@
     <Compile Include="GeneticSharpExtensions\FibonacciRandomization.cs" />
     <Compile Include="GeneticSharpExtensions\Chromosome.cs" />
     <Compile Include="OptimizerManager\GeneManager.cs" />
-    <Compile Include="Fitness\AdaptiveSharpeRatioFitness.cs" />
     <Compile Include="Fitness\OptimizerFitness.cs" />
     <Compile Include="Configuration\OptimizerConfiguration.cs" />
-    <Compile Include="LeanExtensions\Queuer.cs" />
     <Compile Include="Common\StatisticsAdapter.cs" />
     <Compile Include="GeneticSharpExtensions\PopulationRandom.cs" />
     <Compile Include="Program.cs" />

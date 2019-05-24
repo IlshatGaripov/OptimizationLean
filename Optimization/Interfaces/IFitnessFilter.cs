@@ -8,7 +8,7 @@ namespace Optimization
     public interface IFitnessFilter
     {
         /// <summary>
-        /// Determines whether or not the fitness result is significant.
+        /// Determines whether or not the fitness result is valualbe.
         /// </summary>
         bool IsSuccess(Dictionary<string, decimal> result, OptimizerFitness fitness);
     }
