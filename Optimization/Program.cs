@@ -21,10 +21,7 @@ namespace Optimization
         public static void Main(string[] args)
         {
             // Load JSON from configuration to class object
-            Config = OptimizerInitializer.LoadConfigFromFile("optimization_local.json");
-
-            // TODO: revise 1!
-            OptimizerInitializer.Initialize();
+            Config = Exstensions.LoadConfigFromFile("optimization_local.json");
 
             // TODO: revise 2!
             GeneFactory.Initialize(Config.Genes);
