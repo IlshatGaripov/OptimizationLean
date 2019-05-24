@@ -115,7 +115,7 @@
     <Compile Include="Interfaces\IOptimizerManager.cs" />
     <Compile Include="LeanExtensions\EmptyApiHandler.cs" />
     <Compile Include="Common\Enums.cs" />
-    <Compile Include="Fitness\FitnessFilter.cs" />
+    <Compile Include="FitnessFilter\FitnessFilter.cs" />
     <Compile Include="LeanExtensions\OptimizerResultHandler.cs" />
     <Compile Include="Fitness\NFoldCrossReturnMaximizer.cs" />
     <Compile Include="Fitness\NFoldCrossSharpeMaximizer.cs" />
