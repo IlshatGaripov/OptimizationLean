@@ -80,12 +80,6 @@ namespace Optimization
         public bool IncludeNegativeReturn { get; set; }
 
         /// <summary>
-        /// Type name of fitness function. Defaults to fitness based on Sharpe Ratio
-        /// </summary>
-        [JsonProperty("fitnessTypeName")]
-        public string FitnessTypeName { get; set; } = "Optimization.OptimizerFitness";
-
-        /// <summary>
         /// Override config.json setting
         /// </summary>
         [JsonProperty("dataFolder")]

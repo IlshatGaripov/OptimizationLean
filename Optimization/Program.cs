@@ -1,5 +1,4 @@
 ﻿using System;
-using GeneticSharp.Domain.Fitnesses;
 using NLog;
 
 namespace Optimization
@@ -8,9 +7,6 @@ namespace Optimization
     {
         // logger
         public static Logger Logger = LogManager.GetLogger("optimizer");
-
-        // optimizer manager
-        public static IOptimizerManager Manager;
 
         // program wide config file.
         public static OptimizerConfiguration Config;
@@ -31,16 +27,12 @@ namespace Optimization
 
             try
             {
-                var fitnessTypeString = Config.FitnessTypeName;
-                var fitness = (IFitness)Activator.CreateInstance(Type.GetType(fitnessTypeString) ?? throw new InvalidOperationException());
-
                 // GA manager
-                Manager = new GeneManager();
-                Manager.Initialize(fitness);
-                Manager.Start();
+                var manager = new GeneManager();
+                manager.Start();
 
-                // In the end
-                NLog.LogManager.Shutdown();   // shutdown the logger
+                // Shutdown the logger in the end
+                LogManager.Shutdown();   
 
                 Console.WriteLine("Press ENTER to exit the program");
                 Console.ReadKey(); 
@@ -48,7 +40,7 @@ namespace Optimization
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Console.ReadKey();
+                throw;
             }
         }
 

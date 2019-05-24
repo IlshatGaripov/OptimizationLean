@@ -6,13 +6,7 @@ namespace Optimization
     public class MaximizerManager : IOptimizerManager
     {
         public const string Termination = "Termination Reached.";
-        private IFitness _fitness;
-
-        public void Initialize(IFitness fitness)
-        {
-            _fitness = fitness;
-            // _executor.MaxThreads = _config.MaxThreads > 0 ? _config.MaxThreads : 8;
-        }
+        private readonly IFitness _fitness = new OptimizerFitness();
 
         public void Start()
         {

@@ -5,7 +5,7 @@
   "max-threads": 100,
 
   // FITNESS
-  "fitnessTypeName": "Optimization.OptimizerFitness",
+  "fitnessTypeName": "azure",
   "minimumTrades": 1,
   "enableFitnessFilter": true,
 
