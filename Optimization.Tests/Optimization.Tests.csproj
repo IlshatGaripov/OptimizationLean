@@ -75,14 +75,12 @@
     <Compile Include="ConfiguredFitnessTests.cs" />
     <Compile Include="DeflatedSharpeRatioFitnessTest.cs" />
     <Compile Include="DualPeriodSharpeFitnessTests.cs" />
-    <Compile Include="DynastyTests.cs" />
     <Compile Include="GeneConverterTests.cs" />
     <Compile Include="GeneFactoryTests.cs" />
     <Compile Include="GeneManagerTests.cs" />
     <Compile Include="MockGeneManagerFactory.cs" />
     <Compile Include="NFoldCrossSharpeMaximizerTests.cs" />
     <Compile Include="OptimizerFitnessTests.cs" />
-    <Compile Include="OptimizerInitializerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatisticsAdapterTests.cs" />
   </ItemGroup>

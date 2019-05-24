@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Optimization
 {
@@ -46,6 +48,18 @@ namespace Optimization
             }
 
             return output.ToString().TrimEnd(',', ' ');
+        }
+
+        /// <summary>
+        /// Loads values from JSON text file to a special class holding the config values.
+        /// </summary>
+        public static OptimizerConfiguration LoadConfigFromFile(string path)
+        {
+            // DateTimeFormat for proper deserialize of start and end date string to DateTime
+            var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd" };
+
+            // generic version of DeserializeObject transforms text from json to specific class that holds the corresponding values.
+            return JsonConvert.DeserializeObject<OptimizerConfiguration>(File.ReadAllText(path), dateTimeConverter);
         }
     }
 }

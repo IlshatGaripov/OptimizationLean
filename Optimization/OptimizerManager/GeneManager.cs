@@ -16,54 +16,48 @@ namespace Optimization
     public class GeneManager : IOptimizerManager
     {
         public const string Termination = "Termination Reached.";
-        
-        //executor
-        private ITaskExecutor _executor;
 
-        private IPopulation _population;
-        private IFitness _fitness;
-        private ITermination _termination;
-        private ISelection _selection;
-        private ICrossover _crossover;
-        private IMutation _mutation;
-        private IReinsertion _reinsertion;
+        // Genetic Sharp objects 
+        private readonly ITaskExecutor _executor;
+        private readonly IPopulation _population;
+        private readonly IFitness _fitness;
+        private readonly ITermination _termination;
+        private readonly ISelection _selection;
+        private readonly ICrossover _crossover;
+        private readonly IMutation _mutation;
+        private readonly IReinsertion _reinsertion;
 
         /// <summary>
         /// Init the class variables. 
         /// </summary>
-        public void Initialize(IFitness fitness)
+        public GeneManager()
         {
-            // fitness
-            _fitness = fitness;
-
             // params to init GA common to different optimization modes
             _selection = new TournamentSelection();
             _crossover = Program.Config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover();
             _mutation = new UniformMutation(true);
             _reinsertion = new ElitistReinsertion();
 
-            // Executor
+            // Max threads
             var maxThreads = Program.Config.MaxThreads > 0 ? Program.Config.MaxThreads : 8;
 
             switch (Program.Config.ExecutionMode)
             {
                 case ExecutionMode.Linear:
                     _executor = new LinearTaskExecutor();
+                    _fitness = new OptimizerFitness();
                     break;
 
                 case ExecutionMode.Parallel:
                     _executor = new ParallelTaskExecutor { MaxThreads = maxThreads };
+                    _fitness = new OptimizerFitness();
                     break;
 
                 case ExecutionMode.Azure:
-                {
-                    // Deploy Batch resources that will be used for computation and storage
-                    AzureBatchManager.DeployAsync().Wait();
-
                     _executor = new TaskExecutorAzure { MaxThreads = maxThreads };
+                    _fitness = new AzureFitness();
                     break;
-                }
-                    
+
                 default:
                     throw new Exception("Executor initialization failed");
             }
@@ -72,23 +66,25 @@ namespace Optimization
             switch (Program.Config.OptimizationMode)
             {
                 case OptimizationMode.BruteForce:
-                {
-                    // create cartesian population
-                    _population = new PopulationCartesian();
-                    _termination = new GenerationNumberTermination(1);
+                    {
+                        // create cartesian population
+                        _population = new PopulationCartesian();
+                        _termination = new GenerationNumberTermination(1);
 
-                    break;
-                }
+                        break;
+                    }
+
                 case OptimizationMode.GeneticAlgorithm:
-                {
-                    // create random population
-                    _population = new PopulationRandom();
-                    _termination = new OrTermination(
-                        new FitnessStagnationTermination(Program.Config.StagnationGenerations), 
-                        new GenerationNumberTermination(Program.Config.Generations));
+                    {
+                        // create random population
+                        _population = new PopulationRandom();
+                        _termination = new OrTermination(
+                            new FitnessStagnationTermination(Program.Config.StagnationGenerations),
+                            new GenerationNumberTermination(Program.Config.Generations));
 
-                    break;
-                }
+                        break;
+                    }
+
                 default:
                     throw new Exception("Optimization mode specific objects were not initialized");
             }
@@ -98,12 +94,17 @@ namespace Optimization
         /// Start the optimization. The core method.
         /// </summary>
         public void Start()
-        {           
-            if (_executor == null)
+        {
+            switch (_executor)
             {
-                throw new Exception("Executor was not initialized");
+                case TaskExecutorAzure _:
+                    // Deploy Batch resources
+                    AzureBatchManager.DeployAsync().Wait();
+                    break;
+                case null:
+                    throw new Exception("Executor was not initialized");
             }
-            
+
             // create the GA itself . Object of custom type (contained in GeneticSharpExtensions folder).
             var ga = new GeneticAlgorithmCustom(_population, _fitness, _selection, _crossover, _mutation)
             {
@@ -131,9 +132,9 @@ namespace Optimization
 
             Program.Logger.Info(Termination);
 
-            if (Program.Config.ExecutionMode == ExecutionMode.Azure)
+            // Clean up Batch resources
+            if (_executor is TaskExecutorAzure)
             {
-                // Clean up Batch resources
                 AzureBatchManager.FinalizeAsync().Wait();
             }
         }
@@ -143,23 +144,7 @@ namespace Optimization
         /// </summary>
         private void GenerationRan(object sender, EventArgs e)
         {
-            /*
-            //keep first iteration of alpha to maintain id
-            if (_bestChromosome == null || _population.BestChromosome.Fitness > _bestChromosome?.Fitness)
-            {
-                _bestChromosome = (Chromosome)_population.BestChromosome;
-            }
-            */
-
-            // we don't need _bestChromosome value as _population.BestChromosome must maintain the best solution according to the interface (!)
-            // so that is a duplicate
-
-            /*
-            Program.Logger.Info("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}, Id: {5}",
-                Program.Config.AlgorithmTypeName, _population.GenerationsNumber, _bestChromosome.Fitness,
-                _fitness.Name, _bestChromosome.ToKeyValueString(), _bestChromosome.Id);
-            */
+            
         }
-
     }
 }

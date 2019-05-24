@@ -52,8 +52,7 @@ namespace Optimization
 
         /// <summary>
         /// Deploy Batch resourses for cloud computing. Open a batch client.
-        /// </summary> 
-        /// <returns>A <see cref="System.Threading.Tasks.Task"/> object that represents the asynchronous operation.</returns>
+        /// </summary>
         public static async Task DeployAsync()
         {
             Console.WriteLine("Optimization / Azure Start: {0}", DateTime.Now);
@@ -72,8 +71,8 @@ namespace Optimization
 
             // == STORAGE ==
             // Construct the Storage account connection string
-            string storageConnectionString = String.Format("DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1}",
-                Program.Config.StorageAccountName, Program.Config.StorageAccountKey);
+            string storageConnectionString =
+                $"DefaultEndpointsProtocol=https;AccountName={Program.Config.StorageAccountName};AccountKey={Program.Config.StorageAccountKey}";
 
             // Retrieve the storage account
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
@@ -224,13 +223,14 @@ namespace Optimization
             string cmdMapNetDrive = $"net use {DataNetDrive} {fileShareUncPath} " +
                                   $"/user:Azure\\{Program.Config.StorageAccountName} {Program.Config.StorageAccountKey}";
             string cmdRobocopy = $"robocopy {DataNetDrive} %AZ_BATCH_NODE_SHARED_DIR%\\Data /E";
+            string cmdErrorLevel = "IF %ERRORLEVEL% LEQ 1 SET ERRORLEVEL = 0";
 
             // Prep task
             var preparationTask =
                 new JobPreparationTask
                 {
                     // Map Azure file share to node drive and copy the content to shared directory
-                    CommandLine = $"cmd /c {cmdMapNetDrive} && {cmdRobocopy}",
+                    CommandLine = $"cmd /c {cmdMapNetDrive} && {cmdRobocopy} & {cmdErrorLevel}",
                     ResourceFiles = inputFiles,
                     WaitForSuccess = true
                 };

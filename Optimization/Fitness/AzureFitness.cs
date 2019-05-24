@@ -40,8 +40,8 @@ namespace Optimization
             var chromosomeBase = (Chromosome)chromosome;
 
             // Application Package Directory 
-            string appPath = String.Format("%AZ_BATCH_APP_PACKAGE_{0}#{1}%",
-                AzureBatchManager.AppPackageId, AzureBatchManager.AppPackageVersion);
+            string appPath =
+                $"%AZ_BATCH_APP_PACKAGE_{AzureBatchManager.AppPackageId}#{AzureBatchManager.AppPackageVersion}%";
 
             // Unique identifier of a chromosome
             var id = chromosomeBase.Id;

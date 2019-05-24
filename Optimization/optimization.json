@@ -4,21 +4,20 @@
   "execution-mode": "azure",
   "max-threads": 100,
 
-  // FITNESS
-  "fitnessTypeName": "Optimization.OptimizerFitness",
+  // FITNESS FILTER
   "minimumTrades": 1,
   "enableFitnessFilter": true,
 
   // GENES
   "genes": [
     {
-      "key": "consolidatorPeriod",
+      "key": "period",
       "min": 60,
       "max": 120,
       "step": 60
     },
     {
-      "key": "bollingerMultiplier",
+      "key": "mult",
       "min": 1.8,
       "max": 2.5,
       "step": 0.3

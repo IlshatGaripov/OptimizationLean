@@ -10,11 +10,6 @@ namespace Optimization
         /// <summary>
         /// ...
         /// </summary>
-        void Initialize(IFitness fitness);
-
-        /// <summary>
-        /// ...
-        /// </summary>
         void Start();
     }
 }
