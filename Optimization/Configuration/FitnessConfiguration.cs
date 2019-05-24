@@ -6,7 +6,7 @@ namespace Optimization
     /// ...
     /// </summary>
     [Serializable]
-    public class FitnessConfiguration : IFitnessConfiguration
+    public class FitnessConfiguration
     {
         /// <summary>
         /// Name of the fitness

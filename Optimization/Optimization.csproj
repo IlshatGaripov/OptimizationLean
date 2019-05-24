@@ -127,7 +127,6 @@
     <Compile Include="GeneticSharpExtensions\FibonacciRandomization.cs" />
     <Compile Include="GeneticSharpExtensions\Chromosome.cs" />
     <Compile Include="OptimizerManager\GeneManager.cs" />
-    <Compile Include="Configuration\IFitnessConfiguration.cs" />
     <Compile Include="Fitness\AdaptiveSharpeRatioFitness.cs" />
     <Compile Include="Common\OptimizerInitializer.cs" />
     <Compile Include="Fitness\OptimizerFitness.cs" />
