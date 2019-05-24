@@ -223,13 +223,14 @@ namespace Optimization
             string cmdMapNetDrive = $"net use {DataNetDrive} {fileShareUncPath} " +
                                   $"/user:Azure\\{Program.Config.StorageAccountName} {Program.Config.StorageAccountKey}";
             string cmdRobocopy = $"robocopy {DataNetDrive} %AZ_BATCH_NODE_SHARED_DIR%\\Data /E";
+            string cmdErrorLevel = "IF %ERRORLEVEL% LEQ 1 SET ERRORLEVEL = 0";
 
             // Prep task
             var preparationTask =
                 new JobPreparationTask
                 {
                     // Map Azure file share to node drive and copy the content to shared directory
-                    CommandLine = $"cmd /c {cmdMapNetDrive} && {cmdRobocopy}",
+                    CommandLine = $"cmd /c {cmdMapNetDrive} && {cmdRobocopy} & {cmdErrorLevel}",
                     ResourceFiles = inputFiles,
                     WaitForSuccess = true
                 };
