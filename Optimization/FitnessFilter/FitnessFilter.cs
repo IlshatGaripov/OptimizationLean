@@ -12,29 +12,18 @@ namespace Optimization
         /// <returns></returns>        
         public bool IsSuccess(Dictionary<string, decimal> result, OptimizerFitness fitness)
         {
-            if (!Program.Config.EnableFitnessFilter)
+            if (Program.Config.FitnessFilter != null)
             {
                 return true;
             }
 
             /*
-            //using config ignore a result with negative return or disable this single filter and still apply others
-            if (fitness.GetType() != typeof(CompoundingAnnualReturnFitness) && !Program.Config.IncludeNegativeReturn && result["CompoundingAnnualReturn"] < 0)
-            {
-                return false;
-            }
-            */
-
-            if (!Program.Config.IncludeNegativeReturn && result["CompoundingAnnualReturn"] < 0)
-            {
-                return false;
-            }
-
             //must meet minimum trading activity if configured
             if (Program.Config.MinimumTrades > 0 && result["TotalNumberOfTrades"] < Program.Config.MinimumTrades)
             {
                 return false;
             }
+            */
 
             //Consider not trading a failure
             if (result["TotalNumberOfTrades"] == 0)

@@ -97,6 +97,7 @@
     <Compile Include="Common\Exstensions.cs" />
     <Compile Include="Common\OptimizerAppDomainManager.cs" />
     <Compile Include="Configuration\FitnessConfiguration.cs" />
+    <Compile Include="Configuration\FitnessFilterConfiguration.cs" />
     <Compile Include="Fitness\AzureFitness.cs" />
     <Compile Include="Configuration\GeneConfiguration.cs" />
     <Compile Include="GeneticSharpExtensions\ChromosomeCartesian.cs" />

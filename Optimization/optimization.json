@@ -5,9 +5,10 @@
   "max-threads": 100,
 
   // EVALUATE FITNESS
-  "fitness-score": "SharpRatio",
-  "minimumTrades": 1,
-  "enableFitnessFilter": true,
+  "fitness-score": "SharpeRatio",
+  "fitness-filter": {
+    "min-trades": 9
+  },
 
   // GENES
   "genes": [
