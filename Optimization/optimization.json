@@ -1,10 +1,11 @@
 {
   // MODE
-  "optimization-mode": "bruteforce",
-  "execution-mode": "azure",
+  "optimization-mode": "BruteForce",
+  "execution-mode": "Azure",
   "max-threads": 100,
 
-  // FITNESS FILTER
+  // EVALUATE FITNESS
+  "fitness-score": "SharpRatio",
   "minimumTrades": 1,
   "enableFitnessFilter": true,
 

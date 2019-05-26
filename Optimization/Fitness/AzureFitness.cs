@@ -213,7 +213,7 @@ namespace Optimization
                 // Convert json to results dictionary
                 var result = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(json);
 
-                return StatisticsAdapter.CalculateFitness("SharpeRatio", result);
+                return StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore);
             }
         }
 

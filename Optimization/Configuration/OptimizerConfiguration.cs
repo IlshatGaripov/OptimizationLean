@@ -19,11 +19,19 @@ namespace Optimization
         public OptimizationMode OptimizationMode { get; set; }
 
         /// <summary>
-        /// Execution mode - linear/ parallel/ azure
+        /// Task execution mode:
+        /// linear or parallel using local computing powers or compute in parallel in azure cloud
         /// </summary>
         [JsonProperty("execution-mode")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public ExecutionMode ExecutionMode { get; set; }
+        public TaskExecutionMode TaskExecutionMode { get; set; }
+
+        /// <summary>
+        /// Metric to evaluate the algorithm performance
+        /// </summary>
+        [JsonProperty("fitness-score")]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public FitnessScore FitnessScore { get; set; }
 
         /// <summary>
         /// Number of parallel backtests

@@ -47,7 +47,7 @@ namespace Optimization.Tests
 
             public double CalculateFitnessWrapper(Dictionary<string, decimal> result)
             {
-                return StatisticsAdapter.CalculateFitness("SharpeRatio", result);
+                return StatisticsAdapter.CalculateFitness(result, FitnessScore.SharpeRatio);
             }
         }
 

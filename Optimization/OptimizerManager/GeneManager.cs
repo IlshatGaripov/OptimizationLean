@@ -42,19 +42,19 @@ namespace Optimization
             // Max threads
             var maxThreads = Program.Config.MaxThreads > 0 ? Program.Config.MaxThreads : 8;
 
-            switch (Program.Config.ExecutionMode)
+            switch (Program.Config.TaskExecutionMode)
             {
-                case ExecutionMode.Linear:
+                case TaskExecutionMode.Linear:
                     _executor = new LinearTaskExecutor();
                     _fitness = new OptimizerFitness();
                     break;
 
-                case ExecutionMode.Parallel:
+                case TaskExecutionMode.Parallel:
                     _executor = new ParallelTaskExecutor { MaxThreads = maxThreads };
                     _fitness = new OptimizerFitness();
                     break;
 
-                case ExecutionMode.Azure:
+                case TaskExecutionMode.Azure:
                     _executor = new TaskExecutorAzure { MaxThreads = maxThreads };
                     _fitness = new AzureFitness();
                     break;

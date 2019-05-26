@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
@@ -58,8 +59,16 @@ namespace Optimization
             // DateTimeFormat for proper deserialize of start and end date string to DateTime
             var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd" };
 
-            // generic version of DeserializeObject transforms text from json to specific class that holds the corresponding values.
-            return JsonConvert.DeserializeObject<OptimizerConfiguration>(File.ReadAllText(path), dateTimeConverter);
+            try
+            {
+                // Transform the text from json to an object that holds the values from a file
+                return JsonConvert.DeserializeObject<OptimizerConfiguration>(File.ReadAllText(path), dateTimeConverter);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }

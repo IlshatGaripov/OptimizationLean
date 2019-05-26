@@ -10,7 +10,7 @@ namespace Optimization
 {
     public class SharpeMaximizer : OptimizerFitness
     {
-        public virtual string ScoreKey { get; set; } = "SharpeRatio";
+        //public virtual string ScoreKey { get; set; } = "SharpeRatio";
         public IChromosome Best { get; set; }
         private readonly ConditionalWeakTable<OptimizerResult, string> _resultIndex;
         private const double ErrorFitness = 1.01;
@@ -106,7 +106,7 @@ namespace Optimization
                 }
 
                 var score = GetScore(list);
-                var fitness = StatisticsAdapter.CalculateFitness(ScoreKey, score);
+                var fitness = StatisticsAdapter.CalculateFitness(score, Program.Config.FitnessScore);
 
                 output.AppendFormat("{0}: {1}", Name, fitness.ToString("0.##"));
                 Program.Logger.Info(output);

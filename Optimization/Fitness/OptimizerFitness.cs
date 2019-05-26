@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Fitnesses;
@@ -63,7 +62,7 @@ namespace Optimization
                 outputResult += paramsString + Environment.NewLine;
                 
                 // calculate fitness and concat the results to an output string
-                var fitness = StatisticsAdapter.CalculateFitness("SharpeRatio", result);
+                var fitness = StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore);
 
                 outputResult += $"~ Fitness.Value({Name}) = {fitness} ";
                 outputResult += $"Drawdown = {Math.Round(result["Drawdown"], 2)} TotalNumberOfTrades = {result["TotalNumberOfTrades"]}";

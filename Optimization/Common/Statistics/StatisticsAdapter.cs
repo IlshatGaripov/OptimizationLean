@@ -1,4 +1,5 @@
-﻿using QuantConnect.Statistics;
+﻿using System;
+using QuantConnect.Statistics;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -56,16 +57,27 @@ namespace Optimization
 
             return dict;
         }
-        
+
         /// <summary>
         /// Calculates fitness by build-in score key
         /// </summary>
-        /// <param name="scoreKey">Existing score of effectivness of an algorithm</param>
         /// <param name="result">Full results directionary</param>
+        /// <param name="scoreKey">Existing score of effectivness of an algorithm</param>
         /// <returns></returns>
-        public static double CalculateFitness(string scoreKey, Dictionary<string, decimal> result)
+        public static double CalculateFitness(Dictionary<string, decimal> result, FitnessScore scoreKey)
         {
-            return (double)result[scoreKey];
+            switch (scoreKey)
+            {
+                case FitnessScore.SharpeRatio:
+                    return (double) result["SharpeRatio"];
+
+                case FitnessScore.TotalNetProfit:
+                    return (double) result["TotalNetProfit"];
+
+                default:
+                    throw new NotImplementedException();
+            }
+            
         }
     }
 }
