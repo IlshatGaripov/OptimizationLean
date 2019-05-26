@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace Optimization
 {
-    public class StatisticsAdapter
+    public static class StatisticsAdapter
     {
-        private static readonly Dictionary<string, string> _binding = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> Binding = new Dictionary<string, string>
         {
             {"Total Trades", "TotalNumberOfTrades"},
             {"Average Win","AverageWinRate"},
@@ -31,21 +31,30 @@ namespace Optimization
 
         public static decimal Translate(string key, Dictionary<string, decimal> list)
         {
-            if (_binding.ContainsKey(key))
+            if (Binding.ContainsKey(key))
             {
-                return list[_binding[key]];
+                return list[Binding[key]];
             }
 
             return list[key];
         }
 
-        public static Dictionary<string, decimal> Transform(AlgorithmPerformance performance, IDictionary<string, string> summary)
+        /// <summary>
+        /// Transforms <see cref="StatisticsResults"/> to a dictionary containing a custom performance summary 
+        /// </summary>
+        /// <param name="statisticsResults">StatisticsResults object returned by Lean Engine</param>
+        /// <returns>Dictionary with informative statistics for the user</returns>
+        public static Dictionary<string, decimal> Transform(StatisticsResults statisticsResults)
         {
-            var list = performance.PortfolioStatistics.GetType().GetProperties().ToDictionary(k => k.Name, v => (decimal)v.GetValue(performance.PortfolioStatistics));
-            list.Add("TotalNumberOfTrades", int.Parse(summary["Total Trades"]));
-            list.Add("TotalFees", decimal.Parse(summary["Total Fees"].Substring(1)));
+            var performance = statisticsResults.TotalPerformance;
+            var summary = statisticsResults.Summary;
 
-            return list;
+            // Create a dictionary
+            var dict = performance.PortfolioStatistics.GetType().GetProperties().ToDictionary(k => k.Name, v => (decimal)v.GetValue(performance.PortfolioStatistics));
+            dict.Add("TotalNumberOfTrades", int.Parse(summary["Total Trades"]));
+            dict.Add("TotalFees", decimal.Parse(summary["Total Fees"].Substring(1)));
+
+            return dict;
         }
 
     }

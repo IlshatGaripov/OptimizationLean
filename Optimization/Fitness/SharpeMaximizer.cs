@@ -45,9 +45,9 @@ namespace Optimization
                     }
                     else if (Program.Config.Fitness.OptimizerTypeName == OptimizerTypeOptions.Bayesian.ToString())
                     {
-                        /*
-                        optimizer = new BayesianOptimizer(parameters, maxIterations: Program.Config.Generations, numberOfStartingPoints: Program.Config.PopulationSize, seed: 42);
-                        */
+                        
+                        optimizer = new BayesianOptimizer(parameters, iterations: Program.Config.Generations, randomStartingPointCount: Program.Config.PopulationSize, seed: 42);
+                        
                     }
                     else if (Program.Config.Fitness.OptimizerTypeName == OptimizerTypeOptions.GlobalizedBoundedNelderMead.ToString())
                     {
