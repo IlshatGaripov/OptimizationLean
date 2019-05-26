@@ -106,7 +106,7 @@ namespace Optimization
                 }
 
                 var score = GetScore(list);
-                var fitness = CalculateFitness(score);
+                var fitness = StatisticsAdapter.CalculateFitness(ScoreKey, score);
 
                 output.AppendFormat("{0}: {1}", Name, fitness.ToString("0.##"));
                 Program.Logger.Info(output);
@@ -149,11 +149,6 @@ namespace Optimization
 
             destination.Fitness = result.Error;
             return destination;
-        }
-
-        protected override double CalculateFitness(Dictionary<string, decimal> result)
-        {
-            return (double)result[ScoreKey];
         }
 
     }

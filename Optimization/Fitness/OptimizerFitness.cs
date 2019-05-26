@@ -63,7 +63,7 @@ namespace Optimization
                 outputResult += paramsString + Environment.NewLine;
                 
                 // calculate fitness and concat the results to an output string
-                var fitness = CalculateFitness(result);
+                var fitness = StatisticsAdapter.CalculateFitness("SharpeRatio", result);
 
                 outputResult += $"~ Fitness.Value({Name}) = {fitness} ";
                 outputResult += $"Drawdown = {Math.Round(result["Drawdown"], 2)} TotalNumberOfTrades = {result["TotalNumberOfTrades"]}";
@@ -81,15 +81,6 @@ namespace Optimization
                 Program.Logger.Error(ex);
                 return 0;
             }
-        }
-
-        /// <summary>
-        /// Calculates the fitness by full
-        /// </summary>
-        /// <param name="result">Full backtest results of<see cref="OptimizerResultHandler"/></param>
-        protected virtual double CalculateFitness(Dictionary<string, decimal> result)
-        {
-            return (double)result["SharpeRatio"]; 
         }
 
     }

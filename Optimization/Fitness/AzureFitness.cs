@@ -213,17 +213,8 @@ namespace Optimization
                 // Convert json to results dictionary
                 var result = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(json);
 
-                return CalculateFitness(result);
+                return StatisticsAdapter.CalculateFitness("SharpeRatio", result);
             }
-        }
-
-        /// <summary>
-        /// Calculates the chromosome fitness. For simplicity we will use Sharp Ratio.
-        /// </summary>
-        /// <param name="result">Full backtest results of<see cref="OptimizerResultHandler"/></param>
-        private static double CalculateFitness(Dictionary<string, decimal> result)
-        {
-            return (double)result["SharpeRatio"];
         }
 
     }

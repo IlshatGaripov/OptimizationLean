@@ -1,12 +1,7 @@
 ﻿using GeneticSharp.Domain.Chromosomes;
 using Moq;
 using NUnit.Framework;
-using Optimization;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Optimization.Tests
 {
@@ -52,7 +47,7 @@ namespace Optimization.Tests
 
             public double CalculateFitnessWrapper(Dictionary<string, decimal> result)
             {
-                return base.CalculateFitness(result);
+                return StatisticsAdapter.CalculateFitness("SharpeRatio", result);
             }
         }
 

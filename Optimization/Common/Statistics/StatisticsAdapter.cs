@@ -56,6 +56,16 @@ namespace Optimization
 
             return dict;
         }
-
+        
+        /// <summary>
+        /// Calculates fitness by build-in score key
+        /// </summary>
+        /// <param name="scoreKey">Existing score of effectivness of an algorithm</param>
+        /// <param name="result">Full results directionary</param>
+        /// <returns></returns>
+        public static double CalculateFitness(string scoreKey, Dictionary<string, decimal> result)
+        {
+            return (double)result[scoreKey];
+        }
     }
 }

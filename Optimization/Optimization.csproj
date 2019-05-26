@@ -108,10 +108,9 @@
     <Compile Include="Common\GeneFactory.cs" />
     <Compile Include="GeneticSharpExtensions\TaskExecutorAzure.cs" />
     <Compile Include="Interfaces\IOptimizerManager.cs" />
-    <Compile Include="LeanExtensions\EmptyApiHandler.cs" />
     <Compile Include="Common\Enums.cs" />
     <Compile Include="FitnessFilter\FitnessFilter.cs" />
-    <Compile Include="LeanExtensions\OptimizerResultHandler.cs" />
+    <Compile Include="Common\Statistics\OptimizerResultHandler.cs" />
     <Compile Include="Fitness\NFoldCrossReturnMaximizer.cs" />
     <Compile Include="Fitness\NFoldCrossSharpeMaximizer.cs" />
     <Compile Include="Fitness\NestedCrossSharpeMaximizer.cs" />
@@ -124,7 +123,7 @@
     <Compile Include="OptimizerManager\GeneManager.cs" />
     <Compile Include="Fitness\OptimizerFitness.cs" />
     <Compile Include="Configuration\OptimizerConfiguration.cs" />
-    <Compile Include="Common\StatisticsAdapter.cs" />
+    <Compile Include="Common\Statistics\StatisticsAdapter.cs" />
     <Compile Include="GeneticSharpExtensions\PopulationRandom.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
