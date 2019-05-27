@@ -98,10 +98,18 @@ namespace Optimization
         {
             switch (_executor)
             {
+                // Deploy Batch resources if computations are to be made using cloud compute powers
                 case TaskExecutorAzure _:
-                    // Deploy Batch resources
                     AzureBatchManager.DeployAsync().Wait();
                     break;
+
+                // Configure App Domain settings if calculations are planned to be handled using local PC powers
+                case LinearTaskExecutor _:
+                case ParallelTaskExecutor _:
+                    OptimizerAppDomainManager.Initialize();
+                    break;
+
+                // Otherwise
                 case null:
                     throw new Exception("Executor was not initialized");
             }

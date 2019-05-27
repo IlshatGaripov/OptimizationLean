@@ -16,14 +16,8 @@ namespace Optimization
         /// </summary>
         public static void Main(string[] args)
         {
-            // Load configuration settings from json to an object
+            // Load the optimizer settings from config json
             Config = Exstensions.LoadConfigFromFile("optimization_local.json");
-
-            // TODO: revise 2!
-            GeneFactory.Initialize(Config.Genes);
-
-            // Configure App Domain settings that are used if computing is made on the local machine
-            OptimizerAppDomainManager.Initialize();    
 
             try
             {

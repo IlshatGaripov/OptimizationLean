@@ -11,29 +11,14 @@ namespace Optimization
     public static class GeneFactory
     {
         /// <summary>
-        /// Gene configurations array.
-        /// </summary>
-        public static GeneConfiguration[] GeneConfigArray { get; private set; }
-
-        /// <summary>
         /// Randomizer basic.
         /// </summary>
-        private static IRandomization _basic;
+        private static readonly IRandomization Basic = new BasicRandomization();
 
         /// <summary>
         /// Randomizer fibonacci.
         /// </summary>
-        private static IRandomization _fibonacci;
-
-        /// <summary>
-        /// Static initialization method. To assign class variables the values.
-        /// </summary>
-        public static void Initialize(GeneConfiguration[] config)
-        {
-            GeneConfigArray = config;
-            _basic = RandomizationProvider.Current;
-            _fibonacci = new FibonacciRandomization();
-        }
+        private static readonly IRandomization Fibonacci = new FibonacciRandomization();
 
         /// <summary>
         /// Returns random int within an interval.
@@ -76,7 +61,7 @@ namespace Optimization
         public static Gene GenerateRandom(GeneConfiguration config)
         {
             // set randomization scheme.
-            RandomizationProvider.Current = config.Fibonacci ? _fibonacci : _basic;
+            RandomizationProvider.Current = config.Fibonacci ? Fibonacci : Basic;
             
             // generate random decimal within an interval
             if (config.MinDecimal.HasValue && config.MaxDecimal.HasValue)
