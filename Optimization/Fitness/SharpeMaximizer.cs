@@ -8,12 +8,11 @@ using System.Runtime.CompilerServices;
 
 namespace Optimization
 {
-
     public class SharpeMaximizer : OptimizerFitness
     {
-        public virtual string ScoreKey { get; set; } = "SharpeRatio";
+        //public virtual string ScoreKey { get; set; } = "SharpeRatio";
         public IChromosome Best { get; set; }
-        private ConditionalWeakTable<OptimizerResult, string> _resultIndex;
+        private readonly ConditionalWeakTable<OptimizerResult, string> _resultIndex;
         private const double ErrorFitness = 1.01;
 
         public SharpeMaximizer()
@@ -46,9 +45,9 @@ namespace Optimization
                     }
                     else if (Program.Config.Fitness.OptimizerTypeName == OptimizerTypeOptions.Bayesian.ToString())
                     {
-                        /*
-                        optimizer = new BayesianOptimizer(parameters, maxIterations: Program.Config.Generations, numberOfStartingPoints: Program.Config.PopulationSize, seed: 42);
-                        */
+                        
+                        optimizer = new BayesianOptimizer(parameters, iterations: Program.Config.Generations, randomStartingPointCount: Program.Config.PopulationSize, seed: 42);
+                        
                     }
                     else if (Program.Config.Fitness.OptimizerTypeName == OptimizerTypeOptions.GlobalizedBoundedNelderMead.ToString())
                     {
@@ -107,12 +106,12 @@ namespace Optimization
                 }
 
                 var score = GetScore(list);
-                var fitness = CalculateFitness(score);
+                var fitness = StatisticsAdapter.CalculateFitness(score, Program.Config.FitnessScore);
 
-                output.AppendFormat("{0}: {1}", Name, fitness.Value.ToString("0.##"));
+                output.AppendFormat("{0}: {1}", Name, fitness.ToString("0.##"));
                 Program.Logger.Info(output);
 
-                var result = new OptimizerResult(p, fitness.Fitness);
+                var result = new OptimizerResult(p, fitness);
                 _resultIndex.Add(result, id);
                 return result;
             }
@@ -152,26 +151,6 @@ namespace Optimization
             return destination;
         }
 
-        protected override FitnessResult CalculateFitness(Dictionary<string, decimal> result)
-        {
-            var ratio = result[ScoreKey];
-
-            if (Filter != null && !Filter.IsSuccess(result, this))
-            {
-                ratio = ErrorRatio;                
-            }
-
-            return new FitnessResult
-            {
-                Value = ratio,
-                Fitness = 1 - ((double)ratio / 1000)
-            };
-        }
-
-        public override double GetAdjustedFitness(double? fitness)
-        {
-            return ((fitness ?? ErrorFitness) - 1) * 1000 * -1;
-        }
     }
     
 }

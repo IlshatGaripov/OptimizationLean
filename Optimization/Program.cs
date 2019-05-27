@@ -5,10 +5,10 @@ namespace Optimization
 {
     public static class Program
     {
-        // logger
+        // The logger
         public static Logger Logger = LogManager.GetLogger("optimizer");
 
-        // program wide config file.
+        // Program wide config file object.
         public static OptimizerConfiguration Config;
 
         /// <summary>
@@ -16,7 +16,7 @@ namespace Optimization
         /// </summary>
         public static void Main(string[] args)
         {
-            // Load JSON from configuration to class object
+            // Load configuration settings from json to an object
             Config = Exstensions.LoadConfigFromFile("optimization_local.json");
 
             // TODO: revise 2!

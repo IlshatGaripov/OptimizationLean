@@ -15,6 +15,7 @@ namespace Optimization
     /// </summary>
     public class GeneManager : IOptimizerManager
     {
+        // Termination Reached! 
         public const string Termination = "Termination Reached.";
 
         // Genetic Sharp objects 
@@ -41,19 +42,19 @@ namespace Optimization
             // Max threads
             var maxThreads = Program.Config.MaxThreads > 0 ? Program.Config.MaxThreads : 8;
 
-            switch (Program.Config.ExecutionMode)
+            switch (Program.Config.TaskExecutionMode)
             {
-                case ExecutionMode.Linear:
+                case TaskExecutionMode.Linear:
                     _executor = new LinearTaskExecutor();
                     _fitness = new OptimizerFitness();
                     break;
 
-                case ExecutionMode.Parallel:
+                case TaskExecutionMode.Parallel:
                     _executor = new ParallelTaskExecutor { MaxThreads = maxThreads };
                     _fitness = new OptimizerFitness();
                     break;
 
-                case ExecutionMode.Azure:
+                case TaskExecutionMode.Azure:
                     _executor = new TaskExecutorAzure { MaxThreads = maxThreads };
                     _fitness = new AzureFitness();
                     break;
@@ -91,7 +92,7 @@ namespace Optimization
         }
 
         /// <summary>
-        /// Start the optimization. The core method.
+        /// Starts an optimization. 
         /// </summary>
         public void Start()
         {
@@ -105,7 +106,7 @@ namespace Optimization
                     throw new Exception("Executor was not initialized");
             }
 
-            // create the GA itself . Object of custom type (contained in GeneticSharpExtensions folder).
+            // Create the GA itself
             var ga = new GeneticAlgorithmCustom(_population, _fitness, _selection, _crossover, _mutation)
             {
                 TaskExecutor = _executor,
@@ -115,11 +116,11 @@ namespace Optimization
                 CrossoverProbability = Program.Config.CrossoverProbability
             };
 
-            //subscribe to events
+            // Subscribe to events
             ga.GenerationRan += GenerationRan;
             ga.TerminationReached += TerminationReached;
 
-            //run the GA 
+            // Run the GA 
             ga.Start();
         }
 

@@ -1,12 +1,15 @@
 {
   // MODE
-  "optimization-mode": "bruteforce",
-  "execution-mode": "azure",
+  "optimization-mode": "BruteForce",
+  "execution-mode": "Azure",
   "max-threads": 100,
 
-  // FITNESS FILTER
-  "minimumTrades": 1,
-  "enableFitnessFilter": true,
+  // EVALUATE FITNESS
+  "fitness-score": "SharpeRatio",
+  "fitness-filter": {
+    "min-trades": 9,
+    "max-drawdown": 0.35
+  },
 
   // GENES
   "genes": [

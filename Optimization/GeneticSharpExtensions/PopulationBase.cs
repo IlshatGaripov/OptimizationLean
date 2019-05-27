@@ -12,36 +12,6 @@ namespace Optimization
     /// </summary>
     public abstract class PopulationBase : IPopulation
     {
-        /*
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeneticSharp.Domain.Populations.Population"/> class.
-        /// </summary>
-        /// <param name="minSize">The minimum size (chromosomes).</param>
-        /// <param name="maxSize">The maximum size (chromosomes).</param>
-        /// <param name="adamChromosome">The original chromosome of all population ;).</param>
-        public Population(int minSize, int maxSize, IChromosome adamChromosome)
-        {
-            if (minSize < 2)
-            {
-                throw new ArgumentOutOfRangeException("minSize", "The minimum size for a population is 2 chromosomes.");
-            }
-
-            if (maxSize < minSize)
-            {
-                throw new ArgumentOutOfRangeException("maxSize", "The maximum size for a population should be equal or greater than minimum size.");
-            }
-
-            ExceptionHelper.ThrowIfNull("adamChromosome", adamChromosome);
-
-            CreationDate = DateTime.Now;
-            MinSize = minSize;
-            MaxSize = maxSize;
-            AdamChromosome = adamChromosome;
-            Generations = new List<Generation>();
-            GenerationStrategy = new PerformanceGenerationStrategy(10);
-        }
-        */
-
         /// <summary>
         /// Constructor. General for all derived class. Performing general (common for inherited behavior) initialization.
         /// </summary>
@@ -120,7 +90,10 @@ namespace Optimization
         public virtual void CreateInitialGeneration()
         {
             GenerationsNumber = 0;
+
+            // Initial generation
             var chromosomesList = GenerateChromosomes();
+
             // calls the base class method. Chromosomes validation is held inside.
             CreateNewGeneration(chromosomesList);
         }

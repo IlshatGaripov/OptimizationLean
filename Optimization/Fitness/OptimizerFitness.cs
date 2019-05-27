@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Fitnesses;
 
 namespace Optimization
 {
-    /// <inheritdoc />
     /// <summary>
     /// Default optimizer behaviour using Sharpe ratio.
     /// </summary>
@@ -15,25 +13,7 @@ namespace Optimization
     {
         private static readonly object Obj = new object();
 
-        /// <summary>
-        /// Name. Virtual.
-        /// </summary>
         public string Name { get; set; } = "Sharpe";
-
-        /// <summary>
-        /// Filter used to sort out insignificant values.
-        /// </summary>
-        public IFitnessFilter Filter { get; set; } = new FitnessFilter();
-
-        /// <summary>
-        /// The scale used to calculate the normalized value of fitness. Can be overriden is child class.
-        /// </summary>
-        protected virtual double Scale { get; set; } = 0.02;
-
-        /// <summary>
-        /// Default value for insignificat result of evaluation.
-        /// </summary>
-        protected const decimal ErrorRatio = -10;
 
         /// <summary>
         /// Evaluates the chromosome's fitness.
@@ -77,8 +57,9 @@ namespace Optimization
                 outputResult += paramsString + Environment.NewLine;
                 
                 // calculate fitness and concat the results to an output string
-                var fitness = CalculateFitness(result);
-                outputResult += $"~ Fitness.Value({Name}) = {fitness.Value} ";
+                var fitness = StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore);
+
+                outputResult += $"~ Fitness.Value({Name}) = {fitness} ";
                 outputResult += $"Drawdown = {Math.Round(result["Drawdown"], 2)} TotalNumberOfTrades = {result["TotalNumberOfTrades"]}";
 
                 lock (Obj)
@@ -87,7 +68,7 @@ namespace Optimization
                     Program.Logger.Info(outputResult);
                 }
 
-                return fitness.Fitness;
+                return fitness;
             }
             catch (Exception ex)
             {
@@ -95,53 +76,6 @@ namespace Optimization
                 return 0;
             }
         }
-
-        /// <summary>
-        /// Calculates the fitness by Sharp Ratio.
-        /// </summary>
-        protected virtual FitnessResult CalculateFitness(Dictionary<string, decimal> result)
-        {
-            var fitness = new FitnessResult();
-            var ratio = result["SharpeRatio"];
-
-            // if there is an isignificant result revealed by appying a filter
-            if (Filter != null && !Filter.IsSuccess(result, this))
-            {
-                // then assign a ratio the default error value  
-                ratio = ErrorRatio;
-            }
-
-            fitness.Value = ratio;
-            fitness.Fitness = (double)(Math.Max(ratio, ErrorRatio) + 10) * Scale;
-
-            return fitness;
-        }
-
-        /// <summary>
-        /// ??
-        /// </summary>
-        public virtual double GetAdjustedFitness(double? fitness)
-        {
-            return fitness.HasValue ? fitness.Value / Scale - 10 : 0;
-
-        }
-        
-        /// <summary>
-        /// Nested class to contain the fintess function results.
-        /// </summary>
-        protected class FitnessResult
-        {
-            /// <summary>
-            /// The value of the result
-            /// </summary>
-            public decimal Value { get; set; }
-
-            /// <summary>
-            /// The scaled or adjused measurement
-            /// </summary>
-            public double Fitness { get; set; }
-        }
-
 
     }
 }

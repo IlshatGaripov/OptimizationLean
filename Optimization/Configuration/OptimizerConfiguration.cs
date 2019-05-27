@@ -19,11 +19,25 @@ namespace Optimization
         public OptimizationMode OptimizationMode { get; set; }
 
         /// <summary>
-        /// Execution mode - linear/ parallel/ azure
+        /// Task execution mode:
+        /// linear or parallel using local computing powers or compute in parallel in azure cloud
         /// </summary>
         [JsonProperty("execution-mode")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public ExecutionMode ExecutionMode { get; set; }
+        public TaskExecutionMode TaskExecutionMode { get; set; }
+
+        /// <summary>
+        /// Metric to evaluate the algorithm performance
+        /// </summary>
+        [JsonProperty("fitness-score")]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public FitnessScore FitnessScore { get; set; }
+
+        /// <summary>
+        /// Object contains configuration to sort out good algorithm performances
+        /// </summary>
+        [JsonProperty("fitness-filter")]
+        public FitnessFilterConfiguration FitnessFilter { get; set; }
 
         /// <summary>
         /// Number of parallel backtests
@@ -74,12 +88,6 @@ namespace Optimization
         public string AlgorithmLocation { get; set; }
 
         /// <summary>
-        /// By default results with negative Sharpe or CAR are ignored
-        /// </summary>
-        [JsonProperty("includeNegativeReturn")]
-        public bool IncludeNegativeReturn { get; set; }
-
-        /// <summary>
         /// Override config.json setting
         /// </summary>
         [JsonProperty("dataFolder")]
@@ -114,19 +122,7 @@ namespace Optimization
         /// </summary>
         [JsonProperty("crossoverProbability")]
         public float CrossoverProbability { get; set; } = GeneticAlgorithm.DefaultCrossoverProbability;
-
-        /// <summary>
-        /// The minimum number of trades to consider the execution a non-failure
-        /// </summary>
-        [JsonProperty("minimumTrades")]
-        public int MinimumTrades { get; set; }
-
-        /// <summary>
-        /// Enables the fitness filter that discards probable false positive executions
-        /// </summary>
-        [JsonProperty("enableFitnessFilter")]
-        public bool EnableFitnessFilter { get; set; }
-
+        
         /// <summary>
         /// File to store transaction log
         /// </summary>

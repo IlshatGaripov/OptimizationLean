@@ -1,12 +1,7 @@
 ﻿using GeneticSharp.Domain.Chromosomes;
 using Moq;
 using NUnit.Framework;
-using Optimization;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Optimization.Tests
 {
@@ -32,7 +27,7 @@ namespace Optimization.Tests
                 { "TotalNumberOfTrades", trades },
                 { "LossRate", lossRate }
             });
-            Assert.AreEqual(expected, actual.Item2);
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
@@ -50,10 +45,9 @@ namespace Optimization.Tests
             {
             }
 
-            public Tuple<decimal, double> CalculateFitnessWrapper(Dictionary<string, decimal> result)
+            public double CalculateFitnessWrapper(Dictionary<string, decimal> result)
             {
-                var fitness = base.CalculateFitness(result);
-                return new Tuple<decimal, double>(fitness.Value, fitness.Fitness);
+                return StatisticsAdapter.CalculateFitness(result, FitnessScore.SharpeRatio);
             }
         }
 

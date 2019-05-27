@@ -8,7 +8,7 @@ using GeneticSharp.Domain.Fitnesses;
 using Microsoft.Azure.Batch;
 using Microsoft.Azure.Batch.Common;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Optimization
 {
@@ -206,26 +206,15 @@ namespace Optimization
             {
                 await blobData.DownloadToStreamAsync(memoryStream);
 
-                // Read from stream to a string
+                // Read from stream to a json string
                 memoryStream.Position = 0;
-                var statistics = streamReader.ReadToEnd();
+                var json = streamReader.ReadToEnd();
 
-                // Calculate fitness
-                return CalculateFitness(statistics);
+                // Convert json to results dictionary
+                var result = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(json);
+
+                return StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore);
             }
-        }
-
-        /// <summary>
-        /// Calculates the chromosome fitness using some kind of metric. in the simplest case we will use Sharp Ratio.
-        /// </summary>
-        /// <param name="statistics">Json string containing statistics</param>
-        private static double CalculateFitness(string statistics)
-        {
-            // Calculate Sharp Ratio
-            var jsonObject = JObject.Parse(statistics);
-            var sharpRatio = jsonObject.Value<double>("SharpeRatio");
-
-            return sharpRatio;
         }
 
     }

@@ -37,14 +37,8 @@ namespace Optimization
 
         public ConcurrentDictionary<string, Chart> Charts
         {
-            get
-            {
-                return _shadow.Charts;
-            }
-            set
-            {
-                _shadow.Charts = value;
-            }
+            get => _shadow.Charts;
+            set => _shadow.Charts = value;
         }
 
         public TimeSpan ResamplePeriod => _shadow.ResamplePeriod;
@@ -73,7 +67,7 @@ namespace Optimization
                 return;
             }
 
-            FullResults = StatisticsAdapter.Transform(statisticsResults.TotalPerformance, statisticsResults.Summary);
+            FullResults = StatisticsAdapter.Transform(statisticsResults);
         }
 
         #region Shadow Methods
