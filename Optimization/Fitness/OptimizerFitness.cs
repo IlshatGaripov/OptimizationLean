@@ -16,11 +16,6 @@ namespace Optimization
         public string Name { get; set; } = "Sharpe";
 
         /// <summary>
-        /// Filter used to sort out insignificant values.
-        /// </summary>
-        public IFitnessFilter Filter { get; set; } = new FitnessFilter();
-
-        /// <summary>
         /// Evaluates the chromosome's fitness.
         /// </summary>
         public virtual double Evaluate(IChromosome chromosome)

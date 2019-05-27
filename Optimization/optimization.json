@@ -7,7 +7,8 @@
   // EVALUATE FITNESS
   "fitness-score": "SharpeRatio",
   "fitness-filter": {
-    "min-trades": 9
+    "min-trades": 9,
+    "max-drawdown": 0.35
   },
 
   // GENES

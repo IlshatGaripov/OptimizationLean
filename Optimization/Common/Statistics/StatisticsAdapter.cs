@@ -9,7 +9,6 @@ namespace Optimization
     {
         private static readonly Dictionary<string, string> Binding = new Dictionary<string, string>
         {
-            {"Total Trades", "TotalNumberOfTrades"},
             {"Average Win","AverageWinRate"},
             {"Average Loss","AverageLossRate"},
             {"Compounding Annual Return ","CompoundingAnnualReturn"},
@@ -27,6 +26,7 @@ namespace Optimization
             {"Information Ratio","InformationRatio"},
             {"Tracking Error","TrackingError"},
             {"Treynor Ratio","TreynorRatio"},
+            {"Total Trades", "TotalNumberOfTrades"},
             {"Total Fees","TotalFees"}
         };
 
@@ -66,6 +66,13 @@ namespace Optimization
         /// <returns></returns>
         public static double CalculateFitness(Dictionary<string, decimal> result, FitnessScore scoreKey)
         {
+            // Apply a Fitness Filter to result
+            if (Program.Config.FitnessFilter != null && !FitnessFilter.IsSuccess(result))
+            {
+                return FitnessFilter.ErrorValue;
+            }
+            
+            // If filter successfully passed calculate the fitness using metric specified in config
             switch (scoreKey)
             {
                 case FitnessScore.SharpeRatio:
