@@ -114,7 +114,6 @@
     <Compile Include="Common\Statistics\FitnessFilter.cs" />
     <Compile Include="Common\Statistics\OptimizerResultHandler.cs" />
     <Compile Include="Fitness\NFoldCrossReturnMaximizer.cs" />
-    <Compile Include="Fitness\NFoldCrossSharpeMaximizer.cs" />
     <Compile Include="Fitness\NestedCrossSharpeMaximizer.cs" />
     <Compile Include="Fitness\SharpeMaximizer.cs" />
     <Compile Include="Common\Runner.cs" />

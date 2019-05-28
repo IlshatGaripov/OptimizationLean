@@ -22,7 +22,7 @@ namespace Optimization
             try
             {
                 // GA manager
-                var manager = new GeneManager();
+                var manager = new GeneManager(Config.StartDate, Config.EndDate);
                 manager.Start();
 
                 // Shutdown the logger in the end

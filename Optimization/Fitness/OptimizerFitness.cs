@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using GeneticSharp.Domain.Chromosomes;
-using GeneticSharp.Domain.Fitnesses;
 
 namespace Optimization
 {
@@ -9,16 +8,17 @@ namespace Optimization
     /// Default optimizer behaviour using Sharpe ratio.
     /// </summary>
     /// <remarks>Default behaviour will nullify fitness for negative return</remarks>
-    public class OptimizerFitness : IFitness
+    public class OptimizerFitness : LeanFitness
     {
         private static readonly object Obj = new object();
 
-        public string Name { get; set; } = "Sharpe";
+        public OptimizerFitness(DateTime start, DateTime end) : base(start, end)
+        { }
 
         /// <summary>
         /// Evaluates the chromosome's fitness.
         /// </summary>
-        public virtual double Evaluate(IChromosome chromosome)
+        public override double Evaluate(IChromosome chromosome)
         {
             try
             {
@@ -35,13 +35,9 @@ namespace Optimization
                 outputBeforeRun += $"Send for backtest Chromosome Id: {chromosomeCasted.Id} w.params:{Environment.NewLine}";
                 outputBeforeRun += paramsString;
 
-                // Algorithm start and end dates
-                if (Program.Config.StartDate.HasValue && Program.Config.EndDate.HasValue)
-                {
-                    // set algorithm start and end dates
-                    list.Add("startDate", Program.Config.StartDate);
-                    list.Add("endDate", Program.Config.EndDate);
-                }
+                // set algorithm start and end dates
+                list.Add("startDate", StartDate);
+                list.Add("endDate", EndDate);
 
                 lock (Obj)
                 {
@@ -59,7 +55,7 @@ namespace Optimization
                 // calculate fitness and concat the results to an output string
                 var fitness = StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore);
 
-                outputResult += $"~ Fitness.Value({Name}) = {fitness} ";
+                outputResult += $"~ Fitness.Value = {fitness} ";
                 outputResult += $"Drawdown = {Math.Round(result["Drawdown"], 2)} TotalNumberOfTrades = {result["TotalNumberOfTrades"]}";
 
                 lock (Obj)

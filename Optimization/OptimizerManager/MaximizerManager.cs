@@ -2,15 +2,13 @@
 
 namespace Optimization
 {
-
     public class MaximizerManager : IOptimizerManager
     {
         public const string Termination = "Termination Reached.";
-        private readonly IFitness _fitness = new OptimizerFitness();
+        private readonly IFitness _fitness = new OptimizerFitness(Program.Config.StartDate, Program.Config.EndDate);
 
         public void Start()
         {
-            GeneFactory.Initialize(Program.Config.Genes);
             var chromosome = new Chromosome(Program.Config.Genes.Length);
             _fitness.Evaluate(chromosome);
 

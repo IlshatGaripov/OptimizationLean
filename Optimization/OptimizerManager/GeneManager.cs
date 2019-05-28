@@ -15,6 +15,10 @@ namespace Optimization
     /// </summary>
     public class GeneManager : IOptimizerManager
     {
+        // Optimization start and end dates
+        public DateTime StartDate;
+        public DateTime EndDate;
+
         // Termination Reached! 
         public const string Termination = "Termination Reached.";
 
@@ -29,10 +33,16 @@ namespace Optimization
         private readonly IReinsertion _reinsertion;
 
         /// <summary>
-        /// Init the class variables. 
+        /// Init class variables. Algorithm start and end dates are to be set explicitely
         /// </summary>
-        public GeneManager()
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        public GeneManager(DateTime start, DateTime end)
         {
+            // Dates
+            StartDate = start;
+            EndDate = end;
+
             // params to init GA common to different optimization modes
             _selection = new TournamentSelection();
             _crossover = Program.Config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover();
@@ -46,17 +56,17 @@ namespace Optimization
             {
                 case TaskExecutionMode.Linear:
                     _executor = new LinearTaskExecutor();
-                    _fitness = new OptimizerFitness();
+                    _fitness = new OptimizerFitness(StartDate, EndDate);
                     break;
 
                 case TaskExecutionMode.Parallel:
                     _executor = new ParallelTaskExecutor { MaxThreads = maxThreads };
-                    _fitness = new OptimizerFitness();
+                    _fitness = new OptimizerFitness(StartDate, EndDate);
                     break;
 
                 case TaskExecutionMode.Azure:
                     _executor = new TaskExecutorAzure { MaxThreads = maxThreads };
-                    _fitness = new AzureFitness();
+                    _fitness = new AzureFitness(StartDate, EndDate);
                     break;
 
                 default:

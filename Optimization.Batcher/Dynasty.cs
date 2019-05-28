@@ -16,24 +16,22 @@ namespace Optimization.Batcher
 
         private readonly IFileSystem _file;
         private readonly ILogWrapper _logWrapper;
-        private readonly IGeneManagerFactory _managerFactory;
         const string _configFilename = "optimization_dynasty.json";
         private FixedSizeQueue<string> _queue;
         private DynastyConfiguration _config;
         private OptimizerConfiguration _current;
         private static Dynasty _instance;
 
-        public Dynasty(IFileSystem file, ILogWrapper logWrapper, IGeneManagerFactory managerFactory)
+        public Dynasty(IFileSystem file, ILogWrapper logWrapper)
         {
             _file = file;
             _logWrapper = logWrapper;
-            _managerFactory = managerFactory;
             _queue = new FixedSizeQueue<string>(2);
             _current = null;
             _instance = this;
         }
 
-        public Dynasty() : this(new FileSystem(), new LogWrapper(), new GeneManagerFactory())
+        public Dynasty() : this(new FileSystem(), new LogWrapper())
         {
         }
 

@@ -15,10 +15,9 @@ namespace Optimization
         private readonly ConditionalWeakTable<OptimizerResult, string> _resultIndex;
         private const double ErrorFitness = 1.01;
 
-        public SharpeMaximizer()
+        public SharpeMaximizer(DateTime start, DateTime end): base(start, end)
         {
             _resultIndex = new ConditionalWeakTable<OptimizerResult, string>();
-            Name = "Sharpe";
         }
 
         public override double Evaluate(IChromosome chromosome)
@@ -100,15 +99,12 @@ namespace Optimization
                     output.Append(key + ": " + value.ToString() + ", ");
                 }
 
-                if (Program.Config.StartDate.HasValue && Program.Config.EndDate.HasValue)
-                {
-                    output.AppendFormat("Start: {0}, End: {1}, ", Program.Config.StartDate, Program.Config.EndDate);
-                }
+                output.AppendFormat("Start: {0}, End: {1}, ", StartDate, EndDate);
 
                 var score = GetScore(list);
                 var fitness = StatisticsAdapter.CalculateFitness(score, Program.Config.FitnessScore);
 
-                output.AppendFormat("{0}: {1}", Name, fitness.ToString("0.##"));
+                output.AppendFormat("{0}: {1}", "Fitness", fitness.ToString("0.##"));
                 Program.Logger.Info(output);
 
                 var result = new OptimizerResult(p, fitness);
