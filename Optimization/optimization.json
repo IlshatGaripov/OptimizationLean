@@ -3,12 +3,24 @@
   "optimization-mode": "BruteForce",
   "execution-mode": "Azure",
   "max-threads": 100,
-
-  // EVALUATE FITNESS
   "fitness-score": "SharpeRatio",
+
+  // FITENSS FILTER
   "fitness-filter": {
     "min-trades": 9,
     "max-drawdown": 0.35
+  },
+
+  // THE DATES
+  "startDate": "2017-01-02",
+  "endDate": "2018-01-02",
+
+  // WALK FORWARD
+  "walk-forward": {
+    "enabled": true,
+    "anchored": false,
+    "in-sample-period": 365,   // in days
+    "step": 60 
   },
 
   // GENES
@@ -28,8 +40,6 @@
   ],
 
   // LEAN
-  "startDate": "2017-01-02",
-  "endDate": "2018-01-02",
   "algorithmTypeName": "SuperTrendAlgorithm",
   "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
   "dataFolder": "C:/Users/sterling/Google Drive/Data",
@@ -50,6 +60,9 @@
   "onePointCrossover": "true",
   "mutationProbability": 0.5,
   "crossoverProbability": 0.75,
+
+  // TODO: lean the SHARP LEARNING library and Maximizer objects that exist in project
+  // 
   "fitness": {
     "scale": 1,
     "modifier": -1,
