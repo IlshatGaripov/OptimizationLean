@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GeneticSharp.Domain.Chromosomes;
-using GeneticSharp.Domain.Fitnesses;
 using Microsoft.Azure.Batch;
 using Microsoft.Azure.Batch.Common;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -15,16 +14,22 @@ namespace Optimization
     /// <summary>
     /// Fitness function that calculates evaluation in Azure Cloud.
     /// </summary>
-    class AzureFitness: IFitness
+    public class AzureFitness: LeanFitness
     {
         private static readonly object Obj = new object();
+
+        /// <summary>
+        /// Constructor initializes algorithm start and end dates
+        /// </summary>
+        public AzureFitness(DateTime start, DateTime end) : base(start, end)
+        { }
 
         /// <summary>
         /// Performs the evaluation against the specified chromosome.
         /// </summary>
         /// <param name="chromosome">The chromosome to be evaluated.</param>
         /// <returns>The fitness of the chromosome.</returns>
-        public double Evaluate(IChromosome chromosome)
+        public override double Evaluate(IChromosome chromosome)
         {
 
             // All functionality is wrapped in async method. Execute it to obtain a result.
@@ -32,9 +37,9 @@ namespace Optimization
         }
 
         /// <summary>
-        /// Async implementation of evalutation function.
+        /// Async evalutation.
         /// </summary>
-        private static async Task<double> EvaluateAsync(IChromosome chromosome)
+        private async Task<double> EvaluateAsync(IChromosome chromosome)
         {
             // Cast to base chromosome type
             var chromosomeBase = (Chromosome)chromosome;
@@ -62,14 +67,11 @@ namespace Optimization
             // -- 3 -- Add algorithm dll and data folder locations
             var dllFileName = Path.GetFileName(Program.Config.AlgorithmLocation);
             runnerInputArguments += $"algorithm-location %AZ_BATCH_JOB_PREP_WORKING_DIR%\\{dllFileName} ";
-            runnerInputArguments += $"data-folder %AZ_BATCH_NODE_SHARED_DIR%\\Data ";
+            runnerInputArguments += "data-folder %AZ_BATCH_NODE_SHARED_DIR%\\Data ";
 
             // -- 4 -- Algorithm start and end dates
-            if (Program.Config.StartDate.HasValue && Program.Config.EndDate.HasValue)
-            {
-                runnerInputArguments += $"startDate {Program.Config.StartDate.Value:O} ";
-                runnerInputArguments += $"endDate {Program.Config.EndDate.Value:O} ";
-            }
+            runnerInputArguments += $"startDate {StartDate:O} ";
+            runnerInputArguments += $"endDate {EndDate:O} ";
 
             // -- 5 -- File name where the final result of a backtest will be stored at.
             var resultsOutputFile = $"output_{id}.json";

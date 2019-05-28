@@ -72,7 +72,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="GeneConverterTests.cs" />
-    <Compile Include="GeneFactoryTests.cs" />
     <Compile Include="GeneManagerTests.cs" />
     <Compile Include="MockGeneManagerFactory.cs" />
     <Compile Include="NFoldCrossSharpeMaximizerTests.cs" />
