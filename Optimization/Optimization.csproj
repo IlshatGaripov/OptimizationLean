@@ -120,7 +120,7 @@
     <Compile Include="OptimizerManager\MaximizerManager.cs" />
     <Compile Include="GeneticSharpExtensions\FibonacciRandomization.cs" />
     <Compile Include="GeneticSharpExtensions\Chromosome.cs" />
-    <Compile Include="OptimizerManager\GeneManager.cs" />
+    <Compile Include="OptimizerManager\AlgorithmOptimumFinder.cs" />
     <Compile Include="Fitness\OptimizerFitness.cs" />
     <Compile Include="Configuration\OptimizerConfiguration.cs" />
     <Compile Include="Common\Statistics\StatisticsAdapter.cs" />

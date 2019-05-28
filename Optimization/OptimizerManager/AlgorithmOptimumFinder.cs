@@ -13,11 +13,14 @@ namespace Optimization
     /// <summary>
     /// The one that manages the whole genetic optimization process. 
     /// </summary>
-    public class GeneManager : IOptimizerManager
+    public class AlgorithmOptimumFinder : IOptimizerManager
     {
         // Optimization start and end dates
         public DateTime StartDate;
         public DateTime EndDate;
+
+        // Fitness Score to sort the results appearing during optimization
+        public FitnessScore SortCriteria;
 
         // Termination Reached! 
         public const string Termination = "Termination Reached.";
@@ -33,15 +36,18 @@ namespace Optimization
         private readonly IReinsertion _reinsertion;
 
         /// <summary>
-        /// Init class variables. Algorithm start and end dates are to be set explicitely
+        /// Init class variables. Algorithm start and end dates and sorting method
+        /// are to be set explicitely when declaring a class. Default sortCriteria is Sharpe Ratio.
         /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        public GeneManager(DateTime start, DateTime end)
+        /// <param name="start">Algorithm start date</param>
+        /// <param name="end">Algorithm end date</param>
+        /// <param name="sortCriteria">Argument of <see cref="FitnessScore"/> type. Defines a way to sort the results</param>
+        public AlgorithmOptimumFinder(DateTime start, DateTime end, FitnessScore sortCriteria = FitnessScore.SharpeRatio)
         {
-            // Dates
+            // Assign Dates and Criteria to sort the results
             StartDate = start;
             EndDate = end;
+            SortCriteria = sortCriteria;
 
             // params to init GA common to different optimization modes
             _selection = new TournamentSelection();

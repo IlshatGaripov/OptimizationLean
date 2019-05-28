@@ -72,7 +72,7 @@ namespace Optimization.Batcher
             _queue.Enqueue(message);
             //Console.WriteLine(output);
 
-            if (_queue.First() == GeneManager.Termination)
+            if (_queue.First() == AlgorithmOptimumFinder.Termination)
             {
                 _logWrapper.Result(_queue.Dequeue());
                 _logWrapper.Result(_queue.Dequeue());

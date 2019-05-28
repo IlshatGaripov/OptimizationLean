@@ -5,9 +5,8 @@ using GeneticSharp.Domain.Chromosomes;
 namespace Optimization
 {
     /// <summary>
-    /// Default optimizer behaviour using Sharpe ratio.
+    /// Default optimizer behaviour.
     /// </summary>
-    /// <remarks>Default behaviour will nullify fitness for negative return</remarks>
     public class OptimizerFitness : LeanFitness
     {
         private static readonly object Obj = new object();
