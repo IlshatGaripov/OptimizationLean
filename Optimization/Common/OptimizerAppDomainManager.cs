@@ -46,9 +46,18 @@ namespace Optimization
         /// <returns>Full backtest results of<see cref="OptimizerResultHandler"/></returns>
         public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list)
         {
-            // Create runner in App Domain -> Get results -> Unload
+            // Create runner in App Domain -> 
             var rc = CreateRunnerInAppDomain(out var ad);
+
+            // Additional setting to the list ->
+            list.Add("algorithm-type-name", Program.Config.AlgorithmTypeName);
+            list.Add("algorithm-location", Program.Config.AlgorithmLocation);
+            list.Add("data-folder", Program.Config.DataFolder);
+
+            // Obtain results -> 
             var result = rc.Run(list);
+
+            // Unload ->
             AppDomain.Unload(ad);
 
             return result;
@@ -68,10 +77,6 @@ namespace Optimization
             // Create an instance of MarshalbyRefType in AppDomain. A proxy to the object is returned.
             var rc = (Runner)ad.CreateInstanceAndUnwrap(_exeAssembly, 
                     typeof(Runner).FullName ?? throw new InvalidOperationException());
-
-            // create a clone of global config file and pass it to app domain as property
-            var cloneConfig = Exstensions.Clone(Program.Config);
-            ad.SetData("Configuration", cloneConfig);
 
             return rc;
         }

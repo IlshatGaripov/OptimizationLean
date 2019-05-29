@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantConnect.Queues", "..\L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optimization.RunnerAzureApp", "Optimization.RunnerAzureApp\Optimization.RunnerAzureApp.csproj", "{9AFA923F-845E-4EC2-BF26-A7748AB05356}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optimization.RunnerLocal", "Optimization.RunnerLocal\Optimization.RunnerLocal.csproj", "{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -278,6 +280,24 @@ Global
 		{9AFA923F-845E-4EC2-BF26-A7748AB05356}.Release|x64.Build.0 = Release|Any CPU
 		{9AFA923F-845E-4EC2-BF26-A7748AB05356}.Release|x86.ActiveCfg = Release|Any CPU
 		{9AFA923F-845E-4EC2-BF26-A7748AB05356}.Release|x86.Build.0 = Release|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Debug|x64.Build.0 = Debug|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Debug|x86.Build.0 = Debug|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Mono|Any CPU.Build.0 = Release|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Mono|x64.ActiveCfg = Release|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Mono|x64.Build.0 = Release|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Mono|x86.ActiveCfg = Release|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Mono|x86.Build.0 = Release|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Release|x64.ActiveCfg = Release|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Release|x64.Build.0 = Release|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Release|x86.ActiveCfg = Release|Any CPU
+		{9FE6E813-62C1-4CB3-86CD-D7E69CFA8C3F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

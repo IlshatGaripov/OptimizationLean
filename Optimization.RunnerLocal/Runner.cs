@@ -7,8 +7,8 @@ using QuantConnect.Lean.Engine;
 using QuantConnect.Logging;
 using QuantConnect.Util;
 
-namespace Optimization
-{ 
+namespace Optimization.RunnerLocal
+{
     /// <summary>
     /// Class responsible for running the algorithm with Lean Engine.
     /// </summary>
@@ -119,5 +119,4 @@ namespace Optimization
             return _resultsHandler.FullResults;
         }
     }
-
 }
