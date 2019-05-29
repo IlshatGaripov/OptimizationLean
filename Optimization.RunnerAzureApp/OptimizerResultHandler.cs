@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using QuantConnect;
 using QuantConnect.Interfaces;
 using QuantConnect.Lean.Engine.DataFeeds;
@@ -17,34 +18,22 @@ namespace Optimization.RunnerAzureApp
     public class OptimizerResultHandler : IResultHandler
     {
 
-        private IResultHandler _shadow;
+        private readonly IResultHandler _shadow;
 
         #region Properties
         public Dictionary<string, decimal> FullResults { get; set; }
 
         public ConcurrentQueue<Packet> Messages
         {
-            get
-            {
-                return _shadow.Messages;
-            }
+            get => _shadow.Messages;
 
-            set
-            {
-                _shadow.Messages = value;
-            }
+            set => _shadow.Messages = value;
         }
 
         public ConcurrentDictionary<string, Chart> Charts
         {
-            get
-            {
-                return _shadow.Charts;
-            }
-            set
-            {
-                _shadow.Charts = value;
-            }
+            get => _shadow.Charts;
+            set => _shadow.Charts = value;
         }
 
         public TimeSpan ResamplePeriod => _shadow.ResamplePeriod;
@@ -73,7 +62,20 @@ namespace Optimization.RunnerAzureApp
                 return;
             }
 
-            FullResults = StatisticsAdapter.Transform(statisticsResults.TotalPerformance, statisticsResults.Summary);
+            var performance = statisticsResults.TotalPerformance;
+            var summary = statisticsResults.Summary;
+
+            // Create a dictionary
+            var dictionary = performance.PortfolioStatistics.GetType()
+                .GetProperties()
+                .ToDictionary(k => k.Name,
+                    v => (decimal) v.GetValue(performance.PortfolioStatistics));
+
+            // Addditional statistics
+            dictionary.Add("TotalNumberOfTrades", int.Parse(summary["Total Trades"]));
+            dictionary.Add("TotalFees", decimal.Parse(summary["Total Fees"].Substring(1)));
+
+            FullResults = dictionary;
         }
 
         #region Shadow Methods

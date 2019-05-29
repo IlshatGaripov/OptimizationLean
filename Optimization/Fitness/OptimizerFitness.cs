@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using GeneticSharp.Domain.Chromosomes;
-using Optimization.RunnerLocal;
 
 namespace Optimization
 {

@@ -61,6 +61,27 @@
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.4.5\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="QuantConnect.Algorithm">
+      <HintPath>..\..\Lean\Algorithm\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Common">
+      <HintPath>..\..\Lean\Common\bin\Debug\QuantConnect.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Configuration">
+      <HintPath>..\..\Lean\Configuration\bin\Debug\QuantConnect.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Messaging">
+      <HintPath>..\..\Lean\Messaging\bin\Debug\QuantConnect.Messaging.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Lean.Engine">
+      <HintPath>..\..\Lean\Engine\bin\Debug\QuantConnect.Lean.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Logging">
+      <HintPath>..\..\Lean\Logging\bin\Debug\QuantConnect.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Queues">
+      <HintPath>..\..\Lean\Queues\bin\Debug\QuantConnect.Queues.dll</HintPath>
+    </Reference>
     <Reference Include="SharpLearning.Common.Interfaces, Version=0.31.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpLearning.Common.Interfaces.0.31.1\lib\net461\SharpLearning.Common.Interfaces.dll</HintPath>
     </Reference>
@@ -95,7 +116,9 @@
   <ItemGroup>
     <Compile Include="Common\AzureBatchManager.cs" />
     <Compile Include="Common\Exstensions.cs" />
+    <Compile Include="Common\FitnessFilter.cs" />
     <Compile Include="Common\OptimizerAppDomainManager.cs" />
+    <Compile Include="Common\StatisticsAdapter.cs" />
     <Compile Include="Configuration\FitnessConfiguration.cs" />
     <Compile Include="Configuration\FitnessFilterConfiguration.cs" />
     <Compile Include="Configuration\WalkForwardConfiguration.cs" />
@@ -112,7 +135,6 @@
     <Compile Include="GeneticSharpExtensions\TaskExecutorAzure.cs" />
     <Compile Include="Interfaces\IOptimizerManager.cs" />
     <Compile Include="Common\Enums.cs" />
-    <Compile Include="Common\Statistics\FitnessFilter.cs" />
     <Compile Include="Fitness\NFoldCrossReturnMaximizer.cs" />
     <Compile Include="Fitness\NestedCrossSharpeMaximizer.cs" />
     <Compile Include="Fitness\SharpeMaximizer.cs" />
@@ -122,7 +144,6 @@
     <Compile Include="OptimizerManager\AlgorithmOptimumFinder.cs" />
     <Compile Include="Fitness\OptimizerFitness.cs" />
     <Compile Include="Configuration\OptimizerConfiguration.cs" />
-    <Compile Include="Common\Statistics\StatisticsAdapter.cs" />
     <Compile Include="GeneticSharpExtensions\PopulationRandom.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -158,18 +179,6 @@
     <ProjectReference Include="..\..\GeneticSharp\src\GeneticSharp.Infrastructure.Framework\GeneticSharp.Infrastructure.Framework.csproj">
       <Project>{14130612-ff14-4df4-8829-27c0e85e09f0}</Project>
       <Name>GeneticSharp.Infrastructure.Framework</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Lean\Configuration\QuantConnect.Configuration.csproj">
-      <Project>{0aeb4ea3-28c8-476e-89fd-926f06590b4c}</Project>
-      <Name>QuantConnect.Configuration</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Lean\Messaging\QuantConnect.Messaging.csproj">
-      <Project>{f2e90e2d-ba25-40e2-b39a-0ba31e68f7f8}</Project>
-      <Name>QuantConnect.Messaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Lean\Queues\QuantConnect.Queues.csproj">
-      <Project>{d6633172-1368-4df6-9444-825c3e00c819}</Project>
-      <Name>QuantConnect.Queues</Name>
     </ProjectReference>
     <ProjectReference Include="..\Optimization.RunnerLocal\Optimization.RunnerLocal.csproj">
       <Project>{9fe6e813-62c1-4cb3-86cd-d7e69cfa8c3f}</Project>
