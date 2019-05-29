@@ -113,11 +113,9 @@
     <Compile Include="Interfaces\IOptimizerManager.cs" />
     <Compile Include="Common\Enums.cs" />
     <Compile Include="Common\Statistics\FitnessFilter.cs" />
-    <Compile Include="Common\Statistics\OptimizerResultHandler.cs" />
     <Compile Include="Fitness\NFoldCrossReturnMaximizer.cs" />
     <Compile Include="Fitness\NestedCrossSharpeMaximizer.cs" />
     <Compile Include="Fitness\SharpeMaximizer.cs" />
-    <Compile Include="Common\Runner.cs" />
     <Compile Include="OptimizerManager\MaximizerManager.cs" />
     <Compile Include="GeneticSharpExtensions\FibonacciRandomization.cs" />
     <Compile Include="GeneticSharpExtensions\Chromosome.cs" />
@@ -161,21 +159,9 @@
       <Project>{14130612-ff14-4df4-8829-27c0e85e09f0}</Project>
       <Name>GeneticSharp.Infrastructure.Framework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Lean\Common\QuantConnect.csproj">
-      <Project>{2545c0b4-fabb-49c9-8dd1-9ad7ee23f86b}</Project>
-      <Name>QuantConnect</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Lean\Configuration\QuantConnect.Configuration.csproj">
       <Project>{0aeb4ea3-28c8-476e-89fd-926f06590b4c}</Project>
       <Name>QuantConnect.Configuration</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Lean\Engine\QuantConnect.Lean.Engine.csproj">
-      <Project>{12156f46-d07e-4e3d-ad2b-7409e82ab62f}</Project>
-      <Name>QuantConnect.Lean.Engine</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Lean\Logging\QuantConnect.Logging.csproj">
-      <Project>{01911409-86be-4e7d-9947-df714138610d}</Project>
-      <Name>QuantConnect.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Lean\Messaging\QuantConnect.Messaging.csproj">
       <Project>{f2e90e2d-ba25-40e2-b39a-0ba31e68f7f8}</Project>
@@ -184,6 +170,10 @@
     <ProjectReference Include="..\..\Lean\Queues\QuantConnect.Queues.csproj">
       <Project>{d6633172-1368-4df6-9444-825c3e00c819}</Project>
       <Name>QuantConnect.Queues</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Optimization.RunnerLocal\Optimization.RunnerLocal.csproj">
+      <Project>{9fe6e813-62c1-4cb3-86cd-d7e69cfa8c3f}</Project>
+      <Name>Optimization.RunnerLocal</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="..\packages\Accord.3.8.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.8.0\build\Accord.targets')" />

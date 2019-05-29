@@ -54,31 +54,5 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Lean\Common\QuantConnect.csproj">
-      <Project>{2545c0b4-fabb-49c9-8dd1-9ad7ee23f86b}</Project>
-      <Name>QuantConnect</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Lean\Configuration\QuantConnect.Configuration.csproj">
-      <Project>{0aeb4ea3-28c8-476e-89fd-926f06590b4c}</Project>
-      <Name>QuantConnect.Configuration</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Lean\Engine\QuantConnect.Lean.Engine.csproj">
-      <Project>{12156f46-d07e-4e3d-ad2b-7409e82ab62f}</Project>
-      <Name>QuantConnect.Lean.Engine</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Lean\Logging\QuantConnect.Logging.csproj">
-      <Project>{01911409-86be-4e7d-9947-df714138610d}</Project>
-      <Name>QuantConnect.Logging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Lean\Messaging\QuantConnect.Messaging.csproj">
-      <Project>{f2e90e2d-ba25-40e2-b39a-0ba31e68f7f8}</Project>
-      <Name>QuantConnect.Messaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Lean\Queues\QuantConnect.Queues.csproj">
-      <Project>{d6633172-1368-4df6-9444-825c3e00c819}</Project>
-      <Name>QuantConnect.Queues</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

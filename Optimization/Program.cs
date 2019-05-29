@@ -25,11 +25,11 @@ namespace Optimization
                 throw new ArgumentException("Time limits for test are not defined");
             }
 
-            // Some required pre-settings
-            DeployResources();
-
             try
             {
+                // Required pre-settings
+                DeployResources();
+
                 // GA manager
                 var manager = new AlgorithmOptimumFinder(Config.StartDate.Value, Config.EndDate.Value, Config.FitnessScore);
 
@@ -40,17 +40,18 @@ namespace Optimization
                 // Start an optimization
                 manager.Start();
 
-                // Сomplete the life cycle of objects have been deployed
+                // Сomplete the life cycle of objects have been created in deployment phase
                 ReleaseDeployedResources();
-
-                Console.WriteLine("Press ENTER to exit the program");
-                Console.ReadKey(); 
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
+
+            Console.WriteLine();
+            Console.WriteLine("Press ENTER to exit the program");
+            Console.ReadLine();
         }
 
 
@@ -83,10 +84,16 @@ namespace Optimization
         /// </summary>
         public static void ReleaseDeployedResources()
         {
-            // -1- If Azure - Clean up Batch resources
-            if (Program.Config.TaskExecutionMode == TaskExecutionMode.Azure)
+            // -1- Clean up Task Execution resources
+            switch (Program.Config.TaskExecutionMode)
             {
-                AzureBatchManager.FinalizeAsync().Wait();
+                case TaskExecutionMode.Azure:
+                    AzureBatchManager.FinalizeAsync().Wait();
+                    break;
+                case TaskExecutionMode.Linear:
+                case TaskExecutionMode.Parallel:
+                    OptimizerAppDomainManager.Release();
+                    break;
             }
 
             // -2- Shutdown the logger
@@ -98,8 +105,7 @@ namespace Optimization
         /// </summary>
         public static void TerminationReached(object sender, EventArgs e)
         {
-
-            Program.Logger.Info("Termination Reached.");
+            Logger.Info("Termination Reached.");
         }
 
         /// <summary>

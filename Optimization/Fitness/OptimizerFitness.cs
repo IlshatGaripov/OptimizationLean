@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using GeneticSharp.Domain.Chromosomes;
+using Optimization.RunnerLocal;
 
 namespace Optimization
 {
@@ -43,8 +44,13 @@ namespace Optimization
                     // log the result before an experiment (backtest)
                     Program.Logger.Info(outputBeforeRun);
                 }
-                
-                // Calculate
+
+                // Additional setting to the list ->
+                list.Add("algorithm-type-name", Program.Config.AlgorithmTypeName);
+                list.Add("algorithm-location", Program.Config.AlgorithmLocation);
+                list.Add("data-folder", Program.Config.DataFolder);
+
+                // Obtain results -> 
                 var result = OptimizerAppDomainManager.RunAlgorithm(list);   // run the algorithm
 
                 // == OUTPUT 2 ==
