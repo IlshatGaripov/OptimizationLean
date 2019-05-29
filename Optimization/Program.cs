@@ -84,10 +84,16 @@ namespace Optimization
         /// </summary>
         public static void ReleaseDeployedResources()
         {
-            // -1- If Azure - Clean up Batch resources
-            if (Program.Config.TaskExecutionMode == TaskExecutionMode.Azure)
+            // -1- Clean up Task Execution resources
+            switch (Program.Config.TaskExecutionMode)
             {
-                AzureBatchManager.FinalizeAsync().Wait();
+                case TaskExecutionMode.Azure:
+                    AzureBatchManager.FinalizeAsync().Wait();
+                    break;
+                case TaskExecutionMode.Linear:
+                case TaskExecutionMode.Parallel:
+                    OptimizerAppDomainManager.Release();
+                    break;
             }
 
             // -2- Shutdown the logger
@@ -99,8 +105,7 @@ namespace Optimization
         /// </summary>
         public static void TerminationReached(object sender, EventArgs e)
         {
-
-            Program.Logger.Info("Termination Reached.");
+            Logger.Info("Termination Reached.");
         }
 
         /// <summary>
