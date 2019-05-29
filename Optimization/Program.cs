@@ -19,26 +19,28 @@ namespace Optimization
             // Load the optimizer settings from config json
             Config = Exstensions.LoadConfigFromFile("optimization_local.json");
 
-            // **
-            // TODO: Check the Config object values consistency - VALIDATION() - for that all required information is present!
-            // **
+            // Assert that start and end dates are speficied
+            if (Config.StartDate == null || Config.EndDate == null)
+            {
+                throw new ArgumentException("Time limits for test are not defined");
+            }
 
-            // We may need to set up the computation resources
+            // Some required pre-settings
             DeployResources();
 
             try
             {
                 // GA manager
-                var manager = new AlgorithmOptimumFinder(Config.StartDate, Config.EndDate, Config.FitnessScore);
+                var manager = new AlgorithmOptimumFinder(Config.StartDate.Value, Config.EndDate.Value, Config.FitnessScore);
 
-                // Subscribe to events
+                // Subscribe to GA events
                 manager.GenAlgorithm.GenerationRan += GenerationRan;
                 manager.GenAlgorithm.TerminationReached += TerminationReached;
 
-                // Start optimization
+                // Start an optimization
                 manager.Start();
 
-                // Release
+                // Сomplete the life cycle of objects have been deployed
                 ReleaseDeployedResources();
 
                 Console.WriteLine("Press ENTER to exit the program");
@@ -50,6 +52,7 @@ namespace Optimization
                 throw;
             }
         }
+
 
         /// <summary>
         /// Inits computation resources
@@ -91,11 +94,10 @@ namespace Optimization
         }
 
         /// <summary>
-        /// Handler called by the end of optimization algorithm
+        /// Handler called at the end of work of genetic algorithm
         /// </summary>
         public static void TerminationReached(object sender, EventArgs e)
         {
-            GenerationRan(null, null);
 
             Program.Logger.Info("Termination Reached.");
         }

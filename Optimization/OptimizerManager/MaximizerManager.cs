@@ -5,7 +5,7 @@ namespace Optimization
     public class MaximizerManager : IOptimizerManager
     {
         public const string Termination = "Termination Reached.";
-        private readonly IFitness _fitness = new OptimizerFitness(Program.Config.StartDate, Program.Config.EndDate);
+        private readonly IFitness _fitness = new OptimizerFitness(Program.Config.StartDate.Value, Program.Config.EndDate.Value);
 
         public void Start()
         {

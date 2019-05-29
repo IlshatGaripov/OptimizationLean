@@ -98,6 +98,7 @@
     <Compile Include="Common\OptimizerAppDomainManager.cs" />
     <Compile Include="Configuration\FitnessConfiguration.cs" />
     <Compile Include="Configuration\FitnessFilterConfiguration.cs" />
+    <Compile Include="Configuration\WalkForwardConfiguration.cs" />
     <Compile Include="Fitness\AzureFitness.cs" />
     <Compile Include="Configuration\GeneConfiguration.cs" />
     <Compile Include="Fitness\LeanFitness.cs" />

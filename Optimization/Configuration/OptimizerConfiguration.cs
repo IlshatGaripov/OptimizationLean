@@ -27,6 +27,12 @@ namespace Optimization
         public TaskExecutionMode TaskExecutionMode { get; set; }
 
         /// <summary>
+        /// Number of parallel backtests
+        /// </summary>
+        [JsonProperty("max-threads")]
+        public int MaxThreads { get; set; } = 8;
+
+        /// <summary>
         /// Metric to evaluate the algorithm performance
         /// </summary>
         [JsonProperty("fitness-score")]
@@ -40,10 +46,22 @@ namespace Optimization
         public FitnessFilterConfiguration FitnessFilter { get; set; }
 
         /// <summary>
-        /// Number of parallel backtests
+        /// Algorithm backtest start date
         /// </summary>
-        [JsonProperty("max-threads")]
-        public int MaxThreads { get; set; } = 8;
+        [JsonProperty("startDate")]
+        public DateTime? StartDate { get; set; }
+
+        /// <summary>
+        /// Algorithm backtest end date
+        /// </summary>
+        [JsonProperty("endDate")]
+        public DateTime? EndDate { get; set; }
+
+        /// <summary>
+        /// Walk-forward optimizaion mode config object
+        /// </summary>
+        [JsonProperty("walk-forward")]
+        public WalkForwardConfiguration WalkForward { get; set; }
 
         /// <summary>
         /// The settings to generate gene values
@@ -98,18 +116,6 @@ namespace Optimization
         /// </summary>
         [JsonProperty("fitness")]
         public FitnessConfiguration Fitness { get; set; }
-
-        /// <summary>
-        /// Algorithm backtest start date
-        /// </summary>
-        [JsonProperty("startDate")]
-        public DateTime StartDate { get; set; }
-
-        /// <summary>
-        /// Algorithm backtest end date
-        /// </summary>
-        [JsonProperty("endDate")]
-        public DateTime EndDate { get; set; }
 
         /// <summary>
         /// Likeliness of mutation

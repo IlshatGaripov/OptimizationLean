@@ -45,7 +45,7 @@ namespace Optimization
             IMutation mutation = new UniformMutation(true);
             IReinsertion reinsertion = new ElitistReinsertion();
 
-            // GA's specific to compuration mode objects
+            // GA's specific to cofigurable options objects
             ITermination termination;
             IFitness fitness;
             IPopulation population;
