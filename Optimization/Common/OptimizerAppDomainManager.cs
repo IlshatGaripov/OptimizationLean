@@ -24,7 +24,7 @@ namespace Optimization
         }
 
         /// <summary>
-        /// 
+        /// Release 
         /// </summary>
         public static void Release()
         {
