@@ -15,15 +15,26 @@ namespace Optimization
     /// </summary>
     public class AlgorithmOptimumFinder : IOptimizerManager
     {
-        // Optimization start and end dates
-        public DateTime StartDate;
-        public DateTime EndDate;
+        /// <summary>
+        /// Optimization start date
+        /// </summary>
+        public DateTime StartDate { get; set; }
 
-        // Fitness Score to sort the results appearing during optimization
-        public FitnessScore SortCriteria;
+        /// <summary>
+        /// Optimization end date
+        /// </summary>
+        public DateTime EndDate { get; set; }
 
-        // Genetic algorithm itself! 
-        public GeneticAlgorithmCustom GenAlgorithm;
+        /// <summary>
+        /// Fitness Score to sort the parameters obtained by optimization
+        /// </summary>
+        public FitnessScore SortCriteria { get; set; }
+
+        /// <summary>
+        /// Genetic algorithm itself!
+        /// using https://stackoverflow.com/questions/34743533/automated-property-with-getter-only-can-be-set-why/34743568
+        /// </summary>
+        public GeneticAlgorithmCustom GenAlgorithm { get; }
 
         /// <summary>
         /// Init class variables. Algorithm start and end dates and sorting method
@@ -31,7 +42,8 @@ namespace Optimization
         /// </summary>
         /// <param name="start">Algorithm start date</param>
         /// <param name="end">Algorithm end date</param>
-        /// <param name="sortCriteria">Argument of <see cref="FitnessScore"/> type. Defines a way to sort the results</param>
+        /// <param name="sortCriteria">Argument of <see cref="FitnessScore"/> type.
+        /// Defines a criteria to sort the backtest results and choose best parameters</param>
         public AlgorithmOptimumFinder(DateTime start, DateTime end, FitnessScore sortCriteria = FitnessScore.SharpeRatio)
         {
             // Assign Dates and Criteria to sort the results

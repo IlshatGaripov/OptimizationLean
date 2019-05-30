@@ -145,6 +145,7 @@
     <Compile Include="Fitness\OptimizerFitness.cs" />
     <Compile Include="Configuration\OptimizerConfiguration.cs" />
     <Compile Include="GeneticSharpExtensions\PopulationRandom.cs" />
+    <Compile Include="OptimizerManager\WalkForwardOptimizationManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Fitness\CompoundingAnnualReturnFitness.cs" />

@@ -1,4 +1,5 @@
-﻿using GeneticSharp.Domain.Fitnesses;
+﻿using System;
+using GeneticSharp.Domain.Fitnesses;
 
 namespace Optimization
 {
@@ -6,6 +7,10 @@ namespace Optimization
     {
         public const string Termination = "Termination Reached.";
         private readonly IFitness _fitness = new OptimizerFitness(Program.Config.StartDate.Value, Program.Config.EndDate.Value);
+
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public FitnessScore SortCriteria { get; set; }
 
         public void Start()
         {
