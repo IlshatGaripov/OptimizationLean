@@ -383,13 +383,11 @@ namespace Optimization
         /// Runs the evaluate fitness.
         /// </summary>
         /// <param name="chromosome">The chromosome.</param>
-        private void RunEvaluateFitness(object chromosome)
+        private void RunEvaluateFitness(IChromosome chromosome)
         {
-            var c = chromosome as IChromosome;
-
             try
             {
-                c.Fitness = Fitness.Evaluate(c);
+                chromosome.Fitness = Fitness.Evaluate(chromosome);
             }
             catch (Exception ex)
             {

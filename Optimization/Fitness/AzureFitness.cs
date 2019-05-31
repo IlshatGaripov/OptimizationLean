@@ -127,22 +127,27 @@ namespace Optimization
             // Call BatchClient.JobOperations.AddTask() to add the tasks as a collection to a queue
             await batchClient.JobOperations.AddTaskAsync(jobId, cloudTaskCollection);
 
-            // Monitor for a task 01 to complete. Timeout is set to 20 minutes. 
+            // Monitor for a task to complete. Timeout is set to 20 minutes. 
             await MonitorSpecificTaskToCompleteAsync(batchClient, jobId, taskId, TimeSpan.FromMinutes(20));
 
-            var fitness = await ObtainResultFromTheBlob(blobClient, AzureBatchManager.OutputContainerName, 
+            // Obtain results dictionary ->
+            var result = await ObtainResultFromTheBlob(blobClient, AzureBatchManager.OutputContainerName, 
                 @"results\" + resultsOutputFile);
 
+            // Save full results ->
+            chromosomeBase.FullResults = result;
 
-            // Display results to Console 
+            // Calculate fitness ->
+            var fitness = StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore);;
+
+            // Display fitness to Console ->
             var inputParameters = geneKeyValues.Aggregate(string.Empty, (current, item) =>
                                    current + item.Key + ": " + item.Value + " ");
-
             lock (Obj)
             {
                 Console.WriteLine($"IN: [{inputParameters}] FIT: {fitness}");
             }
-            
+
             return fitness;
         }
 
@@ -196,7 +201,7 @@ namespace Optimization
         /// <param name="blobClient">A CloudBlobClient object.</param>
         /// <param name="containerName">Name of container.</param>
         /// <param name="blobName">Name of a file, blob.</param>
-        private static async Task<double> ObtainResultFromTheBlob(CloudBlobClient blobClient, string containerName, string blobName)
+        private static async Task<Dictionary<string,decimal>> ObtainResultFromTheBlob(CloudBlobClient blobClient, string containerName, string blobName)
         {
             // Container
             CloudBlobContainer container = blobClient.GetContainerReference(containerName);
@@ -212,10 +217,8 @@ namespace Optimization
                 memoryStream.Position = 0;
                 var json = streamReader.ReadToEnd();
 
-                // Convert json to results dictionary
-                var result = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(json);
-
-                return StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore);
+                // Convert json to results dictionary and return ->
+                return JsonConvert.DeserializeObject<Dictionary<string, decimal>>(json);
             }
         }
 

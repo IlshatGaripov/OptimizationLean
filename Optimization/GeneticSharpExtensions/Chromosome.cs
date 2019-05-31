@@ -1,11 +1,12 @@
 ﻿using GeneticSharp.Domain.Chromosomes;
 using System;
+using System.Collections.Generic;
 
 namespace Optimization
 {
     /// <summary>
     /// Base class for all custom implementations of a chromosome class.
-    /// Intermediate for ChromosomeBase (library implementation) and actual implementation.
+    /// Intermediate between ChromosomeBase (library implementation) and factual implementation.
     /// </summary>
     public class Chromosome : ChromosomeBase
     {
@@ -13,6 +14,11 @@ namespace Optimization
         /// Unique chromosome id.
         /// </summary>
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
+
+        /// <summary>
+        /// Full backtest results directionay returned by OptimizerResultHandler
+        /// </summary>
+        public Dictionary<string, decimal> FullResults { get; set; }
 
         /// <summary>
         /// Constructor.

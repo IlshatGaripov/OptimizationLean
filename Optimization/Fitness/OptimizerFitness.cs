@@ -5,7 +5,7 @@ using GeneticSharp.Domain.Chromosomes;
 namespace Optimization
 {
     /// <summary>
-    /// Default optimizer behaviour.
+    /// Default optimizer for computation on local machine
     /// </summary>
     public class OptimizerFitness : LeanFitness
     {
@@ -21,17 +21,17 @@ namespace Optimization
         {
             try
             {
-                // == OUTPUT 1 ==
+                // - OUTPUT 1 -
                 var outputBeforeRun = string.Empty;
-                var chromosomeCasted = (Chromosome)chromosome;
+                var chromosomeBase = (Chromosome)chromosome;
 
                 // convert to dictionary and add "id" item
-                var list = chromosomeCasted.ToDictionary();
+                var list = chromosomeBase.ToDictionary();
                 var paramsString = "~ " + list.Aggregate(outputBeforeRun, (current, item) =>
                     current + item.Key + ": " + item.Value + " |");
 
-                list.Add("Id", chromosomeCasted.Id);
-                outputBeforeRun += $"Send for backtest Chromosome Id: {chromosomeCasted.Id} w.params:{Environment.NewLine}";
+                list.Add("Id", chromosomeBase.Id);
+                outputBeforeRun += $"Send for backtest Chromosome Id: {chromosomeBase.Id} w.params:{Environment.NewLine}";
                 outputBeforeRun += paramsString;
 
                 // set algorithm start and end dates
@@ -49,18 +49,22 @@ namespace Optimization
                 list.Add("algorithm-location", Program.Config.AlgorithmLocation);
                 list.Add("data-folder", Program.Config.DataFolder);
 
-                // Obtain results -> 
-                var result = OptimizerAppDomainManager.RunAlgorithm(list);   // run the algorithm
+                // Obtain full results -> 
+                var result = OptimizerAppDomainManager.RunAlgorithm(list);
 
-                // == OUTPUT 2 ==
-                var outputResult = $"PRINT results for Chromosome Id: {chromosomeCasted.Id} w.params:{Environment.NewLine}";
+                // Save full results ->
+                chromosomeBase.FullResults = result;
+
+                // - OUTPUT 2 -
+                var outputResult = $"chromosome #: {chromosomeBase.Id} results:{Environment.NewLine}";
                 outputResult += paramsString + Environment.NewLine;
                 
                 // calculate fitness and concat the results to an output string
                 var fitness = StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore);
 
-                outputResult += $"~ Fitness.Value = {fitness} ";
-                outputResult += $"Drawdown = {Math.Round(result["Drawdown"], 2)} TotalNumberOfTrades = {result["TotalNumberOfTrades"]}";
+                outputResult +=
+                    $"-> Fitness = {fitness} Drawdown = {Math.Round(result["Drawdown"], 2)} " +
+                    $"TotalNumberOfTrades = {result["TotalNumberOfTrades"]}";
 
                 lock (Obj)
                 {
