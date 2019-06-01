@@ -18,17 +18,17 @@ namespace Optimization
         /// <summary>
         /// Optimization start date
         /// </summary>
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
         /// <summary>
         /// Optimization end date
         /// </summary>
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         /// <summary>
         /// Fitness Score to sort the parameters obtained by optimization
         /// </summary>
-        public FitnessScore SortCriteria { get; set; }
+        public FitnessScore? SortCriteria { get; set; }
 
         /// <summary>
         /// Genetic algorithm itself!
@@ -70,17 +70,17 @@ namespace Optimization
             {
                 case TaskExecutionMode.Linear:
                     executor = new LinearTaskExecutor();
-                    fitness = new OptimizerFitness(StartDate, EndDate);
+                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value);
                     break;
 
                 case TaskExecutionMode.Parallel:
                     executor = new ParallelTaskExecutor { MaxThreads = maxThreads };
-                    fitness = new OptimizerFitness(StartDate, EndDate);
+                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value);
                     break;
 
                 case TaskExecutionMode.Azure:
                     executor = new TaskExecutorAzure { MaxThreads = maxThreads };
-                    fitness = new AzureFitness(StartDate, EndDate);
+                    fitness = new AzureFitness(StartDate.Value, EndDate.Value);
                     break;
 
                 default:

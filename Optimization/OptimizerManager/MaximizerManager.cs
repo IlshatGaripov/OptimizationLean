@@ -10,7 +10,7 @@ namespace Optimization
 
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public FitnessScore SortCriteria { get; set; }
+        public FitnessScore? SortCriteria { get; set; }
 
         public void Start()
         {

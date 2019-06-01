@@ -10,17 +10,17 @@ namespace Optimization
         /// <summary>
         /// Optimization start date
         /// </summary>
-        DateTime StartDate { get; set; }
+        DateTime? StartDate { get; set; }
 
         /// <summary>
         /// Optimization end date
         /// </summary>
-        DateTime EndDate { get; set; }
+        DateTime? EndDate { get; set; }
 
         /// <summary>
         /// Fitness Score to sort the parameters obtained by optimization
         /// </summary>
-        FitnessScore SortCriteria { get; set; }
+        FitnessScore? SortCriteria { get; set; }
 
         /// <summary>
         /// Starts the process
