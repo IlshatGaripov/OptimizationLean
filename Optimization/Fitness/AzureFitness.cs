@@ -138,7 +138,7 @@ namespace Optimization
             chromosomeBase.FullResults = result;
 
             // Calculate fitness ->
-            var fitness = StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore);;
+            var fitness = StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore.Value);;
 
             // Display fitness to Console ->
             var inputParameters = geneKeyValues.Aggregate(string.Empty, (current, item) =>

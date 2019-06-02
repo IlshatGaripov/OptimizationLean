@@ -19,10 +19,13 @@ namespace Optimization
             // Load the optimizer settings from config json
             Config = Exstensions.LoadConfigFromFile("optimization_local.json");
 
-            // Assert that start and end dates are speficied
-            if (Config.StartDate == null || Config.EndDate == null)
+            // Make sure that start and end dates are existent
+            if (Config.StartDate == null || 
+                Config.EndDate == null ||
+                Config.FitnessScore == null ||
+                Config.WalkForwardConfiguration == null)
             {
-                throw new ArgumentException("Time limits for test are not defined");
+                throw new ArgumentException("Check that all required config variables are not defined ..");
             }
 
             try
@@ -30,17 +33,35 @@ namespace Optimization
                 // Required pre-settings
                 DeployResources();
 
-                // GA manager
-                var manager = new AlgorithmOptimumFinder(Config.StartDate.Value, Config.EndDate.Value, Config.FitnessScore);
+                // Init and start an optimization manager ->
+                if (Config.WalkForwardConfiguration.Enabled == true)
+                {
+                    var wfoManager = new WalkForwardOptimizationManager
+                    {
+                        StartDate = Config.StartDate,
+                        EndDate = Config.EndDate,
+                        SortCriteria = Config.FitnessScore,
+                        WalkForwardConfiguration = Config.WalkForwardConfiguration
+                    };
 
-                // Subscribe to GA events
-                manager.GenAlgorithm.GenerationRan += GenerationRan;
-                manager.GenAlgorithm.TerminationReached += TerminationReached;
+                    wfoManager.OneEvaluationStepCompleted += WfoStepCompleted;
 
-                // Start an optimization
-                manager.Start();
+                    // Start it ->
+                    wfoManager.Start();
+                }
+                else
+                {
+                    var easyManager = new AlgorithmOptimumFinder(Config.StartDate.Value, Config.EndDate.Value, Config.FitnessScore.Value);
 
-                // Сomplete the life cycle of objects have been created in deployment phase
+                    // Subscribe to GA events ->
+                    easyManager.GenAlgorithm.GenerationRan += GenerationRan;
+                    easyManager.GenAlgorithm.TerminationReached += TerminationReached;
+
+                    // Start an optimization ->
+                    easyManager.Start();
+                }
+                
+                // Сomplete the life cycle of objects have been created in deployment phase ->
                 ReleaseDeployedResources();
             }
             catch (Exception e)
@@ -60,22 +81,16 @@ namespace Optimization
         /// </summary>
         public static void DeployResources()
         {
+            // Set up App Domain settings no matter what computation mode will be used - local PC or a cloud ->
+            OptimizerAppDomainManager.Initialize();
+
+            // Computation mode specific settings ->
             switch (Program.Config.TaskExecutionMode)
             {
-                // Deploy Batch resources if computations are to be made using cloud compute powers
+                // Deploy Batch resources if calculations are made using cloud compute powers
                 case TaskExecutionMode.Azure:
                     AzureBatchManager.DeployAsync().Wait();
                     break;
-
-                // Configure App Domain settings if calculations are planned to be handled using local PC powers
-                case TaskExecutionMode.Linear:
-                case TaskExecutionMode.Parallel:
-                    OptimizerAppDomainManager.Initialize();
-                    break;
-
-                // Otherwise
-                default:
-                    throw new Exception("Execution mode is not precise");
             }
         }
 
@@ -90,14 +105,13 @@ namespace Optimization
                 case TaskExecutionMode.Azure:
                     AzureBatchManager.FinalizeAsync().Wait();
                     break;
-                case TaskExecutionMode.Linear:
-                case TaskExecutionMode.Parallel:
-                    OptimizerAppDomainManager.Release();
-                    break;
             }
 
             // -2- Shutdown the logger
             LogManager.Shutdown();
+
+            // -3- Release AppDomain
+            OptimizerAppDomainManager.Release();
         }
 
         /// <summary>
@@ -114,6 +128,16 @@ namespace Optimization
         public static void GenerationRan(object sender, EventArgs e)
         {
 
+        }
+
+        /// <summary>
+        /// Called at the end of iterative step of walk forward optimization
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public static void WfoStepCompleted(object sender, EventArgs e)
+        {
+            Logger.Info("Walk Forward evaluation step finished");
         }
 
     }

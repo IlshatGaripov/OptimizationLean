@@ -32,17 +32,17 @@ namespace Optimization
         /// Event fired as one stage of optimization on in-sample and
         /// verification on out-of-sample data is completed
         /// </summary>
-        public event EventHandler OneEvaluationStepCompleted;
+        public event EventHandler<WalkForwardEventArgs> OneEvaluationStepCompleted;
 
         /// <summary>
         /// Full results dicrionary for best in sample chromosome backtest result 
         /// </summary>
-        public IList<Dictionary<string, decimal>> BestInSampleFullResults = new List<Dictionary<string, decimal>>();
+        public IList<Dictionary<string, decimal>> BestInSampleResultsList = new List<Dictionary<string, decimal>>();
 
         /// <summary>
         /// Full result dictionary for backtest on out-of-sample data
         /// </summary>
-        public IList<Dictionary<string, decimal>> ValidationFullResults = new List<Dictionary<string, decimal>>();
+        public IList<Dictionary<string, decimal>> ValidationResultsList = new List<Dictionary<string, decimal>>();
 
         /// <summary>
         /// Starts and continues the process till the end
@@ -67,9 +67,9 @@ namespace Optimization
                 throw new ApplicationException("Walk forward configuration must have InSamplePeriod, Step, Anchored values assigned");
             }
 
-            // Make sure that the specified date limits and configuration make sense ->
-            var addDays = WalkForwardConfiguration.InSamplePeriod.Value + WalkForwardConfiguration.Step.Value;
-            if (StartDate.Value.AddDays(addDays) < EndDate.Value)
+            // Make sure that number of days between beginning and end is enough for at least one iteration ->
+            var days = WalkForwardConfiguration.InSamplePeriod.Value + WalkForwardConfiguration.Step.Value;
+            if (StartDate.Value.AddDays(days - 1) > EndDate.Value)
                 throw new ArgumentOutOfRangeException(
                     $"The range between {StartDate.Value} and {EndDate.Value} is short for walk forward configuration values specified");
 
@@ -94,19 +94,24 @@ namespace Optimization
                 var bestChromosomeBase = (Chromosome)optimumFinder.GenAlgorithm.BestChromosome;
 
                 // Then save full result to inner list ->
-                BestInSampleFullResults.Add(bestChromosomeBase.FullResults);
+                var bestInSampleResults = bestChromosomeBase.FullResults;
+                BestInSampleResultsList.Add(bestInSampleResults);
+                
+                // Save best chromosomes to dict ->
+                var bestGenes = bestChromosomeBase.ToDictionary();
 
                 // Using best parameters execute a validation experiment on local machine using best chromosome ->
                 var fitness = new OptimizerFitness(validationStartDate, validationEndDate);
                 fitness.Evaluate(bestChromosome);
 
-                // Add full results to dictionary ->
-                ValidationFullResults.Add(bestChromosomeBase.FullResults);
+                // Save full results to dictionary ->
+                var validationResults = bestChromosomeBase.FullResults;
+                ValidationResultsList.Add(bestChromosomeBase.FullResults);
 
                 // Raise an event informing a single step of evaluation is over ->
-                OnOneEvaluationStepCompleted();
+                OnOneEvaluationStepCompleted(bestInSampleResults, validationResults, bestGenes);
 
-                // Increment the dates ->
+                // Increment the date variables stepping for next iteration ->
                 // If anchored do not increment insample Start Date ->
                 if (!WalkForwardConfiguration.Anchored.Value)
                     insampleStartDate = insampleStartDate.AddDays(step);
@@ -118,11 +123,45 @@ namespace Optimization
         }
 
         /// <summary>
-        /// OneEvaluationStepCompleted wrapper
+        /// Wrapper for OneEvaluationStepCompleted event
         /// </summary>
-        protected virtual void OnOneEvaluationStepCompleted()
+        /// <param name="bestInSampleResults"></param>
+        /// <param name="validationResults"></param>
+        /// <param name="bestGenes"></param>
+        protected virtual void OnOneEvaluationStepCompleted(Dictionary<string, decimal> bestInSampleResults,
+            Dictionary<string, decimal> validationResults,
+            Dictionary<string, object> bestGenes)
         {
-            OneEvaluationStepCompleted?.Invoke(this, EventArgs.Empty);
+            // Create event args object and invoke a delegate ->
+            var eventArgs = new WalkForwardEventArgs
+            {
+                BestInSampleResults = bestInSampleResults,
+                ValidationResults = validationResults,
+                BestGenes = bestGenes
+            };
+            OneEvaluationStepCompleted?.Invoke(this, eventArgs);
         }
+    }
+
+    /// <summary>
+    /// Event args to pass to the handler of OneEvaluationStepCompleted event
+    /// </summary>
+    public class WalkForwardEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Dictionary with full backtest results for best in-sample chromosome 
+        /// </summary>
+        public Dictionary<string, decimal> BestInSampleResults { get; set; }
+
+        /// <summary>
+        /// Dictionary with full validation results on out-of-sample data
+        /// </summary>
+        public Dictionary<string, decimal> ValidationResults { get; set; }
+
+        /// <summary>
+        /// Genes that showed best performance on in sample data
+        /// </summary>
+        public Dictionary<string, object> BestGenes { get; set; }
+
     }
 }

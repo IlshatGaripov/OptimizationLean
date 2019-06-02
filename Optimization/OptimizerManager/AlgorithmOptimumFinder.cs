@@ -44,7 +44,7 @@ namespace Optimization
         /// <param name="end">Algorithm end date</param>
         /// <param name="sortCriteria">Argument of <see cref="FitnessScore"/> type.
         /// Defines a criteria to sort the backtest results and choose best parameters</param>
-        public AlgorithmOptimumFinder(DateTime start, DateTime end, FitnessScore sortCriteria = FitnessScore.SharpeRatio)
+        public AlgorithmOptimumFinder(DateTime start, DateTime end, FitnessScore sortCriteria)
         {
             // Assign Dates and Criteria to sort the results
             StartDate = start;

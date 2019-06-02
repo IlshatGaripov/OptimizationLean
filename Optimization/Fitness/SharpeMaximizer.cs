@@ -102,7 +102,7 @@ namespace Optimization
                 output.AppendFormat("Start: {0}, End: {1}, ", StartDate, EndDate);
 
                 var score = GetScore(list);
-                var fitness = StatisticsAdapter.CalculateFitness(score, Program.Config.FitnessScore);
+                var fitness = StatisticsAdapter.CalculateFitness(score, Program.Config.FitnessScore.Value);
 
                 output.AppendFormat("{0}: {1}", "Fitness", fitness.ToString("0.##"));
                 Program.Logger.Info(output);

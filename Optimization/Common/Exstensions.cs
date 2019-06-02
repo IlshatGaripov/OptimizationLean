@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -13,7 +15,7 @@ namespace Optimization
     public static class Exstensions
     {
         /// <summary>
-        /// Can be used to make a copy of an Configuration object.
+        /// Can be used to make a deep copy of Configuration object.
         /// </summary>
         public static T Clone<T>(T source)
         {
@@ -69,6 +71,33 @@ namespace Optimization
                 Console.WriteLine(e);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Serialize object to memory stream
+        /// https://stackoverflow.com/questions/10390356/serializing-deserializing-with-memory-stream
+        /// </summary>
+        /// <param name="obj">Object to serialize</param>
+        /// <returns>MemoryStream</returns>
+        public static MemoryStream SerializeToStream(object obj)
+        {
+            MemoryStream stream = new MemoryStream();
+            IFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(stream, obj);
+            return stream;
+        }
+
+        /// <summary>
+        /// Deserialize object from memory stream
+        /// </summary>
+        /// <param name="stream">Memory stream</param>
+        /// <returns>Resulting object</returns>
+        public static object DeserializeFromStream(MemoryStream stream)
+        {
+            IFormatter formatter = new BinaryFormatter();
+            stream.Seek(0, SeekOrigin.Begin);
+            object obj = formatter.Deserialize(stream);
+            return obj;
         }
     }
 }

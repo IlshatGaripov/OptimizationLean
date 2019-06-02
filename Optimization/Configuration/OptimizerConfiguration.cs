@@ -37,10 +37,10 @@ namespace Optimization
         /// </summary>
         [JsonProperty("fitness-score")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public FitnessScore FitnessScore { get; set; }
+        public FitnessScore? FitnessScore { get; set; }
 
         /// <summary>
-        /// Object contains configuration to sort out good algorithm performances
+        /// Object contains configuration to sort out algorithms with good performance
         /// </summary>
         [JsonProperty("fitness-filter")]
         public FitnessFilterConfiguration FitnessFilter { get; set; }
@@ -61,7 +61,7 @@ namespace Optimization
         /// Walk-forward optimizaion mode config object
         /// </summary>
         [JsonProperty("walk-forward")]
-        public WalkForwardConfiguration WalkForward { get; set; }
+        public WalkForwardConfiguration WalkForwardConfiguration { get; set; }
 
         /// <summary>
         /// The settings to generate gene values

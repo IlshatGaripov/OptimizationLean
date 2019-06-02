@@ -60,7 +60,7 @@ namespace Optimization
                 outputResult += paramsString + Environment.NewLine;
                 
                 // calculate fitness and concat the results to an output string
-                var fitness = StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore);
+                var fitness = StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore.Value);
 
                 outputResult +=
                     $"-> Fitness = {fitness} Drawdown = {Math.Round(result["Drawdown"], 2)} " +
