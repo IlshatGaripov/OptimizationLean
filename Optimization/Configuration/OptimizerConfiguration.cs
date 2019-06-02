@@ -27,23 +27,41 @@ namespace Optimization
         public TaskExecutionMode TaskExecutionMode { get; set; }
 
         /// <summary>
+        /// Number of parallel backtests
+        /// </summary>
+        [JsonProperty("max-threads")]
+        public int MaxThreads { get; set; } = 8;
+
+        /// <summary>
         /// Metric to evaluate the algorithm performance
         /// </summary>
         [JsonProperty("fitness-score")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public FitnessScore FitnessScore { get; set; }
+        public FitnessScore? FitnessScore { get; set; }
 
         /// <summary>
-        /// Object contains configuration to sort out good algorithm performances
+        /// Object contains configuration to sort out algorithms with good performance
         /// </summary>
         [JsonProperty("fitness-filter")]
         public FitnessFilterConfiguration FitnessFilter { get; set; }
 
         /// <summary>
-        /// Number of parallel backtests
+        /// Algorithm backtest start date
         /// </summary>
-        [JsonProperty("max-threads")]
-        public int MaxThreads { get; set; } = 8;
+        [JsonProperty("startDate")]
+        public DateTime? StartDate { get; set; }
+
+        /// <summary>
+        /// Algorithm backtest end date
+        /// </summary>
+        [JsonProperty("endDate")]
+        public DateTime? EndDate { get; set; }
+
+        /// <summary>
+        /// Walk-forward optimizaion mode config object
+        /// </summary>
+        [JsonProperty("walk-forward")]
+        public WalkForwardConfiguration WalkForwardConfiguration { get; set; }
 
         /// <summary>
         /// The settings to generate gene values
@@ -98,18 +116,6 @@ namespace Optimization
         /// </summary>
         [JsonProperty("fitness")]
         public FitnessConfiguration Fitness { get; set; }
-
-        /// <summary>
-        /// Algorithm backtest start date
-        /// </summary>
-        [JsonProperty("startDate")]
-        public DateTime StartDate { get; set; }
-
-        /// <summary>
-        /// Algorithm backtest end date
-        /// </summary>
-        [JsonProperty("endDate")]
-        public DateTime EndDate { get; set; }
 
         /// <summary>
         /// Likeliness of mutation

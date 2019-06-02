@@ -15,25 +15,26 @@ namespace Optimization
     /// </summary>
     public class AlgorithmOptimumFinder : IOptimizerManager
     {
-        // Optimization start and end dates
-        public DateTime StartDate;
-        public DateTime EndDate;
+        /// <summary>
+        /// Optimization start date
+        /// </summary>
+        public DateTime? StartDate { get; set; }
 
-        // Fitness Score to sort the results appearing during optimization
-        public FitnessScore SortCriteria;
+        /// <summary>
+        /// Optimization end date
+        /// </summary>
+        public DateTime? EndDate { get; set; }
 
-        // Termination Reached! 
-        public const string Termination = "Termination Reached.";
+        /// <summary>
+        /// Fitness Score to sort the parameters obtained by optimization
+        /// </summary>
+        public FitnessScore? SortCriteria { get; set; }
 
-        // Genetic Sharp objects 
-        private readonly ITaskExecutor _executor;
-        private readonly IPopulation _population;
-        private readonly IFitness _fitness;
-        private readonly ITermination _termination;
-        private readonly ISelection _selection;
-        private readonly ICrossover _crossover;
-        private readonly IMutation _mutation;
-        private readonly IReinsertion _reinsertion;
+        /// <summary>
+        /// Genetic algorithm itself!
+        /// using https://stackoverflow.com/questions/34743533/automated-property-with-getter-only-can-be-set-why/34743568
+        /// </summary>
+        public GeneticAlgorithmCustom GenAlgorithm { get; }
 
         /// <summary>
         /// Init class variables. Algorithm start and end dates and sorting method
@@ -41,38 +42,45 @@ namespace Optimization
         /// </summary>
         /// <param name="start">Algorithm start date</param>
         /// <param name="end">Algorithm end date</param>
-        /// <param name="sortCriteria">Argument of <see cref="FitnessScore"/> type. Defines a way to sort the results</param>
-        public AlgorithmOptimumFinder(DateTime start, DateTime end, FitnessScore sortCriteria = FitnessScore.SharpeRatio)
+        /// <param name="sortCriteria">Argument of <see cref="FitnessScore"/> type.
+        /// Defines a criteria to sort the backtest results and choose best parameters</param>
+        public AlgorithmOptimumFinder(DateTime start, DateTime end, FitnessScore sortCriteria)
         {
             // Assign Dates and Criteria to sort the results
             StartDate = start;
             EndDate = end;
             SortCriteria = sortCriteria;
 
-            // params to init GA common to different optimization modes
-            _selection = new TournamentSelection();
-            _crossover = Program.Config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover();
-            _mutation = new UniformMutation(true);
-            _reinsertion = new ElitistReinsertion();
+            // GA's objects common to different optimization modes
+            ISelection selection = new TournamentSelection();
+            ICrossover crossover = Program.Config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover();
+            IMutation mutation = new UniformMutation(true);
+            IReinsertion reinsertion = new ElitistReinsertion();
 
-            // Max threads
+            // GA's specific to cofigurable options objects
+            ITermination termination;
+            IFitness fitness;
+            IPopulation population;
+            ITaskExecutor executor;
+
+            // Max number of threads
             var maxThreads = Program.Config.MaxThreads > 0 ? Program.Config.MaxThreads : 8;
 
             switch (Program.Config.TaskExecutionMode)
             {
                 case TaskExecutionMode.Linear:
-                    _executor = new LinearTaskExecutor();
-                    _fitness = new OptimizerFitness(StartDate, EndDate);
+                    executor = new LinearTaskExecutor();
+                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria);
                     break;
 
                 case TaskExecutionMode.Parallel:
-                    _executor = new ParallelTaskExecutor { MaxThreads = maxThreads };
-                    _fitness = new OptimizerFitness(StartDate, EndDate);
+                    executor = new ParallelTaskExecutor { MaxThreads = maxThreads };
+                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria);
                     break;
 
                 case TaskExecutionMode.Azure:
-                    _executor = new TaskExecutorAzure { MaxThreads = maxThreads };
-                    _fitness = new AzureFitness(StartDate, EndDate);
+                    executor = new TaskExecutorAzure { MaxThreads = maxThreads };
+                    fitness = new AzureFitness(StartDate.Value, EndDate.Value, sortCriteria);
                     break;
 
                 default:
@@ -85,8 +93,8 @@ namespace Optimization
                 case OptimizationMode.BruteForce:
                     {
                         // create cartesian population
-                        _population = new PopulationCartesian();
-                        _termination = new GenerationNumberTermination(1);
+                        population = new PopulationCartesian();
+                        termination = new GenerationNumberTermination(1);
 
                         break;
                     }
@@ -94,8 +102,8 @@ namespace Optimization
                 case OptimizationMode.GeneticAlgorithm:
                     {
                         // create random population
-                        _population = new PopulationRandom();
-                        _termination = new OrTermination(
+                        population = new PopulationRandom();
+                        termination = new OrTermination(
                             new FitnessStagnationTermination(Program.Config.StagnationGenerations),
                             new GenerationNumberTermination(Program.Config.Generations));
 
@@ -105,6 +113,18 @@ namespace Optimization
                 default:
                     throw new Exception("Optimization mode specific objects were not initialized");
             }
+
+            // Create the GA itself
+            // It's important to initialize GA in constructor as we would
+            // like to declare event handlers from outside the class before calling Start()
+            GenAlgorithm = new GeneticAlgorithmCustom(population, fitness, selection, crossover, mutation)
+            {
+                TaskExecutor = executor,
+                Termination = termination,
+                Reinsertion = reinsertion,
+                MutationProbability = Program.Config.MutationProbability,
+                CrossoverProbability = Program.Config.CrossoverProbability
+            };
         }
 
         /// <summary>
@@ -112,64 +132,10 @@ namespace Optimization
         /// </summary>
         public void Start()
         {
-            switch (_executor)
-            {
-                // Deploy Batch resources if computations are to be made using cloud compute powers
-                case TaskExecutorAzure _:
-                    AzureBatchManager.DeployAsync().Wait();
-                    break;
-
-                // Configure App Domain settings if calculations are planned to be handled using local PC powers
-                case LinearTaskExecutor _:
-                case ParallelTaskExecutor _:
-                    OptimizerAppDomainManager.Initialize();
-                    break;
-
-                // Otherwise
-                case null:
-                    throw new Exception("Executor was not initialized");
-            }
-
-            // Create the GA itself
-            var ga = new GeneticAlgorithmCustom(_population, _fitness, _selection, _crossover, _mutation)
-            {
-                TaskExecutor = _executor,
-                Termination = _termination,
-                Reinsertion = _reinsertion,
-                MutationProbability = Program.Config.MutationProbability,
-                CrossoverProbability = Program.Config.CrossoverProbability
-            };
-
-            // Subscribe to events
-            ga.GenerationRan += GenerationRan;
-            ga.TerminationReached += TerminationReached;
 
             // Run the GA 
-            ga.Start();
+            GenAlgorithm.Start();
         }
 
-        /// <summary>
-        /// Handler called by the end of optimization algorithm
-        /// </summary>
-        private void TerminationReached(object sender, EventArgs e)
-        {
-            GenerationRan(null, null);
-
-            Program.Logger.Info(Termination);
-
-            // Clean up Batch resources
-            if (_executor is TaskExecutorAzure)
-            {
-                AzureBatchManager.FinalizeAsync().Wait();
-            }
-        }
-
-        /// <summary>
-        /// Handler called at the end of next generation
-        /// </summary>
-        private void GenerationRan(object sender, EventArgs e)
-        {
-            
-        }
     }
 }

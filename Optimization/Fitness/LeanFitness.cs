@@ -9,14 +9,26 @@ namespace Optimization
     /// </summary>
     public abstract class LeanFitness: IFitness
     {
-        // Algorithm start and end dates
-        protected DateTime StartDate;
-        protected DateTime EndDate;
+        /// <summary>
+        /// Algorithm start date
+        /// </summary>
+        protected DateTime StartDate { get; set; }
 
-        protected LeanFitness(DateTime start, DateTime end)
+        /// <summary>
+        /// Algorithm end date
+        /// </summary>
+        protected DateTime EndDate { get; set; }
+
+        /// <summary>
+        /// Fitness score
+        /// </summary>
+        protected FitnessScore FitnessScore { get; set; }
+
+        protected LeanFitness(DateTime start, DateTime end, FitnessScore fitScore)
         {
             StartDate = start;
             EndDate = end;
+            FitnessScore = fitScore;
         }
 
         public abstract double Evaluate(IChromosome chromosome);

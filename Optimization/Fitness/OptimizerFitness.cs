@@ -5,13 +5,13 @@ using GeneticSharp.Domain.Chromosomes;
 namespace Optimization
 {
     /// <summary>
-    /// Default optimizer behaviour.
+    /// Default optimizer for computation on local machine
     /// </summary>
     public class OptimizerFitness : LeanFitness
     {
         private static readonly object Obj = new object();
 
-        public OptimizerFitness(DateTime start, DateTime end) : base(start, end)
+        public OptimizerFitness(DateTime start, DateTime end, FitnessScore fitScore) : base(start, end, fitScore)
         { }
 
         /// <summary>
@@ -21,53 +21,62 @@ namespace Optimization
         {
             try
             {
-                // == OUTPUT 1 ==
+                // - OUTPUT 1 -
                 var outputBeforeRun = string.Empty;
-                var chromosomeCasted = (Chromosome)chromosome;
+                var chromosomeBase = (Chromosome)chromosome;
 
                 // convert to dictionary and add "id" item
-                var list = chromosomeCasted.ToDictionary();
-                var paramsString = "~ " + list.Aggregate(outputBeforeRun, (current, item) =>
+                var list = chromosomeBase.ToDictionary();
+                var paramsString = list.Aggregate(outputBeforeRun, (current, item) =>
                     current + item.Key + ": " + item.Value + " |");
 
-                list.Add("Id", chromosomeCasted.Id);
-                outputBeforeRun += $"Send for backtest Chromosome Id: {chromosomeCasted.Id} w.params:{Environment.NewLine}";
-                outputBeforeRun += paramsString;
+                list.Add("Id", chromosomeBase.Id);
+                outputBeforeRun += $"Chromosome Id: {chromosomeBase.Id} -> params: [{paramsString}]";
 
-                // set algorithm start and end dates
+                // Write to the log information before an experiment ->
+                lock (Obj)
+                {
+                    Program.Logger.Trace(outputBeforeRun);
+                }
+
+                // Set algorithm start and end dates ->
                 list.Add("startDate", StartDate);
                 list.Add("endDate", EndDate);
 
-                lock (Obj)
-                {
-                    // log the result before an experiment (backtest)
-                    Program.Logger.Info(outputBeforeRun);
-                }
-                
-                // Calculate
-                var result = OptimizerAppDomainManager.RunAlgorithm(list);   // run the algorithm
+                // Additional settings to the list ->
+                list.Add("algorithm-type-name", Program.Config.AlgorithmTypeName);
+                list.Add("algorithm-location", Program.Config.AlgorithmLocation);
+                list.Add("data-folder", Program.Config.DataFolder);
 
-                // == OUTPUT 2 ==
-                var outputResult = $"PRINT results for Chromosome Id: {chromosomeCasted.Id} w.params:{Environment.NewLine}";
-                outputResult += paramsString + Environment.NewLine;
-                
-                // calculate fitness and concat the results to an output string
-                var fitness = StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore);
+                // Obtain full results -> 
+                var result = OptimizerAppDomainManager.RunAlgorithm(list);
 
-                outputResult += $"~ Fitness.Value = {fitness} ";
-                outputResult += $"Drawdown = {Math.Round(result["Drawdown"], 2)} TotalNumberOfTrades = {result["TotalNumberOfTrades"]}";
+                // Save full results ->
+                chromosomeBase.FitnessResult = new FitnessResult
+                    { StartDate = this.StartDate, EndDate = this.EndDate, FullResults = result };
+
+                // - OUTPUT 2 -
+                var output2 = $"chromosome #: {chromosomeBase.Id} results:{Environment.NewLine}";
+                output2 += paramsString + Environment.NewLine;
+                
+                // Calculate fitness and concat the results with an output string ->
+                var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore);
+
+                output2 +=
+                    $"-> Fitness = {fitness} Drawdown = {Math.Round(result["Drawdown"], 2)} " +
+                    $"TotalNumberOfTrades = {result["TotalNumberOfTrades"]}";
 
                 lock (Obj)
                 {
                     // log final output and return the result of evalution
-                    Program.Logger.Info(outputResult);
+                    Program.Logger.Trace(output2);
                 }
 
                 return fitness;
             }
             catch (Exception ex)
             {
-                Program.Logger.Error(ex);
+                Program.Logger.Error(ex.Message);
                 return 0;
             }
         }

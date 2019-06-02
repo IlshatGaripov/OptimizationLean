@@ -13,18 +13,18 @@ namespace Optimization
         /// Minimum number of trades algorithm must 
         /// </summary>
         [JsonProperty("min-trades")]
-        public int? MinimumTrades;
+        public int? MinimumTrades { get; set; }
 
         /// <summary>
         /// Maximum allowed Drawdown performance
         /// </summary>
         [JsonProperty("max-drawdown")]
-        public decimal? MaxDrawdown;
+        public decimal? MaxDrawdown { get; set; }
 
         /// <summary>
         /// Minimum allowed Sharp Ratio
         /// </summary>
         [JsonProperty("min-sharpe-ratio")]
-        public decimal? MinSharpeRatio;
+        public decimal? MinSharpeRatio { get; set; }
     }
 }

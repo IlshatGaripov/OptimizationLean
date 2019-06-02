@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.ComponentModel.Composition;
 using System.Linq;
 using QuantConnect.Configuration;
@@ -8,8 +7,8 @@ using QuantConnect.Lean.Engine;
 using QuantConnect.Logging;
 using QuantConnect.Util;
 
-namespace Optimization
-{ 
+namespace Optimization.RunnerLocal
+{
     /// <summary>
     /// Class responsible for running the algorithm with Lean Engine.
     /// </summary>
@@ -33,19 +32,13 @@ namespace Optimization
             // take chromosome's GUID if specified to initialize id variable
             _id = (alorithmInputs.ContainsKey("Id") ? alorithmInputs["Id"] : Guid.NewGuid().ToString("N")).ToString();
 
-            // get current AppDomain for the Thread executing this
-            var currentAppDomain = AppDomain.CurrentDomain;
-
-            // obtain a global program config through the property
-            var globalConfigCopy = (OptimizerConfiguration)currentAppDomain.GetData("Configuration");
-
             // set the algorithm input variables. 
             foreach (var pair in alorithmInputs.Where(i => i.Key != "Id"))
             {
                 // represent datetime in lean-friendly format. example: 2009-06-15
                 if (pair.Value is DateTime time)
                 {
-                    var cast = (DateTime?) time;
+                    var cast = (DateTime?)time;
                     Config.Set(pair.Key, cast.Value.ToString("O"));
                 }
                 else
@@ -59,30 +52,12 @@ namespace Optimization
             Config.Set("algorithm-language", "CSharp");     // omitted?
             Config.Set("result-handler", nameof(OptimizerResultHandler));   //override default result handler
 
-            // Algorithm name
-            if (!string.IsNullOrEmpty(globalConfigCopy.AlgorithmTypeName))
-            {
-                Config.Set("algorithm-type-name", globalConfigCopy.AlgorithmTypeName);
-            }
-
-            // Physical location of dll with an algorithm.
-            if (!string.IsNullOrEmpty(globalConfigCopy.AlgorithmLocation))
-            {
-                Config.Set("algorithm-location", Path.GetFileName(globalConfigCopy.AlgorithmLocation));
-            }
-
-            // Data folder
-            if (!string.IsNullOrEmpty(globalConfigCopy.DataFolder))
-            {
-                Config.Set("data-folder", globalConfigCopy.DataFolder);
-            }
-
-            //separate log uniquely named
+            // Separate log uniquely named
             var dirPath = $"C:/Users/sterling/Desktop/logs/{DateTime.Now:yyyy-MM-dd}/leanLogs/";
             var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + _id + ".txt";
             var filePath = String.Concat(dirPath, logFileName);
 
-            // create directory if not exist
+            // Create directory if not exist
             System.IO.Directory.CreateDirectory(dirPath);
 
             Log.LogHandler = new FileLogHandler(filePath);
@@ -144,5 +119,4 @@ namespace Optimization
             return _resultsHandler.FullResults;
         }
     }
-
 }
