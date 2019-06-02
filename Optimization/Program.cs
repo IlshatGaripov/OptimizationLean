@@ -135,7 +135,7 @@ namespace Optimization
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public static void WfoStepCompleted(object sender, EventArgs e)
+        public static void WfoStepCompleted(object sender, WalkForwardEventArgs e)
         {
             Logger.Info("Walk Forward evaluation step finished");
         }

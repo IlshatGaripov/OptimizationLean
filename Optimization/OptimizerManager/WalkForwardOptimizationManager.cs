@@ -101,7 +101,7 @@ namespace Optimization
                 var bestGenes = bestChromosomeBase.ToDictionary();
 
                 // Using best parameters execute a validation experiment on local machine using best chromosome ->
-                var fitness = new OptimizerFitness(validationStartDate, validationEndDate);
+                var fitness = new OptimizerFitness(validationStartDate, validationEndDate, SortCriteria.Value);
                 fitness.Evaluate(bestChromosome);
 
                 // Save full results to dictionary ->

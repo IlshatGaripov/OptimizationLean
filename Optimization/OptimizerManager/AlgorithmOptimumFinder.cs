@@ -70,17 +70,17 @@ namespace Optimization
             {
                 case TaskExecutionMode.Linear:
                     executor = new LinearTaskExecutor();
-                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value);
+                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria);
                     break;
 
                 case TaskExecutionMode.Parallel:
                     executor = new ParallelTaskExecutor { MaxThreads = maxThreads };
-                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value);
+                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria);
                     break;
 
                 case TaskExecutionMode.Azure:
                     executor = new TaskExecutorAzure { MaxThreads = maxThreads };
-                    fitness = new AzureFitness(StartDate.Value, EndDate.Value);
+                    fitness = new AzureFitness(StartDate.Value, EndDate.Value, sortCriteria);
                     break;
 
                 default:

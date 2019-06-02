@@ -21,7 +21,7 @@ namespace Optimization
         /// <summary>
         /// Constructor initializes algorithm start and end dates
         /// </summary>
-        public AzureFitness(DateTime start, DateTime end) : base(start, end)
+        public AzureFitness(DateTime start, DateTime end, FitnessScore fitScore) : base(start, end, fitScore)
         { }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace Optimization
             chromosomeBase.FullResults = result;
 
             // Calculate fitness ->
-            var fitness = StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore.Value);;
+            var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore);
 
             // Display fitness to Console ->
             var inputParameters = geneKeyValues.Aggregate(string.Empty, (current, item) =>

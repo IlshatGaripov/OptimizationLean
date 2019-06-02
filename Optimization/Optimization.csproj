@@ -135,10 +135,6 @@
     <Compile Include="GeneticSharpExtensions\TaskExecutorAzure.cs" />
     <Compile Include="Interfaces\IOptimizerManager.cs" />
     <Compile Include="Common\Enums.cs" />
-    <Compile Include="Fitness\NFoldCrossReturnMaximizer.cs" />
-    <Compile Include="Fitness\NestedCrossSharpeMaximizer.cs" />
-    <Compile Include="Fitness\SharpeMaximizer.cs" />
-    <Compile Include="OptimizerManager\MaximizerManager.cs" />
     <Compile Include="GeneticSharpExtensions\FibonacciRandomization.cs" />
     <Compile Include="GeneticSharpExtensions\Chromosome.cs" />
     <Compile Include="OptimizerManager\AlgorithmOptimumFinder.cs" />
@@ -148,7 +144,6 @@
     <Compile Include="OptimizerManager\WalkForwardOptimizationManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Fitness\CompoundingAnnualReturnFitness.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

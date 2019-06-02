@@ -11,7 +11,7 @@ namespace Optimization
     {
         private static readonly object Obj = new object();
 
-        public OptimizerFitness(DateTime start, DateTime end) : base(start, end)
+        public OptimizerFitness(DateTime start, DateTime end, FitnessScore fitScore) : base(start, end, fitScore)
         { }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Optimization
                 outputResult += paramsString + Environment.NewLine;
                 
                 // calculate fitness and concat the results to an output string
-                var fitness = StatisticsAdapter.CalculateFitness(result, Program.Config.FitnessScore.Value);
+                var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore);
 
                 outputResult +=
                     $"-> Fitness = {fitness} Drawdown = {Math.Round(result["Drawdown"], 2)} " +
