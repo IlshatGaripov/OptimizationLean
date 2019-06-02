@@ -37,7 +37,7 @@ namespace Optimization
         /// <summary>
         /// Full results dicrionary for best in sample chromosome backtest result 
         /// </summary>
-        public IList<Dictionary<string, decimal>> BestInSampleResultsList = new List<Dictionary<string, decimal>>();
+        public IList<Dictionary<string, decimal>> InSampleBestResultsList = new List<Dictionary<string, decimal>>();
 
         /// <summary>
         /// Full result dictionary for backtest on out-of-sample data
@@ -78,6 +78,7 @@ namespace Optimization
             var insampleEndDate = insampleStartDate.AddDays(WalkForwardConfiguration.InSamplePeriod.Value - 1);
             var validationStartDate = insampleEndDate.AddDays(1);
             var validationEndDate = validationStartDate.AddDays(WalkForwardConfiguration.Step.Value - 1);
+
             var step = WalkForwardConfiguration.Step.Value;
 
             // While insampleEndDate is less then fixed optimization EndDate we may crank one more iteration -> 
@@ -95,12 +96,13 @@ namespace Optimization
 
                 // Then save full result to inner list ->
                 var bestInSampleResults = bestChromosomeBase.FitnessResult.FullResults;
-                BestInSampleResultsList.Add(bestInSampleResults);
+                InSampleBestResultsList.Add(bestInSampleResults);
                 
                 // Save best chromosome's genes to dict ->
                 var bestGenes = bestChromosomeBase.ToDictionary();
 
-                // Using best parameters execute a validation experiment on local machine using best chromosome ->
+                // Using best parameters run a validation experiment on local machine using best genes ->
+                Program.Logger.Trace(" >> WALK FORWARD VALIDATION >> \n");
                 var fitness = new OptimizerFitness(validationStartDate, validationEndDate, SortCriteria.Value);
                 fitness.Evaluate(bestChromosome);
 
@@ -135,7 +137,7 @@ namespace Optimization
             // Create event args object and invoke a delegate ->
             var eventArgs = new WalkForwardEventArgs
             {
-                BestInSampleResults = bestInSampleResults,
+                InSampleBestResults = bestInSampleResults,
                 ValidationResults = validationResults,
                 BestGenes = bestGenes
             };
@@ -151,7 +153,7 @@ namespace Optimization
         /// <summary>
         /// Dictionary with full backtest results for best in-sample chromosome 
         /// </summary>
-        public Dictionary<string, decimal> BestInSampleResults { get; set; }
+        public Dictionary<string, decimal> InSampleBestResults { get; set; }
 
         /// <summary>
         /// Dictionary with full validation results on out-of-sample data

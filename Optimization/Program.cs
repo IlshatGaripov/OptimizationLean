@@ -1,12 +1,12 @@
 ﻿using System;
-using NLog;
+using QuantConnect.Logging;
 
 namespace Optimization
 {
     public static class Program
     {
         // The logger
-        public static Logger Logger = LogManager.GetLogger("optimizer");
+        public static ILogHandler Logger = new ConsoleLogHandler();
 
         // Program wide config file object.
         public static OptimizerConfiguration Config;
@@ -108,11 +108,8 @@ namespace Optimization
                     AzureBatchManager.FinalizeAsync().Wait();
                     break;
             }
-
-            // -2- Shutdown the logger
-            LogManager.Shutdown();
-
-            // -3- Release AppDomain
+            
+            // -2- Release AppDomain
             OptimizerAppDomainManager.Release();
         }
 
@@ -121,7 +118,7 @@ namespace Optimization
         /// </summary>
         public static void TerminationReached(object sender, EventArgs e)
         {
-            Logger.Info("Termination Reached.");
+            Logger.Trace("Termination Reached.");
         }
 
         /// <summary>
@@ -139,7 +136,10 @@ namespace Optimization
         /// <param name="e"></param>
         public static void WfoStepCompleted(object sender, WalkForwardEventArgs e)
         {
-            Logger.Info("Walk Forward evaluation step finished");
+            Logger.Trace(" >> VALIDATION COMPLETED >> \n")
+
+            Logger.Trace($"Sharpe in-sample: {e.InSampleBestResults["SharpeRatio"]} " +
+                         $"Sharpe validation: {e.ValidationResults["SharpeRatio"]}");
         }
 
     }
