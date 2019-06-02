@@ -53,7 +53,8 @@ namespace Optimization
                 var result = OptimizerAppDomainManager.RunAlgorithm(list);
 
                 // Save full results ->
-                chromosomeBase.FullResults = result;
+                chromosomeBase.FitnessResult = new FitnessResult
+                    { StartDate = this.StartDate, EndDate = this.EndDate, FullResults = result };
 
                 // - OUTPUT 2 -
                 var outputResult = $"chromosome #: {chromosomeBase.Id} results:{Environment.NewLine}";

@@ -135,7 +135,8 @@ namespace Optimization
                 @"results\" + resultsOutputFile);
 
             // Save full results ->
-            chromosomeBase.FullResults = result;
+            chromosomeBase.FitnessResult = new FitnessResult
+                {StartDate = this.StartDate, EndDate = this.EndDate, FullResults = result};
 
             // Calculate fitness ->
             var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore);

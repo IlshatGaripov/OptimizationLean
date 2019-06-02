@@ -16,6 +16,8 @@ namespace Optimization
         /// </summary>
         public static void Main(string[] args)
         {
+            //TODO 3: remove unused references!
+
             // Load the optimizer settings from config json
             Config = Exstensions.LoadConfigFromFile("optimization_local.json");
 

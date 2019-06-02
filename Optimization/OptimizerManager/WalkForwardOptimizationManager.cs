@@ -94,10 +94,10 @@ namespace Optimization
                 var bestChromosomeBase = (Chromosome)optimumFinder.GenAlgorithm.BestChromosome;
 
                 // Then save full result to inner list ->
-                var bestInSampleResults = bestChromosomeBase.FullResults;
+                var bestInSampleResults = bestChromosomeBase.FitnessResult.FullResults;
                 BestInSampleResultsList.Add(bestInSampleResults);
                 
-                // Save best chromosomes to dict ->
+                // Save best chromosome's genes to dict ->
                 var bestGenes = bestChromosomeBase.ToDictionary();
 
                 // Using best parameters execute a validation experiment on local machine using best chromosome ->
@@ -105,8 +105,8 @@ namespace Optimization
                 fitness.Evaluate(bestChromosome);
 
                 // Save full results to dictionary ->
-                var validationResults = bestChromosomeBase.FullResults;
-                ValidationResultsList.Add(bestChromosomeBase.FullResults);
+                var validationResults = bestChromosomeBase.FitnessResult.FullResults;
+                ValidationResultsList.Add(validationResults);
 
                 // Raise an event informing a single step of evaluation is over ->
                 OnOneEvaluationStepCompleted(bestInSampleResults, validationResults, bestGenes);
