@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using GeneticSharp.Domain.Chromosomes;
+using GeneticSharp.Domain.Fitnesses;
 
 namespace Optimization
 {
@@ -37,12 +40,12 @@ namespace Optimization
         /// <summary>
         /// Full results dicrionary for best in sample chromosome backtest result 
         /// </summary>
-        public IList<Dictionary<string, decimal>> InSampleBestResultsList = new List<Dictionary<string, decimal>>();
+        private readonly IList<Dictionary<string, decimal>> _inSampleBestResultsList = new List<Dictionary<string, decimal>>();
 
         /// <summary>
         /// Full result dictionary for backtest on out-of-sample data
         /// </summary>
-        public IList<Dictionary<string, decimal>> ValidationResultsList = new List<Dictionary<string, decimal>>();
+        private readonly IList<Dictionary<string, decimal>> _validationResultsList = new List<Dictionary<string, decimal>>();
 
         /// <summary>
         /// Starts and continues the process till the end
@@ -81,39 +84,38 @@ namespace Optimization
 
             var step = WalkForwardConfiguration.Step.Value;
 
+            // The list to store validation tasks, we'll perform validation in the background for not to block the calculations ->
+            var validationTasks = new List<Task>();
+
             // While insampleEndDate is less then fixed optimization EndDate we may crank one more iteration -> 
             while (insampleEndDate < EndDate.Value)
             {
-                // create new optimum finder which will use optimization scheme filed in optimization.json ->
+                // Create new optimum finder (wrapper for GA) ->
                 var optimumFinder = new AlgorithmOptimumFinder(insampleStartDate, insampleEndDate, SortCriteria.Value);
 
-                // Start and wat to complete ->
+                // Start an optimization and wait to complete ->
                 optimumFinder.Start();
 
-                // Once completed retrive best chromosome and cast it to the base class ->
+                // Once completed retrive best chromosome and cast it to base class object ->
                 var bestChromosome = optimumFinder.GenAlgorithm.BestChromosome;
                 var bestChromosomeBase = (Chromosome)optimumFinder.GenAlgorithm.BestChromosome;
 
-                // Then save full result to inner list ->
+                // Save best results to the list ->
                 var bestInSampleResults = bestChromosomeBase.FitnessResult.FullResults;
-                InSampleBestResultsList.Add(bestInSampleResults);
-                
-                // Save best chromosome's genes to dict ->
-                var bestGenes = bestChromosomeBase.ToDictionary();
+                _inSampleBestResultsList.Add(bestInSampleResults);
 
-                // Using best parameters run a validation experiment on local machine using best genes ->
-                Program.Logger.Trace(" >> WALK FORWARD VALIDATION >> \n");
-                var fitness = new OptimizerFitness(validationStartDate, validationEndDate, SortCriteria.Value);
-                fitness.Evaluate(bestChromosome);
+                // Validate out of sample ->
+                var date = validationStartDate;
+                var endDate = validationEndDate;
 
-                // Save full results to dictionary ->
-                var validationResults = bestChromosomeBase.FitnessResult.FullResults;
-                ValidationResultsList.Add(validationResults);
+                // Add task to the collection ->
+                validationTasks.Add(Task.Run(() => ValidateOutOfSample(bestChromosome, 
+                    date,
+                    endDate,
+                    SortCriteria.Value,
+                    bestInSampleResults))); 
 
-                // Raise an event informing a single step of evaluation is over ->
-                OnOneEvaluationStepCompleted(bestInSampleResults, validationResults, bestGenes);
-
-                // Increment the date variables stepping for next iteration ->
+                // Increment the variables and step to the next iteration ->
                 // If anchored do not increment insample Start Date ->
                 if (!WalkForwardConfiguration.Anchored.Value)
                     insampleStartDate = insampleStartDate.AddDays(step);
@@ -122,6 +124,52 @@ namespace Optimization
                 validationStartDate = validationStartDate.AddDays(step);
                 validationEndDate = validationEndDate.AddDays(step);
             }
+
+            // Make sure all out-of-sample experiment are complete before exit ->
+            Task.WaitAll(validationTasks.ToArray());
+        }
+
+        /// <summary>
+        /// Method called in the backgound to validate the best chromosome on out-of-sample data
+        /// </summary>
+        /// <param name="chromosome"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="fitScore"></param>
+        /// <param name="bestInSampleResults"></param>
+        protected void ValidateOutOfSample(IChromosome chromosome,
+            DateTime startDate,
+            DateTime endDate,
+            FitnessScore fitScore,
+            Dictionary<string, decimal> bestInSampleResults)
+        {
+            Program.Logger.Trace($" >> WALK FORWARD VALIDATION ({startDate} to {endDate}) STARTED >> \n");
+
+            // Cast to base class ->
+            var bestChromosomeBase = (Chromosome) chromosome;
+
+            // Save best chromosome's genes to dictionary ->
+            var bestGenes = bestChromosomeBase.ToDictionary();
+
+            // Run a backtest ->
+            IFitness fitness;
+            if (Program.Config.TaskExecutionMode == TaskExecutionMode.Azure)
+            {
+                fitness = new AzureFitness(startDate, endDate, fitScore);
+                fitness.Evaluate(chromosome);
+            }
+            else
+            {
+                fitness = new OptimizerFitness(startDate, endDate, fitScore);
+                fitness.Evaluate(chromosome);
+            }
+            
+            // Save full results to dictionary ->
+            var validationResults = bestChromosomeBase.FitnessResult.FullResults;
+            _validationResultsList.Add(validationResults);
+
+            // Raise an event informing a single step of evaluation is completed ->
+            OnOneEvaluationStepCompleted(bestInSampleResults, validationResults, bestGenes);
         }
 
         /// <summary>
@@ -146,7 +194,7 @@ namespace Optimization
     }
 
     /// <summary>
-    /// Event args to pass to the handler of OneEvaluationStepCompleted event
+    /// Event args wrapper for the variables to pass to OneEvaluationStepCompleted event
     /// </summary>
     public class WalkForwardEventArgs : EventArgs
     {

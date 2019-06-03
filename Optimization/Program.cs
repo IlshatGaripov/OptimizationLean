@@ -16,8 +16,6 @@ namespace Optimization
         /// </summary>
         public static void Main(string[] args)
         {
-            //TODO 3: remove unused references!
-
             // Load the optimizer settings from config json
             Config = Exstensions.LoadConfigFromFile("optimization_local.json");
 
@@ -136,7 +134,7 @@ namespace Optimization
         /// <param name="e"></param>
         public static void WfoStepCompleted(object sender, WalkForwardEventArgs e)
         {
-            Logger.Trace(" >> VALIDATION COMPLETED >> \n")
+            Logger.Trace(" >> VALIDATION COMPLETED >> \n");
 
             Logger.Trace($"Sharpe in-sample: {e.InSampleBestResults["SharpeRatio"]} " +
                          $"Sharpe validation: {e.ValidationResults["SharpeRatio"]}");
