@@ -5,7 +5,7 @@
   "max-threads": 100,
   "fitness-score": "SharpeRatio",
 
-  // FITENSS FILTER
+  // FITNESS FILTER
   "fitness-filter": {
     "min-trades": 9,
     "max-drawdown": 0.35
@@ -19,8 +19,8 @@
   "walk-forward": {
     "enabled": true,
     "anchored": false,
-    "in-sample-period": 365,   // in days
-    "step": 60 
+    "in-sample-period": 365, // in days
+    "step": 60
   },
 
   // GENES
@@ -40,34 +40,24 @@
   ],
 
   // LEAN
-  "algorithmTypeName": "SuperTrendAlgorithm",
-  "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
-  "dataFolder": "C:/Users/sterling/Google Drive/Data",
+  "algorithm-type-name": "SuperTrendAlgorithm",
+  "algorithm-location": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
+  "data-folder": "C:/Users/sterling/Google Drive/Data",
 
   // AZURE
-  "batchAccountName": "",
-  "batchAccountKey": "",
-  "batchAccountUrl": "",
-  "storageAccountName": "",
-  "storageAccountKey": "",
-  "dedicatedComputeNodes": 0,
-  "lowPriorityComputeNodes": 2,
+  "batch-account-name": "",
+  "batch-account-key": "",
+  "batch-account-url": "",
+  "storage-account-name": "",
+  "storage-account-key": "",
+  "dedicated-nodes": 0,
+  "low-priority-nodes": 2,
 
   // GENETIC OPTIMIZATION
-  "populationSize": 24,
+  "population-size": 24,
   "generations": 20,
-  "stagnationGenerations": 30,
-  "onePointCrossover": "true",
-  "mutationProbability": 0.5,
-  "crossoverProbability": 0.75,
-
-  // TODO: lean the SHARP LEARNING library and Maximizer objects that exist in project
-  // 
-  "fitness": {
-    "scale": 1,
-    "modifier": -1,
-    "resultKey": "Beta",
-    "name": "MinimizeBeta",
-    "OptimizerTypeName": "ParticleSwarm"
-  }
+  "stagnation-generations": 30,
+  "one-point-crossover": "true",
+  "mutation-probability": 0.5,
+  "crossover-probability": 0.75
 }

@@ -40,8 +40,8 @@ namespace Optimization
                 }
 
                 // Set algorithm start and end dates ->
-                list.Add("startDate", StartDate);
-                list.Add("endDate", EndDate);
+                list.Add("start-date", StartDate);
+                list.Add("end-date", EndDate);
 
                 // Additional settings to the list ->
                 list.Add("algorithm-type-name", Program.Config.AlgorithmTypeName);

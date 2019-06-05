@@ -70,9 +70,69 @@ namespace Optimization
         public GeneConfiguration[] Genes { get; set; }
 
         /// <summary>
+        /// Override config.json setting
+        /// </summary>
+        [JsonProperty("algorithm-type-name")]
+        public string AlgorithmTypeName { get; set; }
+
+        /// <summary>
+        /// Override config.json setting
+        /// </summary>
+        [JsonProperty("algorithm-location")]
+        public string AlgorithmLocation { get; set; }
+
+        /// <summary>
+        /// Override config.json setting
+        /// </summary>
+        [JsonProperty("data-folder")]
+        public string DataFolder { get; set; }
+
+        /// <summary>
+        /// Azure Batch acc name.
+        /// </summary>
+        [JsonProperty("batch-account-name")]
+        public string BatchAccountName { get; set; }
+
+        /// <summary>
+        /// Azure Batch acc key.
+        /// </summary>
+        [JsonProperty("batch-account-key")]
+        public string BatchAccountKey { get; set; }
+
+        /// <summary>
+        /// Azure Batch acc url.
+        /// </summary>
+        [JsonProperty("batch-account-url")]
+        public string BatchAccountUrl { get; set; }
+
+        /// <summary>
+        /// Azure Storage acc name.
+        /// </summary>
+        [JsonProperty("storage-account-name")]
+        public string StorageAccountName { get; set; }
+
+        /// <summary>
+        /// Azure Storage acc key.
+        /// </summary>
+        [JsonProperty("storage-account-key")]
+        public string StorageAccountKey { get; set; }
+
+        /// <summary>
+        /// Dedicated compute nodes.
+        /// </summary>
+        [JsonProperty("dedicated-nodes")]
+        public int DedicatedNodeCount { get; set; }
+
+        /// <summary>
+        /// Low-priority compute nodes.
+        /// </summary>
+        [JsonProperty("low-priority-nodes")]
+        public int LowPriorityNodeCount { get; set; }
+
+        /// <summary>
         /// The initial size of the population
         /// </summary>
-        [JsonProperty("populationSize")]
+        [JsonProperty("population-size")]
         public int PopulationSize { get; set; } = 12;
 
         /// <summary>
@@ -84,97 +144,25 @@ namespace Optimization
         /// <summary>
         /// Quit if fitness does not improve for generations
         /// </summary>
-        [JsonProperty("stagnationGenerations")]
+        [JsonProperty("stagnation-generations")]
         public int StagnationGenerations { get; set; } = 10;
-
-        /// <summary>
-        /// Override config.json setting
-        /// </summary>
-        [JsonProperty("algorithmTypeName")]
-        public string AlgorithmTypeName { get; set; }
 
         /// <summary>
         /// 1 or 2 point crossover
         /// </summary>
-        [JsonProperty("onePointCrossover")]
+        [JsonProperty("one-point-crossover")]
         public bool OnePointCrossover { get; set; } = false;
-
-        /// <summary>
-        /// Override config.json setting
-        /// </summary>
-        [JsonProperty("algorithmLocation")]
-        public string AlgorithmLocation { get; set; }
-
-        /// <summary>
-        /// Override config.json setting
-        /// </summary>
-        [JsonProperty("dataFolder")]
-        public string DataFolder { get; set; }
-
-        /// <summary>
-        /// Settings for use with the ConfiguredFitness
-        /// </summary>
-        [JsonProperty("fitness")]
-        public FitnessConfiguration Fitness { get; set; }
 
         /// <summary>
         /// Likeliness of mutation
         /// </summary>
-        [JsonProperty("mutationProbability")]
+        [JsonProperty("mutation-probability")]
         public float MutationProbability { get; set; } = GeneticAlgorithm.DefaultMutationProbability;
 
         /// <summary>
         /// Likeliness of crossover
         /// </summary>
-        [JsonProperty("crossoverProbability")]
+        [JsonProperty("crossover-probability")]
         public float CrossoverProbability { get; set; } = GeneticAlgorithm.DefaultCrossoverProbability;
-        
-        /// <summary>
-        /// File to store transaction log
-        /// </summary>
-        [JsonProperty("transactionLog")]
-        public string TransactionLog { get; set; }
-
-        /// <summary>
-        /// Azure Batch acc name.
-        /// </summary>
-        [JsonProperty("batchAccountName")]
-        public string BatchAccountName { get; set; }
-
-        /// <summary>
-        /// Azure Batch acc key.
-        /// </summary>
-        [JsonProperty("batchAccountKey")]
-        public string BatchAccountKey { get; set; }
-
-        /// <summary>
-        /// Azure Batch acc url.
-        /// </summary>
-        [JsonProperty("batchAccountUrl")]
-        public string BatchAccountUrl { get; set; }
-
-        /// <summary>
-        /// Azure Storage acc name.
-        /// </summary>
-        [JsonProperty("storageAccountName")]
-        public string StorageAccountName { get; set; }
-
-        /// <summary>
-        /// Azure Storage acc key.
-        /// </summary>
-        [JsonProperty("storageAccountKey")]
-        public string StorageAccountKey { get; set; }
-
-        /// <summary>
-        /// Dedicated compute nodes.
-        /// </summary>
-        [JsonProperty("dedicatedComputeNodes")]
-        public int DedicatedNodeCount { get; set; }
-
-        /// <summary>
-        /// Low-priority compute nodes.
-        /// </summary>
-        [JsonProperty("lowPriorityComputeNodes")]
-        public int LowPriorityNodeCount { get; set; }
     }
 }

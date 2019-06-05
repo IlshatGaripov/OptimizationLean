@@ -95,7 +95,6 @@
     <Compile Include="Common\FitnessFilter.cs" />
     <Compile Include="Common\OptimizerAppDomainManager.cs" />
     <Compile Include="Common\StatisticsAdapter.cs" />
-    <Compile Include="Configuration\FitnessConfiguration.cs" />
     <Compile Include="Configuration\FitnessFilterConfiguration.cs" />
     <Compile Include="Configuration\WalkForwardConfiguration.cs" />
     <Compile Include="Fitness\AzureFitness.cs" />
@@ -124,9 +123,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Content Include="optimization.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="optimization_dynasty.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="app.config">

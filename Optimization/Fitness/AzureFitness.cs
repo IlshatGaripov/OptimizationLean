@@ -70,8 +70,8 @@ namespace Optimization
             runnerInputArguments += "data-folder %AZ_BATCH_NODE_SHARED_DIR%\\Data ";
 
             // -- 4 -- Algorithm start and end dates
-            runnerInputArguments += $"startDate {StartDate:O} ";
-            runnerInputArguments += $"endDate {EndDate:O} ";
+            runnerInputArguments += $"start-date {StartDate:O} ";
+            runnerInputArguments += $"end-date {EndDate:O} ";
 
             // -- 5 -- File name where the final result of a backtest will be stored at.
             var resultsOutputFile = $"output_{id}.json";
