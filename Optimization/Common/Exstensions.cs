@@ -26,14 +26,14 @@ namespace Optimization
         /// <summary>
         /// Converts a collection of chromosome genes into string/object dictionary.
         /// </summary>
-        public static Dictionary<string, object> ToDictionary(this Chromosome ch)
+        public static Dictionary<string, string> ToDictionary(this Chromosome ch)
         {
-            var resultingDictionary = new Dictionary<string, object>();
+            var resultingDictionary = new Dictionary<string, string>();
 
             for (var index = 0; index < ch.Length; index++)
             {
                 // take the key from global config file
-                resultingDictionary.Add(Program.Config.Genes[index].Key, ch.GetGene(index).Value);
+                resultingDictionary.Add(Program.Config.Genes[index].Key, ch.GetGene(index).Value.ToString());
             }
 
             return resultingDictionary;

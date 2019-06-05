@@ -180,7 +180,7 @@ namespace Optimization
         /// <param name="bestGenes"></param>
         protected virtual void OnOneEvaluationStepCompleted(Dictionary<string, decimal> bestInSampleResults,
             Dictionary<string, decimal> validationResults,
-            Dictionary<string, object> bestGenes)
+            Dictionary<string, string> bestGenes)
         {
             // Create event args object and invoke a delegate ->
             var eventArgs = new WalkForwardEventArgs
@@ -211,7 +211,7 @@ namespace Optimization
         /// <summary>
         /// Genes that showed best performance on in sample data
         /// </summary>
-        public Dictionary<string, object> BestGenes { get; set; }
+        public Dictionary<string, string> BestGenes { get; set; }
 
     }
 }

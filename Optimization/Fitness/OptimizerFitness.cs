@@ -22,16 +22,15 @@ namespace Optimization
             try
             {
                 // - OUTPUT 1 -
-                var outputBeforeRun = string.Empty;
                 var chromosomeBase = (Chromosome)chromosome;
 
-                // convert to dictionary and add "id" item
+                // Convert to dictionary and add "id" key-value pair ->
                 var list = chromosomeBase.ToDictionary();
-                var paramsString = list.Aggregate(outputBeforeRun, (current, item) =>
-                    current + item.Key + ": " + item.Value + " |");
+                list.Add("chromosome-id", chromosomeBase.Id);
 
-                list.Add("Id", chromosomeBase.Id);
-                outputBeforeRun += $"Chromosome Id: {chromosomeBase.Id} -> params: [{paramsString}]";
+                // Create an output string ->
+                var paramsString = chromosomeBase.ToKeyValueString();
+                var outputBeforeRun = $"Chromosome Id: {chromosomeBase.Id} -> params: [{paramsString}]";
 
                 // Write to the log information before an experiment ->
                 lock (Obj)
@@ -40,8 +39,8 @@ namespace Optimization
                 }
 
                 // Set algorithm start and end dates ->
-                list.Add("start-date", StartDate);
-                list.Add("end-date", EndDate);
+                list.Add("start-date", StartDate.ToString("O"));
+                list.Add("end-date", EndDate.ToString("O"));
 
                 // Additional settings to the list ->
                 list.Add("algorithm-type-name", Program.Config.AlgorithmTypeName);

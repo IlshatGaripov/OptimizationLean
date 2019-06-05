@@ -20,41 +20,27 @@ namespace Optimization.RunnerLocal
         private OptimizerResultHandler _resultsHandler;
 
         /// <summary>
-        /// Unique identifier. Well it's actually not in use currently.
-        /// </summary>
-        private string _id;
-
-        /// <summary>
         /// Method performs necessary initialization and starts and algorithm inside Lean Engine.
         /// </summary>
-        public Dictionary<string, decimal> Run(Dictionary<string, object> alorithmInputs)
+        public Dictionary<string, decimal> Run(Dictionary<string, string> alorithmInputs)
         {
-            // take chromosome's GUID if specified to initialize id variable
-            _id = (alorithmInputs.ContainsKey("Id") ? alorithmInputs["Id"] : Guid.NewGuid().ToString("N")).ToString();
+            // Chromosome id must be there ->
+            var id = alorithmInputs["chromosome-id"];
 
-            // set the algorithm input variables. 
-            foreach (var pair in alorithmInputs.Where(i => i.Key != "Id"))
+            // Set algorithm input variables ->
+            foreach (var pair in alorithmInputs.Where(i => i.Key != "chromosome-id"))
             {
-                // represent datetime in lean-friendly format. example: 2009-06-15
-                if (pair.Value is DateTime time)
-                {
-                    var cast = (DateTime?)time;
-                    Config.Set(pair.Key, cast.Value.ToString("O"));
-                }
-                else
-                {
-                    Config.Set(pair.Key, pair.Value.ToString());
-                }
+                Config.Set(pair.Key, pair.Value);
             }
 
-            // Lean general settings:
+            // Lean general settings ->
             Config.Set("environment", "backtesting");
             Config.Set("algorithm-language", "CSharp");     // omitted?
             Config.Set("result-handler", nameof(OptimizerResultHandler));   //override default result handler
 
             // Separate log uniquely named
             var dirPath = $"C:/Users/sterling/Desktop/logs/{DateTime.Now:yyyy-MM-dd}/leanLogs/";
-            var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + _id + ".txt";
+            var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + id + ".txt";
             var filePath = String.Concat(dirPath, logFileName);
 
             // Create directory if not exist

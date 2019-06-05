@@ -52,7 +52,7 @@ namespace Optimization
         /// </summary>
         /// <param name="list">Input parameters.</param>
         /// <returns>Full backtest results of<see cref="OptimizerResultHandler"/></returns>
-        public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list)
+        public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, string> list)
         {
             // Create a new AppDomain ->
             var name = Guid.NewGuid().ToString("x");
