@@ -67,7 +67,7 @@ namespace Optimization
             if (config.MinDecimal.HasValue && config.MaxDecimal.HasValue)
             {
                 var randomDecimal = RandomBetween(config.MinDecimal.Value, config.MaxDecimal.Value);
-                return new Gene(new KeyValuePair<string, object>(config.Key, randomDecimal));
+                return new Gene(randomDecimal);
             }
 
             // if no decimal nor int values specified - there is a mistake.
@@ -77,7 +77,7 @@ namespace Optimization
             // if has int values interval - generate random int in between.
             var randomInteger = RandomBetween(config.MinInt.Value, config.MaxInt.Value);
 
-            return new Gene(new KeyValuePair<string, object>(config.Key, randomInteger));
+            return new Gene(randomInteger);
         }
 
     }

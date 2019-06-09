@@ -32,8 +32,14 @@ namespace Optimization
 
             for (var index = 0; index < ch.Length; index++)
             {
-                // take the key from global config file
-                resultingDictionary.Add(Program.Config.Genes[index].Key, ch.GetGene(index).Value.ToString());
+                // Take the key from Global config ->
+                var key = Program.Config.GeneConfigArray[index].Key;
+
+                // Take value from the Gene ->
+                var value = ch.GetGene(index).Value.ToString();
+
+                // Add these to collection ->
+                resultingDictionary.Add(key, value);
             }
 
             return resultingDictionary;

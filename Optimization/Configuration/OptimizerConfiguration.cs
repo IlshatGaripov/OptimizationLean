@@ -67,7 +67,7 @@ namespace Optimization
         /// The settings to generate gene values
         /// </summary>
         [JsonProperty("genes")]
-        public GeneConfiguration[] Genes { get; set; }
+        public GeneConfiguration[] GeneConfigArray { get; set; }
 
         /// <summary>
         /// Override config.json setting

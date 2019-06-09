@@ -99,7 +99,7 @@ namespace Optimization
                         break;
                     }
 
-                case OptimizationMode.GeneticAlgorithm:
+                case OptimizationMode.Genetic:
                     {
                         // create random population
                         population = new PopulationRandom();

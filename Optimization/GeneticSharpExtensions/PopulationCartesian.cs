@@ -20,7 +20,7 @@ namespace Optimization
             var inputGeneValuesContainer = new List<object[]>();
 
             // iterate over the gene config objects
-            foreach (var config in Program.Config.Genes)
+            foreach (var config in Program.Config.GeneConfigArray)
             {
                 // we need a step value for every gene to generate cartesian product 
                 if (!config.Step.HasValue)

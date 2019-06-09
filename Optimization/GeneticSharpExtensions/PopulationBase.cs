@@ -99,7 +99,7 @@ namespace Optimization
         }
 
         /// <summary>
-        /// Generates a list of chromosomes to used to create the inital generation.
+        /// Generates a list of chromosomes to make up the inital generation.
         /// See <see cref="CreateInitialGeneration"/>
         /// </summary>
         protected virtual IList<IChromosome> GenerateChromosomes() => throw new System.NotImplementedException();

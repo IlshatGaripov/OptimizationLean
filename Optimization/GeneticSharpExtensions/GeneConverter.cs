@@ -58,7 +58,7 @@ namespace Optimization
                 };
             }
 
-            // else those are decimals
+            // else these are decimals
             decimal.TryParse(min, out var minOutputDecimalResult);
             decimal.TryParse(max, out var maxOutputDecimalResult);
 

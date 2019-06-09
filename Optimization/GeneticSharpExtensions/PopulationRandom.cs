@@ -9,18 +9,18 @@ namespace Optimization
     public sealed class PopulationRandom : PopulationBase
     {
         /// <summary>
-        /// Generates the chromosome list.
-        /// Default behavior is just generate it randomly. of given size specificated in config.
-        /// and using GeneFactory randomization methods and GeneConfig settings (max, min, scale).
+        /// Generates a list of chromosomes to make up the inital generation.
+        /// See <see cref="PopulationBase.CreateInitialGeneration"/>
         /// </summary>
         protected override IList<IChromosome> GenerateChromosomes()
         {
             var chromosomes = new List<IChromosome>();
+            var length = Program.Config.GeneConfigArray.Length;
 
-            // create the pre defined list of chromosomes
+            // create the list of chromosomes
             for (var i = 0; i < Program.Config.PopulationSize; i++)
             {
-                chromosomes.Add(new ChromosomeRandom(Program.Config.Genes.Length));
+                chromosomes.Add(new ChromosomeRandom(length));
             }
 
             return chromosomes;

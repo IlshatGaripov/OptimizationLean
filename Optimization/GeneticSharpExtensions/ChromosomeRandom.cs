@@ -11,7 +11,7 @@ namespace Optimization
         public ChromosomeRandom(int length) : base(length)
         {
             // fill the gene array with generated values
-            for (var i = 0; i < Program.Config.Genes.Length; i++)
+            for (var i = 0; i < Program.Config.GeneConfigArray.Length; i++)
             {
                 ReplaceGene(i, GenerateGene(i));
             }
@@ -24,8 +24,11 @@ namespace Optimization
         /// <returns>The gene generated at the specified index.</returns>
         public override Gene GenerateGene(int geneIndex)
         {
-            var geneConfig = Program.Config.Genes[geneIndex];
-            return GeneFactory.GenerateRandom(geneConfig);
+            // Get Gene configuration ->
+            var configuration = Program.Config.GeneConfigArray[geneIndex];
+
+            // Generate random within min-max boundaries ->
+            return GeneFactory.GenerateRandom(configuration);
         }
     }
 

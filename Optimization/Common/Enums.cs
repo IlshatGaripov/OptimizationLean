@@ -5,7 +5,7 @@
     /// </summary>
     public enum OptimizationMode
     {
-        GeneticAlgorithm,
+        Genetic,
         BruteForce
     }
 
