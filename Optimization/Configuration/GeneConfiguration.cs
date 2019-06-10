@@ -34,22 +34,10 @@ namespace Optimization
         /// The maximum value for a decimal value
         /// </summary>
         public decimal? MaxDecimal { get; set; }
-        
-        /// <summary>
-        /// The decimal precision (rounding) for gene values
-        /// </summary>
-        public int? Scale { get; set; }
 
         /// <summary>
         /// Iterative step for brute force mode
         /// </summary>
         public decimal? Step { get; set; }
-
-        /// <summary>
-        /// When true, will randomly select a value between 0 to 10946 from the Fibonacci sequence instead of generating random values
-        /// </summary>
-        /// <remarks></remarks>
-        public bool Fibonacci { get; set; }
-        
     }
 }

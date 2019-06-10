@@ -26,7 +26,6 @@ namespace Optimization
 
             // values that are indespensible for both int and decimal
             var key = json["key"].Value<string>();
-            var fibo = json["fibonacci"]?.Value<bool>() ?? false;
 
             // step
             var step = json["step"]?.Value<decimal>();
@@ -53,8 +52,7 @@ namespace Optimization
                     Key = key,
                     MinInt = minOutputIntResult,
                     MaxInt = maxOuptputIntResult,
-                    Step = step,
-                    Fibonacci = fibo
+                    Step = step
                 };
             }
 
@@ -67,8 +65,7 @@ namespace Optimization
                 Key = key,
                 MinDecimal = minOutputDecimalResult,
                 MaxDecimal = maxOutputDecimalResult,
-                Step = step,
-                Fibonacci = fibo
+                Step = step
             };
         }
 
@@ -78,13 +75,9 @@ namespace Optimization
             
             writer.WriteStartObject();
 
-            // key
+            // Key ->
             writer.WritePropertyName("key");
             writer.WriteValue(gene.Key);
-
-            // fibo
-            writer.WritePropertyName("fibonacci");
-            writer.WriteValue(gene.Fibonacci);
 
             if (gene.MinDecimal.HasValue)
             {

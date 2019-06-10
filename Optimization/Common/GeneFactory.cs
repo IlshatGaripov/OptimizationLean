@@ -1,7 +1,6 @@
 ﻿using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Randomizations;
 using System;
-using System.Collections.Generic;
 
 namespace Optimization
 {
@@ -10,16 +9,6 @@ namespace Optimization
     /// </summary>
     public static class GeneFactory
     {
-        /// <summary>
-        /// Randomizer basic.
-        /// </summary>
-        private static readonly IRandomization Basic = new BasicRandomization();
-
-        /// <summary>
-        /// Randomizer fibonacci.
-        /// </summary>
-        private static readonly IRandomization Fibonacci = new FibonacciRandomization();
-
         /// <summary>
         /// Returns random int within an interval.
         /// </summary>
@@ -60,9 +49,6 @@ namespace Optimization
         /// <param name="config">Gene configuration.</param>
         public static Gene GenerateRandom(GeneConfiguration config)
         {
-            // set randomization scheme.
-            RandomizationProvider.Current = config.Fibonacci ? Fibonacci : Basic;
-            
             // generate random decimal within an interval
             if (config.MinDecimal.HasValue && config.MaxDecimal.HasValue)
             {
