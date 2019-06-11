@@ -54,8 +54,8 @@ namespace Optimization
             // How do we select parents for crossover? ->
             ISelection selection = new TournamentSelection();
 
-            // TODO: learn crossovers - there are plenty of implementations in the lib!
-            ICrossover crossover = Program.Config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover();
+            // TODO: use more crossovers for better randomization - there are plenty of them available in the lib!
+            ICrossover crossover = new TwoPointCrossover();
 
             IMutation mutation = new UniformMutation(true);
             IReinsertion reinsertion = new ElitistReinsertion();

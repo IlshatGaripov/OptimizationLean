@@ -148,21 +148,15 @@ namespace Optimization
         public int StagnationGenerations { get; set; } = 10;
 
         /// <summary>
-        /// 1 or 2 point crossover
-        /// </summary>
-        [JsonProperty("one-point-crossover")]
-        public bool OnePointCrossover { get; set; } = false;
-
-        /// <summary>
         /// Likeliness of mutation
         /// </summary>
         [JsonProperty("mutation-probability")]
-        public float MutationProbability { get; set; } = GeneticAlgorithm.DefaultMutationProbability;
+        public float MutationProbability { get; set; } = GeneticAlgorithmCustom.DefaultMutationProbability;
 
         /// <summary>
         /// Likeliness of crossover
         /// </summary>
         [JsonProperty("crossover-probability")]
-        public float CrossoverProbability { get; set; } = GeneticAlgorithm.DefaultCrossoverProbability;
+        public float CrossoverProbability { get; set; } = GeneticAlgorithmCustom.DefaultCrossoverProbability;
     }
 }

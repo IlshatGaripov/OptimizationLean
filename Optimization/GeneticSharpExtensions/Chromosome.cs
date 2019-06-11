@@ -8,6 +8,7 @@ namespace Optimization
     /// Base class for all custom implementations of a chromosome class.
     /// Intermediate between ChromosomeBase (library implementation) and factual implementation.
     /// </summary>
+    [Serializable]
     public class Chromosome : ChromosomeBase
     {
         /// <summary>
@@ -51,6 +52,7 @@ namespace Optimization
     /// <summary>
     /// Full backtest result are defined in simpliest by full statistics and start and end dates
     /// </summary>
+    [Serializable]
     public class FitnessResult
     {
         /// <summary>

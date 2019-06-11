@@ -57,7 +57,6 @@
   "population-size": 24,
   "generations": 20,
   "stagnation-generations": 30,
-  "one-point-crossover": "true",
   "mutation-probability": 0.5,
   "crossover-probability": 0.75
 }
