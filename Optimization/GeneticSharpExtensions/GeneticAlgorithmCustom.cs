@@ -260,7 +260,7 @@ namespace Optimization
 
                 // this will return true if termination has reached at the end of current generation
                 // as instance, when the GenerationNumberTermination is set to 1 (the case of brute force optimization)
-                // generation must not evolve further and the method will return;
+                // generation must not evolve further and the Resume() will return ->
                 if (EndCurrentGeneration())
                 {
                     return;
@@ -311,11 +311,20 @@ namespace Optimization
         /// <returns>True if termination has been reached, otherwise false.</returns>
         private bool EvolveOneGeneration()
         {
-            var parents = SelectParents();
+            // Select chromosomes to be parents to crossover ->
+            // TODO: use 2 just for the testing.. 
+            var parents = SelectParents(2);
+
+            // Cross ->
             var offspring = Cross(parents);
-            Mutate(offspring);
+
+            // TODO: use mutation
+            //Mutate(offspring);
+
             var newGenerationChromosomes = Reinsert(offspring, parents);
+
             Population.CreateNewGeneration(newGenerationChromosomes);
+
             return EndCurrentGeneration();
         }
 
@@ -326,6 +335,8 @@ namespace Optimization
         private bool EndCurrentGeneration()
         {
             EvaluateFitness();
+
+            // EndCurrentGeneration
             Population.EndCurrentGeneration();
 
             var handler = GenerationRan;
@@ -399,9 +410,10 @@ namespace Optimization
         /// Selects the parents.
         /// </summary>
         /// <returns>The parents.</returns>
-        private IList<IChromosome> SelectParents()
+        /// <param name="number">The number of chromosomes to select from current generation</param>
+        private IList<IChromosome> SelectParents(int number)
         {
-            return Selection.SelectChromosomes(Population.MinSize, Population.CurrentGeneration);
+            return Selection.SelectChromosomes(number, Population.CurrentGeneration);
         }
 
         /// <summary>

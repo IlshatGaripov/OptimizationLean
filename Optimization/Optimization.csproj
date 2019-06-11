@@ -110,7 +110,6 @@
     <Compile Include="GeneticSharpExtensions\TaskExecutorAzure.cs" />
     <Compile Include="Interfaces\IOptimizerManager.cs" />
     <Compile Include="Common\Enums.cs" />
-    <Compile Include="GeneticSharpExtensions\FibonacciRandomization.cs" />
     <Compile Include="GeneticSharpExtensions\Chromosome.cs" />
     <Compile Include="OptimizerManager\AlgorithmOptimumFinder.cs" />
     <Compile Include="Fitness\OptimizerFitness.cs" />

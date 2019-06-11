@@ -51,9 +51,12 @@ namespace Optimization
             EndDate = end;
             SortCriteria = sortCriteria;
 
-            // GA's objects common to different optimization modes
+            // How do we select parents for crossover? ->
             ISelection selection = new TournamentSelection();
+
+            // TODO: learn crossovers - there are plenty of implementations in the lib!
             ICrossover crossover = Program.Config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover();
+
             IMutation mutation = new UniformMutation(true);
             IReinsertion reinsertion = new ElitistReinsertion();
 

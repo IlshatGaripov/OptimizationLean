@@ -13,7 +13,7 @@ namespace Optimization
     public abstract class PopulationBase : IPopulation
     {
         /// <summary>
-        /// Constructor. General for all derived class. Performing general (common for inherited behavior) initialization.
+        /// Constructor. General for all derived class. Performing general (common for inherited) init behavior.
         /// </summary>
         protected PopulationBase()
         {
@@ -122,18 +122,22 @@ namespace Optimization
 
         /// <summary>
         /// Ends the current generation.
-        /// </summary>        
+        /// <remarks>
+        /// Method evaluates the best chromosome. As well as reduce the population to a given number of best solutions. 
+        /// </remarks>
+        /// </summary>
         public virtual void EndCurrentGeneration()
         {
-            // method re writes the CurrentGeneration's Chromosomes list
-            // and leaves only given number of best solutions in 
-            // we will not reduce the population - for now lets keep all the solutions
+            // How many chromosomes to keep in list ->
             var size = CurrentGeneration.Chromosomes.Count;
+
+            // Reduce the population to given number of best solutions ->
             CurrentGeneration.End(size);
 
+            // If there is no better chromosome than already exist then return ->
             if (Equals(BestChromosome, CurrentGeneration.BestChromosome)) return;
 
-            // else
+            // Otherwise ->
             BestChromosome = CurrentGeneration.BestChromosome;
             OnBestChromosomeChanged(EventArgs.Empty);
         }

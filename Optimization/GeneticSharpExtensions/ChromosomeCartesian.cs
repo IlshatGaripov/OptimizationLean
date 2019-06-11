@@ -33,6 +33,14 @@ namespace Optimization
         {
             return new Gene(_geneValues[geneIndex]);
         }
-        
+
+        /// <summary>
+        /// Returns a deep clone copy of a chromosome object.
+        /// </summary>
+        /// <returns>The new chromosome.</returns>
+        public override IChromosome CreateNew()
+        {
+            return new ChromosomeCartesian(_geneValues);
+        }
     }
 }

@@ -39,7 +39,7 @@ namespace Optimization
         }
 
         /// <summary>
-        /// Creates a new chromosome using the same structure of this.
+        /// Returns a deep clone copy of a chromosome object.
         /// </summary>
         /// <returns>The new chromosome.</returns>
         public override IChromosome CreateNew()
