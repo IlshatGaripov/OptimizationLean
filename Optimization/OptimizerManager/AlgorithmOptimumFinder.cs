@@ -55,14 +55,13 @@ namespace Optimization
             var maxThreads = Program.Config.MaxThreads > 0 ? Program.Config.MaxThreads : 8;
 
             // Common properties ->
-            ISelection selection = new TournamentSelection();
-            ICrossover crossover = new TwoPointCrossover();
-            IMutation mutation = new UniformMutation(true);
-            IReinsertion reinsertion = new ElitistReinsertion();
+            var selection = new RouletteWheelSelection();
+            var crossover = new TwoPointCrossover();
+            var mutation = new UniformMutation(true);
 
             // Properties specific to optimization modes ->
             IFitness fitness;
-            IPopulation population;
+            PopulationBase population;
             ITaskExecutor executor;
             ITermination termination;
 
@@ -120,10 +119,8 @@ namespace Optimization
             GenAlgorithm = new GeneticAlgorithmCustom(population, fitness, executor)
             {
                 Selection = selection,
-                Crossover = crossover,
                 Mutation = mutation,
                 Termination = termination,
-                Reinsertion = reinsertion,
                 MutationProbability = Program.Config.MutationProbability,
                 CrossoverProbability = Program.Config.CrossoverProbability
             };

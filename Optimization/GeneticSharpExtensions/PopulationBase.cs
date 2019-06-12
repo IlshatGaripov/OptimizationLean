@@ -8,9 +8,9 @@ using GeneticSharp.Infrastructure.Framework.Commons;
 namespace Optimization
 {
     /// <summary>
-    /// Represents a base abstract class for population of candidate solutions (chromosomes).
+    /// Represents a base abstract class for all custom population object implementations.
     /// </summary>
-    public abstract class PopulationBase : IPopulation
+    public abstract class PopulationBase
     {
         /// <summary>
         /// Constructor. General for all derived class. Performing general (common for inherited) init behavior.
@@ -22,9 +22,6 @@ namespace Optimization
 
             // create generation list.
             Generations = new List<Generation>();
-
-            // generation strategy - only a single (new) generation will be kept in population.
-            GenerationStrategy = new PerformanceGenerationStrategy(1);
         }
 
         /// <summary>
@@ -62,15 +59,13 @@ namespace Optimization
         public int GenerationsNumber { get; protected set; }
 
         /// <summary>
-        /// Gets or sets the minimum size.
+        /// Number of parents to select for crossovers.
         /// </summary>
-        /// <value>The minimum size.</value>
-        public int MinSize { get; set; }
+        public int ParentsQuantity { get; set; }
 
         /// <summary>
-        /// Gets or sets the size of the max.
+        /// Max number of chromosomes to be contained by every generation.
         /// </summary>
-        /// <value>The size of the max.</value>
         public int MaxSize { get; set; }
 
         /// <summary>
@@ -80,21 +75,14 @@ namespace Optimization
         public IChromosome BestChromosome { get; protected set; }
 
         /// <summary>
-        /// Gets or sets the generation strategy.
-        /// </summary>
-        public IGenerationStrategy GenerationStrategy { get; set; }
-
-        /// <summary>
         /// Creates the initial generation.
         /// </summary>
         public virtual void CreateInitialGeneration()
         {
             GenerationsNumber = 0;
 
-            // Initial generation
+            // Generate chromosomes and define a first generation ->
             var chromosomesList = GenerateChromosomes();
-
-            // calls the base class method. Chromosomes validation is held inside.
             CreateNewGeneration(chromosomesList);
         }
 
@@ -118,24 +106,18 @@ namespace Optimization
             // Create new Generation and add to collection ->
             CurrentGeneration = new Generation(++GenerationsNumber, chromosomes);
             Generations.Add(CurrentGeneration);
-
-            // Leaves only predetermined number of object in Generations list (default values is 1) ->
-            GenerationStrategy.RegisterNewGeneration(this);
         }
 
         /// <summary>
         /// Ends the current generation.
         /// <remarks>
-        /// Method evaluates the best chromosome. As well as reduce the population to a given number of best solutions. 
+        /// Method evaluates the best chromosome. Truncates population to a given number of best solutions. 
         /// </remarks>
         /// </summary>
         public virtual void EndCurrentGeneration()
         {
-            // How many chromosomes to keep in list ->
-            var size = CurrentGeneration.Chromosomes.Count;
-
-            // Reduce the population to given number of best solutions ->
-            CurrentGeneration.End(size);
+            // Truncate the population to reasonable size ->
+            CurrentGeneration.End(MaxSize);
 
             // If there is no better chromosome than already exist then return ->
             if (Equals(BestChromosome, CurrentGeneration.BestChromosome)) return;

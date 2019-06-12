@@ -45,7 +45,7 @@ namespace Optimization
         /// <param name="fitness">The fitness evaluation function.</param>
         /// <param name="taskExecutor">Task executor.</param>
         public GeneticAlgorithmCustom(
-                          IPopulation population,
+                          PopulationBase population,
                           IFitness fitness,
                           ITaskExecutor taskExecutor)
         {
@@ -58,7 +58,7 @@ namespace Optimization
             State = GeneticAlgorithmState.NotStarted;
 
             // Defaults ->
-            OperatorsStrategy = new DefaultOperatorsStrategy();
+            CrossoverCollection = new ICrossover[] {new TwoPointCrossover(), new CycleCrossover() };
 
             // Default values ->
             CrossoverProbability = DefaultCrossoverProbability;
@@ -79,17 +79,12 @@ namespace Optimization
         /// Occurs when stopped.
         /// </summary>
         public event EventHandler Stopped;
-        
-        /// <summary>
-        /// Gets the operators strategy
-        /// </summary>
-        public IOperatorsStrategy OperatorsStrategy { get; set; }
 
         /// <summary>
         /// Gets the population.
         /// </summary>
         /// <value>The population.</value>
-        public IPopulation Population { get; }
+        public PopulationBase Population { get; }
 
         /// <summary>
         /// Gets the fitness function.
@@ -105,7 +100,7 @@ namespace Optimization
         /// Gets or sets the crossover operator.
         /// </summary>
         /// <value>The crossover.</value>
-        public ICrossover Crossover { get; set; }
+        public ICrossover[] CrossoverCollection { get; set; }
 
         /// <summary>
         /// Gets or sets the crossover probability.
@@ -121,11 +116,6 @@ namespace Optimization
         /// Gets or sets the mutation probability.
         /// </summary>
         public float MutationProbability { get; set; }
-
-        /// <summary>
-        /// Gets or sets the reinsertion operator.
-        /// </summary>
-        public IReinsertion Reinsertion { get; set; }
 
         /// <summary>
         /// Gets or sets the termination condition.
@@ -206,11 +196,10 @@ namespace Optimization
         /// </summary>
         public void Start()
         {
-            // Check if all properties have been explicitly specified ->
+            // Check that all properties have been explicitly specified ->
             ExceptionHelper.ThrowIfNull("selection", Selection);
-            ExceptionHelper.ThrowIfNull("crossover", Crossover);
+            ExceptionHelper.ThrowIfNull("crossover", CrossoverCollection);
             ExceptionHelper.ThrowIfNull("mutation", Mutation);
-            ExceptionHelper.ThrowIfNull("reinsertion", Reinsertion);
             ExceptionHelper.ThrowIfNull("termination", Termination);
 
             lock (m_lock)
@@ -314,20 +303,17 @@ namespace Optimization
         /// <returns>True if termination has been reached, otherwise false.</returns>
         private bool CreateChildrenAndPerformEvolution()
         {
-            // Select chromosomes to be a source to crossover ->
-            // TODO: use 2 just for the testing.. 
-            var parents = SelectParents(2);
+            // Create a container for offspring ->
+            var offspring = new List<IChromosome>();
 
-            // Cross ->
-            var offspring = Cross(parents);
+            // Select the chromosomes to be origin for crossovers and mutations ->
+            var parents = Selection.SelectChromosomes(Population.ParentsQuantity, Population.CurrentGeneration);
 
-            // TODO: use mutation
-            //Mutate(offspring);
-
-            var newGenerationChromosomes = Reinsert(offspring, parents);
+            // TODO: implement crossover and mutations cycle.
+            //while() ..
 
             // Create new generation and assign it to CurrentGeneration ->
-            Population.CreateNewGeneration(newGenerationChromosomes);
+            Population.CreateNewGeneration(offspring);
 
             return PerformEvolution();
         }
@@ -414,16 +400,7 @@ namespace Optimization
             }
         }
 
-        /// <summary>
-        /// Selects the parents.
-        /// </summary>
-        /// <returns>The parents.</returns>
-        /// <param name="number">The number of chromosomes to select from current generation</param>
-        private IList<IChromosome> SelectParents(int number)
-        {
-            return Selection.SelectChromosomes(number, Population.CurrentGeneration);
-        }
-
+        /*
         /// <summary>
         /// Crosses the specified parents.
         /// </summary>
@@ -442,19 +419,8 @@ namespace Optimization
         {
             OperatorsStrategy.Mutate(Mutation, MutationProbability, chromosomes);
         }
-
-        /// <summary>
-        /// Reinsert the specified offspring and parents.
-        /// </summary>
-        /// <param name="offspring">The offspring chromosomes.</param>
-        /// <param name="parents">The parents chromosomes.</param>
-        /// <returns>
-        /// The reinserted chromosomes.
-        /// </returns>
-        private IList<IChromosome> Reinsert(IList<IChromosome> offspring, IList<IChromosome> parents)
-        {
-            return Reinsertion.SelectChromosomes(Population, offspring, parents);
-        }
+        
+        */
     }
 }
 
