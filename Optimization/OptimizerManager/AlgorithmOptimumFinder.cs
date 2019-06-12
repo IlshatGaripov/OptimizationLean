@@ -51,23 +51,20 @@ namespace Optimization
             EndDate = end;
             SortCriteria = sortCriteria;
 
-            // How do we select parents for crossover? ->
+            // Max number of threads
+            var maxThreads = Program.Config.MaxThreads > 0 ? Program.Config.MaxThreads : 8;
+
+            // Common properties ->
             ISelection selection = new TournamentSelection();
-
-            // TODO: use more crossovers for better randomization - there are plenty of them available in the lib!
             ICrossover crossover = new TwoPointCrossover();
-
             IMutation mutation = new UniformMutation(true);
             IReinsertion reinsertion = new ElitistReinsertion();
 
-            // GA's specific to cofigurable options objects
-            ITermination termination;
+            // Properties specific to optimization modes ->
             IFitness fitness;
             IPopulation population;
             ITaskExecutor executor;
-
-            // Max number of threads
-            var maxThreads = Program.Config.MaxThreads > 0 ? Program.Config.MaxThreads : 8;
+            ITermination termination;
 
             switch (Program.Config.TaskExecutionMode)
             {
@@ -120,9 +117,11 @@ namespace Optimization
             // Create the GA itself
             // It's important to initialize GA in constructor as we would
             // like to declare event handlers from outside the class before calling Start()
-            GenAlgorithm = new GeneticAlgorithmCustom(population, fitness, selection, crossover, mutation)
+            GenAlgorithm = new GeneticAlgorithmCustom(population, fitness, executor)
             {
-                TaskExecutor = executor,
+                Selection = selection,
+                Crossover = crossover,
+                Mutation = mutation,
                 Termination = termination,
                 Reinsertion = reinsertion,
                 MutationProbability = Program.Config.MutationProbability,

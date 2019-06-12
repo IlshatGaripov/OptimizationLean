@@ -37,42 +37,32 @@ namespace Optimization
         private readonly object m_lock = new object();
         private GeneticAlgorithmState m_state;
         private Stopwatch m_stopwatch;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GeneticSharp.Domain.GeneticAlgorithm"/> class.
         /// </summary>
         /// <param name="population">The chromosomes population.</param>
         /// <param name="fitness">The fitness evaluation function.</param>
-        /// <param name="selection">The selection operator.</param>
-        /// <param name="crossover">The crossover operator.</param>
-        /// <param name="mutation">The mutation operator.</param>
+        /// <param name="taskExecutor">Task executor.</param>
         public GeneticAlgorithmCustom(
                           IPopulation population,
                           IFitness fitness,
-                          ISelection selection,
-                          ICrossover crossover,
-                          IMutation mutation)
+                          ITaskExecutor taskExecutor)
         {
-            ExceptionHelper.ThrowIfNull("population", population);
-            ExceptionHelper.ThrowIfNull("fitness", fitness);
-            ExceptionHelper.ThrowIfNull("selection", selection);
-            ExceptionHelper.ThrowIfNull("crossover", crossover);
-            ExceptionHelper.ThrowIfNull("mutation", mutation);
-
             Population = population;
             Fitness = fitness;
-            Selection = selection;
-            Crossover = crossover;
-            Mutation = mutation;
-            Reinsertion = new ElitistReinsertion();
-            Termination = new GenerationNumberTermination(1);
+            TaskExecutor = taskExecutor;
 
-            CrossoverProbability = DefaultCrossoverProbability;
-            MutationProbability = DefaultMutationProbability;
+            // Initial state values ->
             TimeEvolving = TimeSpan.Zero;
             State = GeneticAlgorithmState.NotStarted;
-            TaskExecutor = new LinearTaskExecutor();
+
+            // Defaults ->
             OperatorsStrategy = new DefaultOperatorsStrategy();
+
+            // Default values ->
+            CrossoverProbability = DefaultCrossoverProbability;
+            MutationProbability = DefaultMutationProbability;
         }
         
         /// <summary>
@@ -99,12 +89,12 @@ namespace Optimization
         /// Gets the population.
         /// </summary>
         /// <value>The population.</value>
-        public IPopulation Population { get; private set; }
+        public IPopulation Population { get; }
 
         /// <summary>
         /// Gets the fitness function.
         /// </summary>
-        public IFitness Fitness { get; private set; }
+        public IFitness Fitness { get; }
 
         /// <summary>
         /// Gets or sets the selection operator.
@@ -141,6 +131,11 @@ namespace Optimization
         /// Gets or sets the termination condition.
         /// </summary>
         public ITermination Termination { get; set; }
+
+        /// <summary>
+        /// Gets or sets the task executor which will be used to execute fitness evaluation.
+        /// </summary>
+        public ITaskExecutor TaskExecutor { get; set; }
 
         /// <summary>
         /// Gets the generations number.
@@ -207,15 +202,17 @@ namespace Optimization
         }
 
         /// <summary>
-        /// Gets or sets the task executor which will be used to execute fitness evaluation.
-        /// </summary>
-        public ITaskExecutor TaskExecutor { get; set; }
-
-        /// <summary>
         /// Starts the genetic algorithm using population, fitness, selection, crossover, mutation and termination configured.
         /// </summary>
         public void Start()
         {
+            // Check if all properties have been explicitly specified ->
+            ExceptionHelper.ThrowIfNull("selection", Selection);
+            ExceptionHelper.ThrowIfNull("crossover", Crossover);
+            ExceptionHelper.ThrowIfNull("mutation", Mutation);
+            ExceptionHelper.ThrowIfNull("reinsertion", Reinsertion);
+            ExceptionHelper.ThrowIfNull("termination", Termination);
+
             lock (m_lock)
             {
                 State = GeneticAlgorithmState.Started;
