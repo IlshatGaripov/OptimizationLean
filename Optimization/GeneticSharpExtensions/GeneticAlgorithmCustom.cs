@@ -220,7 +220,10 @@ namespace Optimization
             {
                 State = GeneticAlgorithmState.Started;
                 m_stopwatch = Stopwatch.StartNew();
+
+                // Create initial Generation ->
                 Population.CreateInitialGeneration();
+
                 m_stopwatch.Stop();
                 TimeEvolving = m_stopwatch.Elapsed;
             }
@@ -261,7 +264,7 @@ namespace Optimization
                 // this will return true if termination has reached at the end of current generation
                 // as instance, when the GenerationNumberTermination is set to 1 (the case of brute force optimization)
                 // generation must not evolve further and the Resume() will return ->
-                if (EndCurrentGeneration())
+                if (PerformEvolution())
                 {
                     return;
                 }
@@ -276,7 +279,10 @@ namespace Optimization
                     }
 
                     m_stopwatch.Restart();
-                    terminationConditionReached = EvolveOneGeneration();
+
+                    // Create descendants from current generation and perform evolution ->
+                    terminationConditionReached = CreateChildrenAndPerformEvolution();
+
                     m_stopwatch.Stop();
                     TimeEvolving += m_stopwatch.Elapsed;
                 }
@@ -309,9 +315,9 @@ namespace Optimization
         /// Evolve one generation.
         /// </summary>
         /// <returns>True if termination has been reached, otherwise false.</returns>
-        private bool EvolveOneGeneration()
+        private bool CreateChildrenAndPerformEvolution()
         {
-            // Select chromosomes to be parents to crossover ->
+            // Select chromosomes to be a source to crossover ->
             // TODO: use 2 just for the testing.. 
             var parents = SelectParents(2);
 
@@ -323,25 +329,30 @@ namespace Optimization
 
             var newGenerationChromosomes = Reinsert(offspring, parents);
 
+            // Create new generation and assign it to CurrentGeneration ->
             Population.CreateNewGeneration(newGenerationChromosomes);
 
-            return EndCurrentGeneration();
+            return PerformEvolution();
         }
 
         /// <summary>
-        /// Ends the current generation.
+        /// Calculates fitness and selects chromosomes for next evolution.
+        /// Raises <see cref="GenerationRan"/> and <see cref="TerminationReached"/> events.
         /// </summary>
-        /// <returns><c>true</c>, if current generation was ended, <c>false</c> otherwise.</returns>
-        private bool EndCurrentGeneration()
+        /// <returns>True if termination has been reached, otherwise false.</returns>
+        private bool PerformEvolution()
         {
+            // Calculate fitness for all the chomosomes in Current Generation ->
             EvaluateFitness();
 
-            // EndCurrentGeneration
+            // Perform whatever actions need to be done over the population after the evalutation ->
             Population.EndCurrentGeneration();
 
+            // Inform one step of evolution has been accomplished ->
             var handler = GenerationRan;
             handler?.Invoke(this, EventArgs.Empty);
 
+            // Check if termination is reached ->
             if (Termination.HasReached(this))
             {
                 State = GeneticAlgorithmState.TerminationReached;

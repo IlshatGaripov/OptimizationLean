@@ -112,11 +112,14 @@ namespace Optimization
         {
             ExceptionHelper.ThrowIfNull("chromosomes", chromosomes);
 
-            // validation for non-null gene values
+            // Validate for not null values ->
             chromosomes.ValidateGenes();
             
+            // Create new Generation and add to collection ->
             CurrentGeneration = new Generation(++GenerationsNumber, chromosomes);
             Generations.Add(CurrentGeneration);
+
+            // Leaves only predetermined number of object in Generations list (default values is 1) ->
             GenerationStrategy.RegisterNewGeneration(this);
         }
 
