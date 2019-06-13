@@ -7,6 +7,7 @@ using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Crossovers;
 using GeneticSharp.Domain.Fitnesses;
 using GeneticSharp.Domain.Mutations;
+using GeneticSharp.Domain.Randomizations;
 using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
 using GeneticSharp.Infrastructure.Framework.Commons;
@@ -21,11 +22,6 @@ namespace Optimization
     /// </summary>
     public sealed class GeneticAlgorithmCustom : IGeneticAlgorithm
     {
-        /// <summary>
-        /// The default crossover probability.
-        /// </summary>
-        public const float DefaultCrossoverProbability = 0.75f;
-
         /// <summary>
         /// The default mutation probability.
         /// </summary>
@@ -59,7 +55,6 @@ namespace Optimization
             CrossoverCollection = new ICrossover[] {new TwoPointCrossover(), new CycleCrossover() };
 
             // Default values ->
-            CrossoverProbability = DefaultCrossoverProbability;
             MutationProbability = DefaultMutationProbability;
         }
         
@@ -95,15 +90,9 @@ namespace Optimization
         public ISelection Selection { get; set; }
 
         /// <summary>
-        /// Gets or sets the crossover operator.
+        /// Collection of crossover operators.
         /// </summary>
-        /// <value>The crossover.</value>
         public ICrossover[] CrossoverCollection { get; set; }
-
-        /// <summary>
-        /// Gets or sets the crossover probability.
-        /// </summary>
-        public float CrossoverProbability { get; set; }
 
         /// <summary>
         /// Gets or sets the mutation operator.
@@ -295,11 +284,10 @@ namespace Optimization
             // Select the chromosomes to be origin for crossovers and mutations ->
             var parents = Selection.SelectChromosomes(Population.ParentsQuantity, Population.CurrentGeneration);
 
-            var fromCrossover = new List<IChromosome>();
-
-            while (fromCrossover.Count < Population.MaxSize /2 )
+            while (offspring.Count < Population.MaxSize)
             {
-
+                // Make randon crossover and add result to offspring collection ->
+                offspring.AddRange(RandomCrossover(parents));
             }
 
             // Create new generation and assign it to CurrentGeneration ->
@@ -318,7 +306,7 @@ namespace Optimization
             // Calculate fitness for all the chomosomes in Current Generation ->
             EvaluateFitness();
 
-            // Leave only the values with positive fitness ->
+            // Leave only the values that have positive fitness ->
             Chromosomes = Chromosomes
                 .Where(c => c.Fitness != null && c.Fitness.Value > 0)
                 .OrderByDescending(c => c.Fitness.Value)
@@ -402,17 +390,30 @@ namespace Optimization
             }
         }
 
-        /*
+        
         /// <summary>
         /// Crosses the specified parents.
         /// </summary>
         /// <param name="parents">The parents.</param>
         /// <returns>The result chromosomes.</returns>
-        private IList<IChromosome> Cross(IList<IChromosome> parents)
+        private IList<IChromosome> RandomCrossover(ICollection<IChromosome> parents)
         {
-            return OperatorsStrategy.Cross(Population, Crossover, CrossoverProbability, parents);
+            // Select random crossover operator from list ->
+            var randomCrossoverIndex = RandomizationProvider.Current.GetInt(0, CrossoverCollection.Length);
+            var randomCrossover = CrossoverCollection[randomCrossoverIndex];
+
+            // Get number of parent required for selected operator ->
+            var parentsRequired = randomCrossover.ParentsNumber;
+
+            // Select in random the required number of unique parents ->
+            var randomParentIndexes = RandomizationProvider.Current.GetUniqueInts(parentsRequired, 0, parents.Count);
+            var randomParents = parents.Where((p, i) => randomParentIndexes.Contains(i)).ToList();
+
+            // Apply crossover and return the offspring list ->
+            return randomCrossover.Cross(randomParents);
         }
 
+        /*
         /// <summary>
         /// Mutate the specified chromosomes.
         /// </summary>

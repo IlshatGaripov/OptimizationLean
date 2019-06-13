@@ -152,11 +152,5 @@ namespace Optimization
         /// </summary>
         [JsonProperty("mutation-probability")]
         public float MutationProbability { get; set; } = GeneticAlgorithmCustom.DefaultMutationProbability;
-
-        /// <summary>
-        /// Likeliness of crossover
-        /// </summary>
-        [JsonProperty("crossover-probability")]
-        public float CrossoverProbability { get; set; } = GeneticAlgorithmCustom.DefaultCrossoverProbability;
     }
 }

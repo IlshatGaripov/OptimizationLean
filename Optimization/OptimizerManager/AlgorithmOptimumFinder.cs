@@ -1,7 +1,5 @@
 ﻿using GeneticSharp.Domain.Crossovers;
 using GeneticSharp.Domain.Mutations;
-using GeneticSharp.Domain.Populations;
-using GeneticSharp.Domain.Reinsertions;
 using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
 using GeneticSharp.Infrastructure.Framework.Threading;
@@ -121,8 +119,7 @@ namespace Optimization
                 Selection = selection,
                 Mutation = mutation,
                 Termination = termination,
-                MutationProbability = Program.Config.MutationProbability,
-                CrossoverProbability = Program.Config.CrossoverProbability
+                MutationProbability = Program.Config.MutationProbability
             };
         }
 
