@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using GeneticSharp.Domain.Chromosomes;
-using GeneticSharp.Domain.Populations;
 using GeneticSharp.Infrastructure.Framework.Commons;
 
 namespace Optimization
@@ -61,7 +60,7 @@ namespace Optimization
         /// <summary>
         /// Number of parents to select for crossovers.
         /// </summary>
-        public int ParentsQuantity { get; set; }
+        public int ParentsNumber { get; set; }
 
         /// <summary>
         /// Max number of chromosomes to be contained by every generation.

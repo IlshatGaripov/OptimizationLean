@@ -282,7 +282,7 @@ namespace Optimization
             var offspring = new List<IChromosome>();
 
             // Select the chromosomes to be origin for crossovers and mutations ->
-            var parents = Selection.SelectChromosomes(Population.ParentsQuantity, Population.CurrentGeneration);
+            var parents = SelectParents(Population.ParentsNumber);
 
             while (offspring.Count < Population.MaxSize)
             {
@@ -390,7 +390,20 @@ namespace Optimization
             }
         }
 
-        
+        /// <summary>
+        /// Select parents
+        /// </summary>
+        /// <param name="number">Number of parents chromosomes to select.</param>
+        /// <returns></returns>
+        private IList<IChromosome> SelectParents(int number)
+        {
+            // Create Genetic Sharp lib type Generation as it's required by selection methods ->
+            var generationGeneticSharp = new GeneticSharp.Domain.Populations.Generation(2098, Chromosomes);
+
+            // Perform selection ->
+            return Selection.SelectChromosomes(number, generationGeneticSharp);
+        }
+
         /// <summary>
         /// Crosses the specified parents.
         /// </summary>

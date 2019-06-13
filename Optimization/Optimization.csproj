@@ -102,6 +102,7 @@
     <Compile Include="Fitness\LeanFitness.cs" />
     <Compile Include="GeneticSharpExtensions\ChromosomeCartesian.cs" />
     <Compile Include="GeneticSharpExtensions\ChromosomeRandom.cs" />
+    <Compile Include="GeneticSharpExtensions\Generation.cs" />
     <Compile Include="GeneticSharpExtensions\GeneticAlgorithmCustom.cs" />
     <Compile Include="GeneticSharpExtensions\PopulationCartesian.cs" />
     <Compile Include="GeneticSharpExtensions\PopulationBase.cs" />
