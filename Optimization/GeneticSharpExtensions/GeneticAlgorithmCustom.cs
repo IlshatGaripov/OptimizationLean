@@ -7,8 +7,6 @@ using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Crossovers;
 using GeneticSharp.Domain.Fitnesses;
 using GeneticSharp.Domain.Mutations;
-using GeneticSharp.Domain.Populations;
-using GeneticSharp.Domain.Reinsertions;
 using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
 using GeneticSharp.Infrastructure.Framework.Commons;
@@ -130,25 +128,20 @@ namespace Optimization
         /// <summary>
         /// Gets the generations number.
         /// </summary>
-        /// <value>The generations number.</value>
-        public int GenerationsNumber
-        {
-            get
-            {
-                return Population.GenerationsNumber;
-            }
-        }
+        public int GenerationsNumber => Population.GenerationsNumber;
 
         /// <summary>
         /// Gets the best chromosome.
         /// </summary>
-        /// <value>The best chromosome.</value>
-        public IChromosome BestChromosome
+        public IChromosome BestChromosome => Population.BestChromosome;
+
+        /// <summary>
+        /// Gets the current chromosomes list
+        /// </summary>
+        public IList<IChromosome> Chromosomes
         {
-            get
-            {
-                return Population.BestChromosome;
-            }
+            get => Population.CurrentGeneration.Chromosomes;
+            set => Population.CurrentGeneration.Chromosomes = value;
         }
 
         /// <summary>
@@ -182,14 +175,7 @@ namespace Optimization
         /// <summary>
         /// Gets a value indicating whether this instance is running.
         /// </summary>
-        /// <value><c>true</c> if this instance is running; otherwise, <c>false</c>.</value>
-        public bool IsRunning
-        {
-            get
-            {
-                return State == GeneticAlgorithmState.Started || State == GeneticAlgorithmState.Resumed;
-            }
-        }
+        public bool IsRunning => State == GeneticAlgorithmState.Started || State == GeneticAlgorithmState.Resumed;
 
         /// <summary>
         /// Starts the genetic algorithm using population, fitness, selection, crossover, mutation and termination configured.
@@ -309,8 +295,12 @@ namespace Optimization
             // Select the chromosomes to be origin for crossovers and mutations ->
             var parents = Selection.SelectChromosomes(Population.ParentsQuantity, Population.CurrentGeneration);
 
-            // TODO: implement crossover and mutations cycle.
-            //while() ..
+            var fromCrossover = new List<IChromosome>();
+
+            while (fromCrossover.Count < Population.MaxSize /2 )
+            {
+
+            }
 
             // Create new generation and assign it to CurrentGeneration ->
             Population.CreateNewGeneration(offspring);
@@ -328,8 +318,20 @@ namespace Optimization
             // Calculate fitness for all the chomosomes in Current Generation ->
             EvaluateFitness();
 
-            // Perform whatever actions need to be done over the population after the evalutation ->
-            Population.EndCurrentGeneration();
+            // Leave only the values with positive fitness ->
+            Chromosomes = Chromosomes
+                .Where(c => c.Fitness != null && c.Fitness.Value > 0)
+                .OrderByDescending(c => c.Fitness.Value)
+                .ToList();
+
+            // Truncate if amount is more than max size ->
+            if (Chromosomes.Count > Population.MaxSize)
+            {
+                Chromosomes = Chromosomes.Take(Population.MaxSize).ToList();
+            }
+
+            // Trace the best chromosome ->
+            Population.RegisterTheBestChromosome();
 
             // Inform one step of evolution has been accomplished ->
             var handler = GenerationRan;

@@ -109,18 +109,15 @@ namespace Optimization
         }
 
         /// <summary>
-        /// Ends the current generation.
-        /// <remarks>
-        /// Method evaluates the best chromosome. Truncates population to a given number of best solutions. 
-        /// </remarks>
+        /// Fixes the best chromosome.
         /// </summary>
-        public virtual void EndCurrentGeneration()
+        public virtual void RegisterTheBestChromosome()
         {
-            // Truncate the population to reasonable size ->
-            CurrentGeneration.End(MaxSize);
-
-            // If there is no better chromosome than already exist then return ->
-            if (Equals(BestChromosome, CurrentGeneration.BestChromosome)) return;
+            // If there is no better chromosome than already have just return ->
+            if (Equals(BestChromosome, CurrentGeneration.BestChromosome))
+            {
+                return;
+            }
 
             // Otherwise ->
             BestChromosome = CurrentGeneration.BestChromosome;
