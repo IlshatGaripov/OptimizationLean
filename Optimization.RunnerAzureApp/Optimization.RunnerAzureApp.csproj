@@ -56,8 +56,8 @@
     <Reference Include="CSharpAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\QuantConnect.Brokerages.2.4.0.3493\lib\net452\CSharpAPI.dll</HintPath>
     </Reference>
-    <Reference Include="DotNetZip, Version=1.10.1.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
-      <HintPath>..\packages\DotNetZip.1.10.1\lib\net20\DotNetZip.dll</HintPath>
+    <Reference Include="DotNetZip, Version=1.13.3.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.13.3\lib\net40\DotNetZip.dll</HintPath>
     </Reference>
     <Reference Include="DynamicInterop, Version=0.7.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DynamicInterop.0.7.4\lib\net40\DynamicInterop.dll</HintPath>
@@ -187,7 +187,7 @@
       <HintPath>..\packages\QuantConnect.Brokerages.2.4.0.3493\lib\net452\QuantConnect.Brokerages.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Common, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\QuantConnect.Lean.Engine.2.4.5729\lib\net452\QuantConnect.Common.dll</HintPath>
+      <HintPath>..\packages\QuantConnect.Lean.Engine.2.4.5833\lib\net452\QuantConnect.Common.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Compression, Version=2.4.0.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\QuantConnect.Compression.2.4.0.3493\lib\net452\QuantConnect.Compression.dll</HintPath>
@@ -202,7 +202,7 @@
       <HintPath>..\packages\QuantConnect.Indicators.2.4.0.3493\lib\net452\QuantConnect.Indicators.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Lean.Engine, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\QuantConnect.Lean.Engine.2.4.5729\lib\net452\QuantConnect.Lean.Engine.dll</HintPath>
+      <HintPath>..\packages\QuantConnect.Lean.Engine.2.4.5833\lib\net452\QuantConnect.Lean.Engine.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Logging, Version=2.4.0.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\QuantConnect.Logging.2.4.0.3493\lib\net452\QuantConnect.Logging.dll</HintPath>
