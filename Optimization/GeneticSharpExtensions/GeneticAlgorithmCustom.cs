@@ -51,10 +51,11 @@ namespace Optimization
             TimeEvolving = TimeSpan.Zero;
             State = GeneticAlgorithmState.NotStarted;
 
-            // Defaults ->
+            // Collection of crossover operators to use ->
             CrossoverCollection = new ICrossover[] {new TwoPointCrossover(), new CycleCrossover() };
 
-            // Default values ->
+            // Default mutation will replace any random gene with a new randomly generated value ->
+            Mutation = new UniformMutation();
             MutationProbability = DefaultMutationProbability;
         }
         
@@ -95,7 +96,7 @@ namespace Optimization
         public ICrossover[] CrossoverCollection { get; set; }
 
         /// <summary>
-        /// Gets or sets the mutation operator.
+        /// Default mutation operator.
         /// </summary>
         public IMutation Mutation { get; set; }
 
@@ -222,9 +223,9 @@ namespace Optimization
                     State = GeneticAlgorithmState.Resumed;
                 }
 
-                // this will return true if termination has reached at the end of current generation
-                // as instance, when the GenerationNumberTermination is set to 1 (the case of brute force optimization)
-                // generation must not evolve further and the Resume() will return ->
+                // This will return true if termination has reached.
+                // For instance, when the GenerationNumberTermination is set to 1 (the case of brute force optimization)
+                // generation must not evolve further and method will return ->
                 if (PerformEvolution())
                 {
                     return;
@@ -286,18 +287,46 @@ namespace Optimization
 
             while (offspring.Count < Population.MaxSize)
             {
-                // Make randon crossover and add result to offspring collection ->
-                offspring.AddRange(RandomCrossover(parents));
+                // Select random crossover operator, select random parents 
+                // apply the operator, add result to offspring collection ->
+                var temp = RandomCrossover(parents);
+                offspring.AddRange(temp);
+
+                // To increase diversity mutate the result of crossover and also add to offspring collection ->
+                Mutate(temp);
+                offspring.AddRange(temp);
+            }
+
+            // Add 10 percent of elite chromosomes and keep in next generation ->
+            var numberOfBest = (int)(0.1 * Population.MaxSize);
+            var elite = Chromosomes
+                .Where(c => c.Fitness != null && c.Fitness.Value > 0)
+                .OrderByDescending(c => c.Fitness.Value).Take(numberOfBest);
+
+            offspring.AddRange(elite);
+
+            // Mutate best chromosome's genes three times and also add to next gen ->
+            var best = Population.BestChromosome;
+            for(int i = 0; i < 3; i++)
+            {
+                for(int j = 0; j < best.Length; j++)
+                {
+                    // Copy deep, replace specific gene with random value, add to collection ->
+                    var temp = best.CreateNew();
+                    IndexedGeneMutation(temp, j);
+                    offspring.Add(temp);
+                }
             }
 
             // Create new generation and assign it to CurrentGeneration ->
             Population.CreateNewGeneration(offspring);
 
+            // Evaluate, choose best and inform ->
             return PerformEvolution();
         }
 
         /// <summary>
-        /// Calculates fitness and selects chromosomes for next evolution.
+        /// Calculates fitness for all chromosomes, decides which chromosomes to leave, raises events.
         /// Raises <see cref="GenerationRan"/> and <see cref="TerminationReached"/> events.
         /// </summary>
         /// <returns>True if termination has been reached, otherwise false.</returns>
@@ -398,7 +427,7 @@ namespace Optimization
         private IList<IChromosome> SelectParents(int number)
         {
             // Create Genetic Sharp lib type Generation as it's required by selection methods ->
-            var generationGeneticSharp = new GeneticSharp.Domain.Populations.Generation(2098, Chromosomes);
+            var generationGeneticSharp= new GeneticSharp.Domain.Populations.Generation(Population.CurrentGeneration.Number, Chromosomes);
 
             // Perform selection ->
             return Selection.SelectChromosomes(number, generationGeneticSharp);
@@ -426,17 +455,27 @@ namespace Optimization
             return randomCrossover.Cross(randomParents);
         }
 
-        /*
+        /// <summary>
+        /// Replaces the chromosome's index gene with a new random value
+        /// </summary>
+        /// <param name="chromosome">Chromosome to mutate</param>
+        /// <param name="index">Index to replace a gene at</param>
+        private void IndexedGeneMutation(IChromosome chromosome, int i)
+        {
+            chromosome.ReplaceGene(i, chromosome.GenerateGene(i));
+        }
+
         /// <summary>
         /// Mutate the specified chromosomes.
         /// </summary>
         /// <param name="chromosomes">The chromosomes.</param>
         private void Mutate(IList<IChromosome> chromosomes)
         {
-            OperatorsStrategy.Mutate(Mutation, MutationProbability, chromosomes);
+            foreach (var c in chromosomes)
+            {
+                Mutation.Mutate(c, MutationProbability);
+            }
         }
-        
-        */
     }
 }
 
