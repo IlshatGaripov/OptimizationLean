@@ -117,6 +117,7 @@ namespace Optimization
                 // Numeric values ->
                 GenerationMaxSize = Program.Config.GenerationMaxSize,
                 CrossoverParentsNumber = Program.Config.CrossoverParentsNumber,
+                CrossoverMixProbability = Program.Config.CrossoverMixProbability,
                 MutationProbability = Program.Config.MutationProbability
             };
         }

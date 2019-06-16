@@ -81,6 +81,12 @@ namespace Optimization
         public int CrossoverParentsNumber { get; set; }
 
         /// <summary>
+        /// Probability to swap genes in Uniform Crossover operatior.
+        /// </summary>
+        [JsonProperty("crossover-mix-probability")]
+        public float CrossoverMixProbability { get; set; }
+
+        /// <summary>
         /// Likeliness of mutation
         /// </summary>
         [JsonProperty("mutation-probability")]

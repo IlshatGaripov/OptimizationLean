@@ -47,13 +47,13 @@ namespace Optimization
             TimeEvolving = TimeSpan.Zero;
             State = GeneticAlgorithmState.NotStarted;
 
-            // Collection of crossover operators to use ->
-            CrossoverCollection = new ICrossover[] {new TwoPointCrossover(), new CycleCrossover() };
-
-            // Default mutation will replace any gene at random position with a new gene randomly generated ->
+            // Init mutation - Will replace a gene at random position with a new randomly generated gene ->
             Mutation = new UniformMutation();
+
+            // Collection of crossover operators to use ->
+            CrossoverCollection = new List<ICrossover>();
         }
-        
+
         /// <summary>
         /// Occurs when generation ran.
         /// </summary>
@@ -88,7 +88,7 @@ namespace Optimization
         /// <summary>
         /// Collection of crossover operators.
         /// </summary>
-        public ICrossover[] CrossoverCollection { get; set; }
+        public List<ICrossover> CrossoverCollection { get; set; }
 
         /// <summary>
         /// Default mutation operator.
@@ -104,6 +104,11 @@ namespace Optimization
         /// Number of parents to select for crossovers.
         /// </summary>
         public int CrossoverParentsNumber { get; set; }
+
+        /// <summary>
+        /// Probabiliy to swap genes in UniformCrossover.
+        /// </summary>
+        public float CrossoverMixProbability { get; set; }
 
         /// <summary>
         /// Max number of chromosomes each generation to contain.
@@ -165,7 +170,7 @@ namespace Optimization
         }
 
         /// <summary>
-        /// Starts the genetic algorithm using population, fitness, selection, crossover, mutation and termination configured.
+        /// Starts the genetic optimization algorithm.
         /// </summary>
         public void Start()
         {
@@ -176,10 +181,14 @@ namespace Optimization
             // Throw if one of the variables is zero -> 
             if (GenerationMaxSize == 0 ||
                 CrossoverParentsNumber == 0 ||
-                Math.Abs(MutationProbability) < 0.01)
+                Math.Abs(MutationProbability) < 0.01||
+                Math.Abs(CrossoverMixProbability) < 0.01)
             {
                 throw new ArgumentException("Checking failed. One of the arguments is zero.");
             }
+            
+            // Init Uniform Crossover op. ->
+            CrossoverCollection.Add(new UniformCrossover(CrossoverMixProbability));
 
             lock (m_lock)
             {
@@ -193,6 +202,7 @@ namespace Optimization
                 TimeEvolving = m_stopwatch.Elapsed;
             }
 
+            // -> Continue
             Resume();
         }
 
@@ -209,11 +219,6 @@ namespace Optimization
                 lock (m_lock)
                 {
                     m_stopRequested = false;
-                }
-
-                if (Population.GenerationsNumber == 0)
-                {
-                    throw new InvalidOperationException("Attempt to resume a genetic algorithm which was not yet started.");
                 }
 
                 if (Population.GenerationsNumber > 1)
@@ -444,7 +449,7 @@ namespace Optimization
         private IList<IChromosome> RandomCrossover(ICollection<IChromosome> parents)
         {
             // Select random crossover operator from list ->
-            var randomCrossoverIndex = RandomizationProvider.Current.GetInt(0, CrossoverCollection.Length);
+            var randomCrossoverIndex = RandomizationProvider.Current.GetInt(0, CrossoverCollection.Count);
             var randomCrossover = CrossoverCollection[randomCrossoverIndex];
 
             // Get number of parent required for selected operator ->

@@ -42,6 +42,7 @@
   "population-initial-size": 30,
   "generation-max-size": 20,
   "crossover-parents-number": 5,
+  "crossover-mix-probability": 0.4, 
   "mutation-probability": 0.5,
   "generations": 20,
   "stagnation-generations": 30,
