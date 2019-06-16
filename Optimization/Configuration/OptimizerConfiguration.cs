@@ -1,5 +1,4 @@
-﻿using GeneticSharp.Domain;
-using System;
+﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -25,12 +24,6 @@ namespace Optimization
         [JsonProperty("execution-mode")]
         [JsonConverter(typeof(StringEnumConverter))]
         public TaskExecutionMode TaskExecutionMode { get; set; }
-
-        /// <summary>
-        /// Number of parallel backtests
-        /// </summary>
-        [JsonProperty("max-threads")]
-        public int MaxThreads { get; set; } = 8;
 
         /// <summary>
         /// Metric to evaluate the algorithm performance
@@ -68,6 +61,42 @@ namespace Optimization
         /// </summary>
         [JsonProperty("genes")]
         public GeneConfiguration[] GeneConfigArray { get; set; }
+
+        /// <summary>
+        /// The initial size of the population
+        /// </summary>
+        [JsonProperty("population-initial-size")]
+        public int PopulationInitialSize { get; set; }
+
+        /// <summary>
+        /// Maximum number of chromosomes to remain in every generation
+        /// </summary>
+        [JsonProperty("generation-max-size")]
+        public int GenerationMaxSize { get; set; }
+
+        /// <summary>
+        /// The number of perents to select from past generation to apply variability operators (crossover, mutation)
+        /// </summary>
+        [JsonProperty("crossover-parents-number")]
+        public int CrossoverParentsNumber { get; set; }
+
+        /// <summary>
+        /// Likeliness of mutation
+        /// </summary>
+        [JsonProperty("mutation-probability")]
+        public float MutationProbability { get; set; }
+
+        /// <summary>
+        /// The maximum generations
+        /// </summary>
+        [JsonProperty("generations")]
+        public int Generations { get; set; }
+
+        /// <summary>
+        /// Quit if fitness does not improve for generations
+        /// </summary>
+        [JsonProperty("stagnation-generations")]
+        public int StagnationGenerations { get; set; }
 
         /// <summary>
         /// Override config.json setting
@@ -128,29 +157,5 @@ namespace Optimization
         /// </summary>
         [JsonProperty("low-priority-nodes")]
         public int LowPriorityNodeCount { get; set; }
-
-        /// <summary>
-        /// The initial size of the population
-        /// </summary>
-        [JsonProperty("population-size")]
-        public int PopulationSize { get; set; } = 12;
-
-        /// <summary>
-        /// The maximum generations
-        /// </summary>
-        [JsonProperty("generations")]
-        public int Generations { get; set; } = 1000;
-
-        /// <summary>
-        /// Quit if fitness does not improve for generations
-        /// </summary>
-        [JsonProperty("stagnation-generations")]
-        public int StagnationGenerations { get; set; } = 10;
-
-        /// <summary>
-        /// Likeliness of mutation
-        /// </summary>
-        [JsonProperty("mutation-probability")]
-        public float MutationProbability { get; set; } = GeneticAlgorithmCustom.DefaultMutationProbability;
     }
 }

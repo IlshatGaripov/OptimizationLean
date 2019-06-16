@@ -18,7 +18,7 @@ namespace Optimization
             var length = Program.Config.GeneConfigArray.Length;
 
             // create the list of chromosomes
-            for (var i = 0; i < Program.Config.PopulationSize; i++)
+            for (var i = 0; i < Program.Config.PopulationInitialSize; i++)
             {
                 chromosomes.Add(new ChromosomeRandom(length));
             }

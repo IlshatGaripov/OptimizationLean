@@ -12,14 +12,11 @@ namespace Optimization
     public abstract class PopulationBase
     {
         /// <summary>
-        /// Constructor. General for all derived class. Performing general (common for inherited) init behavior.
+        /// Constructor. General for all derived class. Performing general (common for inheritors) init behavior.
         /// </summary>
         protected PopulationBase()
         {
-            // time
             CreationDate = DateTime.Now;
-
-            // create generation list.
             Generations = new List<Generation>();
         }
 
@@ -35,11 +32,7 @@ namespace Optimization
 
         /// <summary>
         /// Gets or sets the generations.
-        /// <remarks>
-        /// The information of Generations can vary depending of the IGenerationStrategy used.
-        /// </remarks>
         /// </summary>
-        /// <value>The generations.</value>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "Parent classes need to set it.")]
         public IList<Generation> Generations { get; protected set; }
 
@@ -51,21 +44,8 @@ namespace Optimization
 
         /// <summary>
         /// Gets or sets the total number of generations executed.
-        /// <remarks>
-        /// Use this information to know how many generations have been executed, because Generations.Count can vary depending of the IGenerationStrategy used.
-        /// </remarks>
         /// </summary>
         public int GenerationsNumber { get; protected set; }
-
-        /// <summary>
-        /// Number of parents to select for crossovers.
-        /// </summary>
-        public int ParentsNumber { get; set; }
-
-        /// <summary>
-        /// Max number of chromosomes to be contained by every generation.
-        /// </summary>
-        public int MaxSize { get; set; }
 
         /// <summary>
         /// Gets or sets the best chromosome.

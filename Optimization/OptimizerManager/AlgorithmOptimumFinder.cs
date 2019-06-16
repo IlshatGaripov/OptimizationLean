@@ -1,6 +1,4 @@
-﻿using GeneticSharp.Domain.Crossovers;
-using GeneticSharp.Domain.Mutations;
-using GeneticSharp.Domain.Selections;
+﻿using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
 using GeneticSharp.Infrastructure.Framework.Threading;
 using System;
@@ -44,18 +42,13 @@ namespace Optimization
         /// Defines a criteria to sort the backtest results and choose best parameters</param>
         public AlgorithmOptimumFinder(DateTime start, DateTime end, FitnessScore sortCriteria)
         {
-            // Assign Dates and Criteria to sort the results
+            // Assign Dates and Criteria to sort the results ->
             StartDate = start;
             EndDate = end;
             SortCriteria = sortCriteria;
 
-            // Max number of threads
-            var maxThreads = Program.Config.MaxThreads > 0 ? Program.Config.MaxThreads : 8;
-
             // Common properties ->
             var selection = new RouletteWheelSelection();
-            var crossover = new TwoPointCrossover();
-            var mutation = new UniformMutation(true);
 
             // Properties specific to optimization modes ->
             IFitness fitness;
@@ -63,6 +56,7 @@ namespace Optimization
             ITaskExecutor executor;
             ITermination termination;
 
+            // Task execution mode ->
             switch (Program.Config.TaskExecutionMode)
             {
                 case TaskExecutionMode.Linear:
@@ -71,12 +65,12 @@ namespace Optimization
                     break;
 
                 case TaskExecutionMode.Parallel:
-                    executor = new ParallelTaskExecutor { MaxThreads = maxThreads };
+                    executor = new ParallelTaskExecutor();
                     fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria);
                     break;
 
                 case TaskExecutionMode.Azure:
-                    executor = new TaskExecutorAzure { MaxThreads = maxThreads };
+                    executor = new TaskExecutorAzure();
                     fitness = new AzureFitness(StartDate.Value, EndDate.Value, sortCriteria);
                     break;
 
@@ -84,7 +78,7 @@ namespace Optimization
                     throw new Exception("Executor initialization failed");
             }
 
-            // Optimization mode
+            // Optimization mode ->
             switch (Program.Config.OptimizationMode)
             {
                 case OptimizationMode.BruteForce:
@@ -112,13 +106,17 @@ namespace Optimization
             }
 
             // Create the GA itself
-            // It's important to initialize GA in constructor as we would
+            // It's important to initialize GA in a constructor as we would
             // like to declare event handlers from outside the class before calling Start()
             GenAlgorithm = new GeneticAlgorithmCustom(population, fitness, executor)
             {
+                // Reference type ->
                 Selection = selection,
-                Mutation = mutation,
                 Termination = termination,
+
+                // Numeric values ->
+                GenerationMaxSize = Program.Config.GenerationMaxSize,
+                CrossoverParentsNumber = Program.Config.CrossoverParentsNumber,
                 MutationProbability = Program.Config.MutationProbability
             };
         }

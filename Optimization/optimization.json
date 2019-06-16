@@ -2,7 +2,6 @@
   // MODE
   "optimization-mode": "BruteForce",
   "execution-mode": "Azure",
-  "max-threads": 100,
   "fitness-score": "SharpeRatio",
 
   // FITNESS FILTER
@@ -39,6 +38,14 @@
     }
   ],
 
+  // GENETIC OPTIMIZATION
+  "population-initial-size": 30,
+  "generation-max-size": 20,
+  "crossover-parents-number": 5,
+  "mutation-probability": 0.5,
+  "generations": 20,
+  "stagnation-generations": 30,
+
   // LEAN
   "algorithm-type-name": "SuperTrendAlgorithm",
   "algorithm-location": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
@@ -51,11 +58,5 @@
   "storage-account-name": "",
   "storage-account-key": "",
   "dedicated-nodes": 0,
-  "low-priority-nodes": 2,
-
-  // GENETIC OPTIMIZATION
-  "population-size": 24,
-  "generations": 20,
-  "stagnation-generations": 30,
-  "mutation-probability": 0.5
+  "low-priority-nodes": 2
 }

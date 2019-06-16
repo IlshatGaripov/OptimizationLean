@@ -22,10 +22,6 @@ namespace Optimization
     /// </summary>
     public sealed class GeneticAlgorithmCustom : IGeneticAlgorithm
     {
-        /// <summary>
-        /// The default mutation probability.
-        /// </summary>
-        public const float DefaultMutationProbability = 0.1f;
         
         private bool m_stopRequested;
         private readonly object m_lock = new object();
@@ -54,9 +50,8 @@ namespace Optimization
             // Collection of crossover operators to use ->
             CrossoverCollection = new ICrossover[] {new TwoPointCrossover(), new CycleCrossover() };
 
-            // Default mutation will replace any random gene with a new randomly generated value ->
+            // Default mutation will replace any gene at random position with a new gene randomly generated ->
             Mutation = new UniformMutation();
-            MutationProbability = DefaultMutationProbability;
         }
         
         /// <summary>
@@ -106,6 +101,16 @@ namespace Optimization
         public float MutationProbability { get; set; }
 
         /// <summary>
+        /// Number of parents to select for crossovers.
+        /// </summary>
+        public int CrossoverParentsNumber { get; set; }
+
+        /// <summary>
+        /// Max number of chromosomes each generation to contain.
+        /// </summary>
+        public int GenerationMaxSize { get; set; }
+
+        /// <summary>
         /// Gets or sets the termination condition.
         /// </summary>
         public ITermination Termination { get; set; }
@@ -144,10 +149,7 @@ namespace Optimization
         /// </summary>
         public GeneticAlgorithmState State
         {
-            get
-            {
-                return m_state;
-            }
+            get => m_state;
 
             private set
             {
@@ -163,20 +165,21 @@ namespace Optimization
         }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is running.
-        /// </summary>
-        public bool IsRunning => State == GeneticAlgorithmState.Started || State == GeneticAlgorithmState.Resumed;
-
-        /// <summary>
         /// Starts the genetic algorithm using population, fitness, selection, crossover, mutation and termination configured.
         /// </summary>
         public void Start()
         {
             // Check that all properties have been explicitly specified ->
             ExceptionHelper.ThrowIfNull("selection", Selection);
-            ExceptionHelper.ThrowIfNull("crossover", CrossoverCollection);
-            ExceptionHelper.ThrowIfNull("mutation", Mutation);
             ExceptionHelper.ThrowIfNull("termination", Termination);
+
+            // Throw if one of the variables is zero -> 
+            if (GenerationMaxSize == 0 ||
+                CrossoverParentsNumber == 0 ||
+                Math.Abs(MutationProbability) < 0.01)
+            {
+                throw new ArgumentException("Checking failed. One of the arguments is zero.");
+            }
 
             lock (m_lock)
             {
@@ -283,9 +286,9 @@ namespace Optimization
             var offspring = new List<IChromosome>();
 
             // Select the chromosomes to be origin for crossovers and mutations ->
-            var parents = SelectParents(Population.ParentsNumber);
+            var parents = SelectParents(CrossoverParentsNumber);
 
-            while (offspring.Count < Population.MaxSize)
+            while (offspring.Count < GenerationMaxSize)
             {
                 // Select random crossover operator, select random parents 
                 // apply the operator, add result to offspring collection ->
@@ -298,7 +301,7 @@ namespace Optimization
             }
 
             // Add 10 percent of elite chromosomes and keep in next generation ->
-            var numberOfBest = (int)(0.1 * Population.MaxSize);
+            var numberOfBest = (int)(0.1 * GenerationMaxSize);
             var elite = Chromosomes
                 .Where(c => c.Fitness != null && c.Fitness.Value > 0)
                 .OrderByDescending(c => c.Fitness.Value).Take(numberOfBest);
@@ -342,9 +345,9 @@ namespace Optimization
                 .ToList();
 
             // Truncate if amount is more than max size ->
-            if (Chromosomes.Count > Population.MaxSize)
+            if (Chromosomes.Count > GenerationMaxSize)
             {
-                Chromosomes = Chromosomes.Take(Population.MaxSize).ToList();
+                Chromosomes = Chromosomes.Take(GenerationMaxSize).ToList();
             }
 
             // Trace the best chromosome ->
@@ -459,8 +462,8 @@ namespace Optimization
         /// Replaces the chromosome's index gene with a new random value
         /// </summary>
         /// <param name="chromosome">Chromosome to mutate</param>
-        /// <param name="index">Index to replace a gene at</param>
-        private void IndexedGeneMutation(IChromosome chromosome, int i)
+        /// <param name="i">Index to replace a gene at</param>
+        private static void IndexedGeneMutation(IChromosome chromosome, int i)
         {
             chromosome.ReplaceGene(i, chromosome.GenerateGene(i));
         }
