@@ -25,7 +25,7 @@ namespace Optimization.RunnerAzureApp
         public static Dictionary<string, decimal> Run(Dictionary<string, string> inputs)
         {
             // Set the algorithm input variables
-            foreach (var pair in inputs.Where(i => i.Key != "Id"))
+            foreach (var pair in inputs)
             {
                 Config.Set(pair.Key, pair.Value);
             }

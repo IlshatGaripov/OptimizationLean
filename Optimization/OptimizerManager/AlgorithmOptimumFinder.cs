@@ -2,6 +2,7 @@
 using GeneticSharp.Domain.Terminations;
 using GeneticSharp.Infrastructure.Framework.Threading;
 using System;
+using System.Collections.Generic;
 using GeneticSharp.Domain.Fitnesses;
 
 namespace Optimization
@@ -83,7 +84,7 @@ namespace Optimization
             {
                 case OptimizationMode.BruteForce:
                     {
-                        // create cartesian population
+                        // Create cartesian population ->
                         population = new PopulationCartesian();
                         termination = new GenerationNumberTermination(1);
 
@@ -92,11 +93,18 @@ namespace Optimization
 
                 case OptimizationMode.Genetic:
                     {
-                        // create random population
+                        // Create random population ->
                         population = new PopulationRandom();
-                        termination = new OrTermination(
-                            new FitnessStagnationTermination(Program.Config.StagnationGenerations),
-                            new GenerationNumberTermination(Program.Config.Generations));
+
+                        // If generations and stagnation generation values are assigned create the appropriate termination objects ->
+                        var terminationParams = new List<ITermination>();
+                        if (Program.Config.Generations.HasValue) 
+                            terminationParams.Add(new GenerationNumberTermination(Program.Config.Generations.Value));
+                        if (Program.Config.StagnationGenerations.HasValue)
+                            terminationParams.Add(new FitnessStagnationTermination(Program.Config.StagnationGenerations.Value));
+
+                        // Init termination ->
+                        termination = new OrTermination(terminationParams.ToArray());
 
                         break;
                     }

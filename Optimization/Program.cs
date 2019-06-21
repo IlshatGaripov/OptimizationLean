@@ -124,7 +124,7 @@ namespace Optimization
         /// </summary>
         public static void GenerationRan(object sender, EventArgs e)
         {
-
+            Logger.Trace("Ganaration ran completed.");
         }
 
         /// <summary>

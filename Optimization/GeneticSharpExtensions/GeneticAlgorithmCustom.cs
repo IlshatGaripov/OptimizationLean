@@ -287,7 +287,7 @@ namespace Optimization
         /// <returns>True if termination has been reached, otherwise false.</returns>
         private bool CreateChildrenAndPerformEvolution()
         {
-            // Create a container for offspring ->
+            // Create container for the offspring ->
             var offspring = new List<IChromosome>();
 
             // Select the chromosomes to be origin for crossovers and mutations ->
@@ -300,9 +300,11 @@ namespace Optimization
                 var temp = RandomCrossover(parents);
                 offspring.AddRange(temp);
 
+                /*
                 // To increase diversity mutate the result of crossover and also add to offspring collection ->
                 Mutate(temp);
                 offspring.AddRange(temp);
+                */
             }
 
             // Add 10 percent of elite chromosomes and keep in next generation ->

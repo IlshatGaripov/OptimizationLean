@@ -71,16 +71,20 @@ namespace Optimization
             }
 
             // Make sure that number of days between beginning and end is enough for at least one iteration ->
-            var days = WalkForwardConfiguration.InSamplePeriod.Value + WalkForwardConfiguration.Step.Value;
-            if (StartDate.Value.AddDays(days - 1) > EndDate.Value)
+            // We substract 1 as Lean includes both start and end dates into backtest 
+            var minDaysBtStartEnd = WalkForwardConfiguration.InSamplePeriod.Value + WalkForwardConfiguration.Step.Value - 1;
+            if (StartDate.Value.AddDays(minDaysBtStartEnd) > EndDate.Value)
+            {
                 throw new ArgumentOutOfRangeException(
                     $"The range between {StartDate.Value} and {EndDate.Value} is short for walk forward configuration values specified");
+            }
+                
 
             // Init datetime variables will be used in first iteration ->
             var insampleStartDate = StartDate.Value;
             var insampleEndDate = insampleStartDate.AddDays(WalkForwardConfiguration.InSamplePeriod.Value - 1);
             var validationStartDate = insampleEndDate.AddDays(1);
-            var validationEndDate = validationStartDate.AddDays(WalkForwardConfiguration.Step.Value - 1);
+            var validationEndDate = insampleEndDate.AddDays(WalkForwardConfiguration.Step.Value);
 
             var step = WalkForwardConfiguration.Step.Value;
 

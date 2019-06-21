@@ -11,8 +11,8 @@
   },
 
   // THE DATES
-  "startDate": "2017-01-02",
-  "endDate": "2018-01-02",
+  "start-date": "2017-01-02",
+  "end-date": "2018-01-02",
 
   // WALK FORWARD
   "walk-forward": {
@@ -44,8 +44,8 @@
   "crossover-parents-number": 5,
   "crossover-mix-probability": 0.4, 
   "mutation-probability": 0.5,
-  "generations": 20,
-  "stagnation-generations": 30,
+  "generations": 5,
+  "stagnation-generations": 3,
 
   // LEAN
   "algorithm-type-name": "SuperTrendAlgorithm",

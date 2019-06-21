@@ -41,13 +41,13 @@ namespace Optimization
         /// <summary>
         /// Algorithm backtest start date
         /// </summary>
-        [JsonProperty("startDate")]
+        [JsonProperty("start-date")]
         public DateTime? StartDate { get; set; }
 
         /// <summary>
         /// Algorithm backtest end date
         /// </summary>
-        [JsonProperty("endDate")]
+        [JsonProperty("end-date")]
         public DateTime? EndDate { get; set; }
 
         /// <summary>
@@ -96,13 +96,13 @@ namespace Optimization
         /// The maximum generations
         /// </summary>
         [JsonProperty("generations")]
-        public int Generations { get; set; }
+        public int? Generations { get; set; }
 
         /// <summary>
         /// Quit if fitness does not improve for generations
         /// </summary>
         [JsonProperty("stagnation-generations")]
-        public int StagnationGenerations { get; set; }
+        public int? StagnationGenerations { get; set; }
 
         /// <summary>
         /// Override config.json setting
