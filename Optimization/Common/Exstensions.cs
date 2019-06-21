@@ -53,7 +53,7 @@ namespace Optimization
             var output = new StringBuilder();
             foreach (var item in ch.ToDictionary())
             {
-                output.Append(item.Key).Append(": ").Append(item.Value.ToString()).Append(", ");
+                output.Append(item.Key).Append(" ").Append(item.Value).Append(" ");
             }
 
             return output.ToString().TrimEnd(',', ' ');

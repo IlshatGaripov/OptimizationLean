@@ -258,8 +258,9 @@ namespace Optimization
                 }
                 while (!terminationConditionReached);
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e);
                 State = GeneticAlgorithmState.Stopped;
                 throw;
             }

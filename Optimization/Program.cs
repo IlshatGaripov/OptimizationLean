@@ -53,10 +53,6 @@ namespace Optimization
                 {
                     var easyManager = new AlgorithmOptimumFinder(Config.StartDate.Value, Config.EndDate.Value, Config.FitnessScore.Value);
 
-                    // Subscribe to GA events ->
-                    easyManager.GenAlgorithm.GenerationRan += GenerationRan;
-                    easyManager.GenAlgorithm.TerminationReached += TerminationReached;
-
                     // Start an optimization ->
                     easyManager.Start();
                 }
@@ -109,22 +105,6 @@ namespace Optimization
             
             // -2- Release AppDomain
             OptimizerAppDomainManager.Release();
-        }
-
-        /// <summary>
-        /// Handler called at the end of work of genetic algorithm
-        /// </summary>
-        public static void TerminationReached(object sender, EventArgs e)
-        {
-            Logger.Trace("Termination Reached.");
-        }
-
-        /// <summary>
-        /// Handler called at the end of next generation
-        /// </summary>
-        public static void GenerationRan(object sender, EventArgs e)
-        {
-            Logger.Trace("Ganaration ran completed.");
         }
 
         /// <summary>

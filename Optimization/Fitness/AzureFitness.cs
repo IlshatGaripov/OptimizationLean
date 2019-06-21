@@ -51,15 +51,11 @@ namespace Optimization
             // Unique identifier of a chromosome
             var id = chromosomeBase.Id;
 
-            // Create a dictionary and populate it with gene key-value pairs
-            var geneKeyValues = chromosomeBase.ToDictionary();
+            // Algorithm input parameters
+            var algorithmInputs = chromosomeBase.ToKeyValueString();
 
-            // -- 1 -- Create an argument string of those key-values
-            string runnerInputArguments = string.Empty;
-            foreach (var pair in geneKeyValues)
-            {
-                runnerInputArguments += $"{pair.Key} {pair.Value} ";
-            }
+            // -- 1 -- Create an argument string of gene key-values
+            var runnerInputArguments = algorithmInputs + " ";
 
             // -- 2 -- Add an algorithm name to that string
             runnerInputArguments += $"algorithm-type-name {Program.Config.AlgorithmTypeName} ";
@@ -114,7 +110,7 @@ namespace Optimization
             cloudTask.OutputFiles = outputFileList;
 
             // Create a collection to hold the tasks added to the job and add our task to that colleation.
-            List<CloudTask> cloudTaskCollection = new List<CloudTask>
+            var cloudTaskCollection = new List<CloudTask>
             {
                 cloudTask
             };
@@ -141,12 +137,12 @@ namespace Optimization
             // Calculate fitness ->
             var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore);
 
-            // Display fitness to Console ->
-            var inputParameters = geneKeyValues.Aggregate(string.Empty, (current, item) =>
-                                   current + item.Key + ": " + item.Value + " ");
+            // Display results to Console ->
             lock (Obj)
             {
-                Console.WriteLine($"IN: [{inputParameters}] FIT: {fitness}");
+                Console.WriteLine($"Inputs: {algorithmInputs}");
+                Console.WriteLine($"Dates: {StartDate:MM/dd/yyyy} to {EndDate:MM/dd/yyyy}");
+                Console.WriteLine($" {fitness} << Fitness");
             }
 
             return fitness;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Infrastructure.Framework.Commons;
 
@@ -88,11 +89,14 @@ namespace Optimization
         }
 
         /// <summary>
-        /// Fixes the best chromosome.
+        /// Assigns the best chromosome.
         /// </summary>
         public virtual void RegisterTheBestChromosome()
         {
-            // If there is no better chromosome than already have just return ->
+            // Select the generation's best chromosome ->
+            CurrentGeneration.BestChromosome = CurrentGeneration.Chromosomes.First();
+
+            // If there is no better chromosome rather then existing then return ->
             if (Equals(BestChromosome, CurrentGeneration.BestChromosome))
             {
                 return;

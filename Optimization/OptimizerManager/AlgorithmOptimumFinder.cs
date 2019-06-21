@@ -135,10 +135,28 @@ namespace Optimization
         /// </summary>
         public void Start()
         {
+            // Subscribe to GA events ->
+            GenAlgorithm.GenerationRan += GenerationRan;
+            GenAlgorithm.TerminationReached += TerminationReached;
 
             // Run the GA 
             GenAlgorithm.Start();
         }
 
+        /// <summary>
+        /// Handler called at the end of work of genetic algorithm
+        /// </summary>
+        public static void TerminationReached(object sender, EventArgs e)
+        {
+            Program.Logger.Trace("Termination Reached.");
+        }
+
+        /// <summary>
+        /// Handler called at the end of next generation
+        /// </summary>
+        public static void GenerationRan(object sender, EventArgs e)
+        {
+            Program.Logger.Trace("Ganaration ran completed.");
+        }
     }
 }

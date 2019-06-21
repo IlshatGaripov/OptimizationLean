@@ -4,7 +4,7 @@ namespace Optimization
 {
     public static class FitnessFilter
     {
-        public static double ErrorValue = -1;
+        public static double ErrorValue = -10;
 
         /// <summary>
         /// Applies filters to eliminate some false positive optimizer results
