@@ -32,16 +32,6 @@ namespace Optimization
             // Generate random within min-max boundaries ->
             return GeneFactory.GenerateRandom(configuration);
         }
-
-        /// <summary>
-        /// Returns a deep clone copy of a chromosome object.
-        /// </summary>
-        /// <returns>The new chromosome.</returns>
-        public override IChromosome CreateNew()
-        {
-            var memStream = Exstensions.SerializeToStream(this);
-            return (IChromosome)Exstensions.DeserializeFromStream(memStream);
-        }
     }
 
 }

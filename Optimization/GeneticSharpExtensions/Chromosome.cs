@@ -14,7 +14,7 @@ namespace Optimization
         /// <summary>
         /// Unique chromosome id.
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString("N");
+        public string Id { get; set; } 
 
         /// <summary>
         /// Full backtest result for a certain period of time, from start till end date
@@ -26,7 +26,7 @@ namespace Optimization
         /// </summary>
         public Chromosome(int length) : base(length)
         {
-            
+            AssignUniqueId();
         }
         
         /// <summary>
@@ -45,7 +45,22 @@ namespace Optimization
         /// <returns>The new chromosome.</returns>
         public override IChromosome CreateNew()
         {
-            throw new System.NotImplementedException();
+            // Deep clone ->
+            var memStream = Exstensions.SerializeToStream(this);
+            var copyObject = (ChromosomeRandom)Exstensions.DeserializeFromStream(memStream);
+
+            // Assign new unique id ->
+            copyObject.AssignUniqueId();
+
+            return copyObject;
+        }
+
+        /// <summary>
+        /// Assigns unique id to this object.
+        /// </summary>
+        public void AssignUniqueId()
+        {
+            Id = Guid.NewGuid().ToString("N");
         }
     }
 
