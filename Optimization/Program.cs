@@ -8,18 +8,18 @@ namespace Optimization
         // The logger
         public static ILogHandler Logger = new ConsoleLogHandler();
 
-        // Program wide config file object.
+        // Program wide config file object
         public static OptimizerConfiguration Config;
 
         /// <summary>
-        /// Main program entry point.
+        /// Main is main
         /// </summary>
         public static void Main(string[] args)
         {
-            // Load the optimizer settings from config json
+            // Load the optimizer settings from config json ->
             Config = Exstensions.LoadConfigFromFile("optimization_local.json");
 
-            // Make sure that start and end dates are existent
+            // Make sure that start and end dates are existent ->
             if (Config.StartDate == null || 
                 Config.EndDate == null ||
                 Config.FitnessScore == null ||
@@ -28,43 +28,35 @@ namespace Optimization
                 throw new ArgumentException("Check that all required config variables are not defined ..");
             }
 
-            try
+            // Required initial settings ->
+            DeployResources();
+
+            // Init and start an optimization manager ->
+            if (Config.WalkForwardConfiguration.Enabled == true)
             {
-                // Required pre-settings
-                DeployResources();
-
-                // Init and start an optimization manager ->
-                if (Config.WalkForwardConfiguration.Enabled == true)
+                var wfoManager = new WalkForwardOptimizationManager
                 {
-                    var wfoManager = new WalkForwardOptimizationManager
-                    {
-                        StartDate = Config.StartDate,
-                        EndDate = Config.EndDate,
-                        SortCriteria = Config.FitnessScore,
-                        WalkForwardConfiguration = Config.WalkForwardConfiguration
-                    };
+                    StartDate = Config.StartDate,
+                    EndDate = Config.EndDate,
+                    SortCriteria = Config.FitnessScore,
+                    WalkForwardConfiguration = Config.WalkForwardConfiguration
+                };
 
-                    wfoManager.OneEvaluationStepCompleted += WfoStepCompleted;
+                wfoManager.OneEvaluationStepCompleted += WfoStepCompleted;
 
-                    // Start it ->
-                    wfoManager.Start();
-                }
-                else
-                {
-                    var easyManager = new AlgorithmOptimumFinder(Config.StartDate.Value, Config.EndDate.Value, Config.FitnessScore.Value);
-
-                    // Start an optimization ->
-                    easyManager.Start();
-                }
-                
-                // Сomplete the life cycle of objects have been created in deployment phase ->
-                ReleaseDeployedResources();
+                // Start it ->
+                wfoManager.Start();
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine(e);
-                throw;
+                var easyManager = new AlgorithmOptimumFinder(Config.StartDate.Value, Config.EndDate.Value, Config.FitnessScore.Value);
+
+                // Start an optimization ->
+                easyManager.Start();
             }
+
+            // Сomplete the life cycle of objects have been created in deployment phase ->
+            ReleaseDeployedResources();
 
             Console.WriteLine();
             Console.WriteLine("Press ENTER to exit the program");

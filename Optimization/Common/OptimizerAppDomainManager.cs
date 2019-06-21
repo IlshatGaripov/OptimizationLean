@@ -54,21 +54,30 @@ namespace Optimization
         /// <returns>Full backtest results of<see cref="OptimizerResultHandler"/></returns>
         public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, string> list)
         {
-            // Create a new AppDomain ->
-            var name = Guid.NewGuid().ToString("x");
-            var ad = AppDomain.CreateDomain(name, null, _ads);
+            try
+            {
+                // Create a new AppDomain ->
+                var name = Guid.NewGuid().ToString("x");
+                var ad = AppDomain.CreateDomain(name, null, _ads);
 
-            // Create a proxy is new AppDomain ->
-            var rc = (Runner)ad.CreateInstanceAndUnwrap(_assembly,
-                typeof(Runner).FullName ?? throw new InvalidOperationException());
+                // Create a proxy is new AppDomain ->
+                var rc = (Runner)ad.CreateInstanceAndUnwrap(_assembly,
+                    typeof(Runner).FullName ?? throw new InvalidOperationException());
 
-            // Obtain results -> 
-            var result = rc.Run(list);
+                // Obtain results -> 
+                var result = rc.Run(list);
 
-            // Unload ->
-            AppDomain.Unload(ad);
+                // Unload ->
+                AppDomain.Unload(ad);
 
-            return result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
         }
     }
 

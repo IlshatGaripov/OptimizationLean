@@ -407,6 +407,11 @@ namespace Optimization
                     throw new TimeoutException("The fitness evaluation reached the {0} timeout.".With(TaskExecutor.Timeout));
                 }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             finally
             {
                 TaskExecutor.Stop();

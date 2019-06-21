@@ -39,7 +39,7 @@ namespace Optimization.RunnerLocal
             Config.Set("result-handler", nameof(OptimizerResultHandler));   //override default result handler
 
             // Separate log uniquely named
-            var dirPath = $"C:/Users/sterling/Desktop/logs/{DateTime.Now:yyyy-MM-dd}/leanLogs/";
+            var dirPath = $"C:/Users/ilshat/Desktop/logs/{DateTime.Now:yyyy-MM-dd}/leanLogs/";
             var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + id + ".txt";
             var filePath = String.Concat(dirPath, logFileName);
 
