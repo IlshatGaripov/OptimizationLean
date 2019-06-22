@@ -35,7 +35,7 @@ namespace Optimization
             for (var index = 0; index < ch.Length; index++)
             {
                 // Take the key from Global config ->
-                var key = Program.Config.GeneConfigArray[index].Key;
+                var key = ch.GeneConfigurationArray[index].Key;
 
                 // Take value from the Gene ->
                 var value = ch.GetGene(index).Value.ToString();
@@ -61,13 +61,21 @@ namespace Optimization
             return output.ToString().TrimEnd(',', ' ');
         }
 
-        
+        /// <summary>
+        /// Makes sure that given chromosomes contain only distinct gene value sequences.
+        /// When selecting by two or more equal sequence priority is given to chromosomes with evaluated fitness.
+        /// </summary>
+        /// <param name="chromosomes">The list that may have chromosomes with repeating sequence of genes</param>
+        /// <returns></returns>
         public static IList<IChromosome> SelectDistinct(this IList<IChromosome> chromosomes)
         {
-            return (IList<IChromosome>) chromosomes.
-                OrderBy(c => c.Fitness.HasValue ? 0 : 1)
-                .GroupBy(c => c.GetGenes())
-                .Select(g => g.First());
+            return chromosomes.OrderBy(c => c.Fitness.HasValue
+                    ? 0
+                    : 1)
+                .GroupBy(c => c.GetGenes(),
+                    new GeneArrayComparer())
+                .Select(g => g.First())
+                .ToList();
         }
 
         /// <summary>
@@ -117,4 +125,5 @@ namespace Optimization
             return obj;
         }
     }
+
 }

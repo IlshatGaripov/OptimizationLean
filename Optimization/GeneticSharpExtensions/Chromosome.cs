@@ -12,6 +12,11 @@ namespace Optimization
     public class Chromosome : ChromosomeBase
     {
         /// <summary>
+        /// Genes configuration array
+        /// </summary>
+        public GeneConfiguration[] GeneConfigurationArray { get; set; }
+
+        /// <summary>
         /// Unique chromosome id.
         /// </summary>
         public string Id { get; set; } 
@@ -22,10 +27,13 @@ namespace Optimization
         public FitnessResult FitnessResult { get; set; }
 
         /// <summary>
-        /// Constructor.
+        /// Constructor
         /// </summary>
-        public Chromosome(int length) : base(length)
+        /// <param name="configArray">Gene configurations array</param>
+        /// <param name="length">Chromosome length</param>
+        public Chromosome(GeneConfiguration[] configArray, int length) : base(length)
         {
+            GeneConfigurationArray = configArray;
             AssignUniqueId();
         }
         

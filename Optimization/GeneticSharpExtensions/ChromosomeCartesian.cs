@@ -15,7 +15,7 @@ namespace Optimization
         /// <summary>
         /// Constructor for the class. Pass a lenguth to constructor of a base class <see cref="ChromosomeBase"/>
         /// </summary>
-        public ChromosomeCartesian(object[] geneValues) : base(geneValues.Length)
+        public ChromosomeCartesian(object[] geneValues, GeneConfiguration[] configArray) : base(configArray, geneValues.Length)
         {
             _geneValues = geneValues;
 

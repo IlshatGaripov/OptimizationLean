@@ -10,6 +10,17 @@ namespace Optimization
     /// </summary>
     public sealed class PopulationCartesian : PopulationBase
     {
+        private readonly GeneConfiguration[] _geneConfigurationArray;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="configArray">Gene configuration array</param>
+        public PopulationCartesian(GeneConfiguration[] configArray)
+        {
+            _geneConfigurationArray = configArray;
+        }
+
         /// <summary>
         /// Creates a population for brute force optimization mode.
         /// All possible combinations (within bounds of acceptable values specified in optimization config) are generated
@@ -56,7 +67,7 @@ namespace Optimization
             var cartesianProduct = CartesianProduct(inputGeneValuesContainer.ToArray());
             
             // LINQ type return - compact and nice.
-            return cartesianProduct.Select(input => new ChromosomeCartesian(input)).Cast<IChromosome>().ToList();
+            return cartesianProduct.Select(input => new ChromosomeCartesian(input, _geneConfigurationArray)).Cast<IChromosome>().ToList();
         }
 
         /// <summary>

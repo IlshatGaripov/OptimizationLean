@@ -15,7 +15,7 @@ namespace Optimization
         /// Constructor
         /// </summary>
         /// <param name="configArray">Array with gene configuration</param>
-        /// <param name="initialSize">Array with gene configuration</param>
+        /// <param name="initialSize">Initial population size</param>
         public PopulationRandom(GeneConfiguration[] configArray, int initialSize)
         {
             _geneConfigurationArray = configArray;
@@ -29,12 +29,11 @@ namespace Optimization
         protected override IList<IChromosome> GenerateChromosomes()
         {
             var chromosomes = new List<IChromosome>();
-            var length = _geneConfigurationArray.Length;
 
             // create the list of chromosomes
             for (var i = 0; i < _initialSize; i++)
             {
-                chromosomes.Add(new ChromosomeRandom(length));
+                chromosomes.Add(new ChromosomeRandom(_geneConfigurationArray, _geneConfigurationArray.Length));
             }
 
             return chromosomes;

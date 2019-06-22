@@ -10,10 +10,15 @@ namespace Optimization
     [Serializable]
     public sealed class ChromosomeRandom: Chromosome
     {
-        public ChromosomeRandom(int length) : base(length)
+        /// <summary>
+        /// Creates randomly generated chromosome
+        /// </summary>
+        /// <param name="configArray">Gene configurations array</param>
+        /// <param name="length">Chromosome length</param>
+        public ChromosomeRandom(GeneConfiguration[] configArray, int length) : base(configArray, length)
         {
             // fill the gene array with generated values
-            for (var i = 0; i < Program.Config.GeneConfigArray.Length; i++)
+            for (var i = 0; i < GeneConfigurationArray.Length; i++)
             {
                 ReplaceGene(i, GenerateGene(i));
             }
@@ -27,7 +32,7 @@ namespace Optimization
         public override Gene GenerateGene(int geneIndex)
         {
             // Get Gene configuration ->
-            var configuration = Program.Config.GeneConfigArray[geneIndex];
+            var configuration = GeneConfigurationArray[geneIndex];
 
             // Generate random within min-max boundaries ->
             return GeneFactory.GenerateRandom(configuration);

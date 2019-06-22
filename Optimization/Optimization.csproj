@@ -91,8 +91,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\AzureBatchManager.cs" />
+    <Compile Include="Common\CompareHelper.cs" />
     <Compile Include="Common\Exstensions.cs" />
     <Compile Include="Common\FitnessFilter.cs" />
+    <Compile Include="Common\GeneArrayComparer.cs" />
     <Compile Include="Common\OptimizerAppDomainManager.cs" />
     <Compile Include="Common\StatisticsAdapter.cs" />
     <Compile Include="Configuration\FitnessFilterConfiguration.cs" />
@@ -109,7 +111,7 @@
     <Compile Include="GeneticSharpExtensions\GeneConverter.cs" />
     <Compile Include="Common\GeneFactory.cs" />
     <Compile Include="GeneticSharpExtensions\TaskExecutorAzure.cs" />
-    <Compile Include="Interfaces\IOptimizerManager.cs" />
+    <Compile Include="OptimizerManager\IOptimizerManager.cs" />
     <Compile Include="Common\Enums.cs" />
     <Compile Include="GeneticSharpExtensions\Chromosome.cs" />
     <Compile Include="OptimizerManager\AlgorithmOptimumFinder.cs" />

@@ -85,7 +85,7 @@ namespace Optimization
                 case OptimizationMode.BruteForce:
                     {
                         // Create cartesian population ->
-                        population = new PopulationCartesian();
+                        population = new PopulationCartesian(Program.Config.GeneConfigArray);
                         termination = new GenerationNumberTermination(1);
 
                         break;

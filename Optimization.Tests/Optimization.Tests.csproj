@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=3.12.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.12.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
@@ -51,9 +54,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\GeneticSharp\src\GeneticSharp.Domain\GeneticSharp.Domain.csproj">
+      <Project>{B7FDC057-F9F2-4467-89E7-041202FB7BDC}</Project>
+      <Name>GeneticSharp.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Optimization\Optimization.csproj">
       <Project>{89d0362e-9aed-4718-b35e-bcae2949848d}</Project>
       <Name>Optimization</Name>
