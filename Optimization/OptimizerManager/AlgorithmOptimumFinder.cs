@@ -94,7 +94,7 @@ namespace Optimization
                 case OptimizationMode.Genetic:
                     {
                         // Create random population ->
-                        population = new PopulationRandom();
+                        population = new PopulationRandom(Program.Config.GeneConfigArray, Program.Config.PopulationInitialSize);
 
                         // If generations and stagnation generation values are assigned create the appropriate termination objects ->
                         var terminationParams = new List<ITermination>();

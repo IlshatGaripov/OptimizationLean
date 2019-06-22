@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using GeneticSharp.Domain.Chromosomes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -57,6 +59,15 @@ namespace Optimization
             }
 
             return output.ToString().TrimEnd(',', ' ');
+        }
+
+        
+        public static IList<IChromosome> SelectDistinct(this IList<IChromosome> chromosomes)
+        {
+            return (IList<IChromosome>) chromosomes.
+                OrderBy(c => c.Fitness.HasValue ? 0 : 1)
+                .GroupBy(c => c.GetGenes())
+                .Select(g => g.First());
         }
 
         /// <summary>

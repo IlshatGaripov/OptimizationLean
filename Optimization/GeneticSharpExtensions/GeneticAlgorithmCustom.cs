@@ -301,28 +301,26 @@ namespace Optimization
                 var temp = RandomCrossover(parents);
                 offspring.AddRange(temp);
 
-                /*
-                // To increase diversity mutate the result of crossover and also add to offspring collection ->
+                // To increase diversity apply mutation to results of crossover and add to offspring ->
                 Mutate(temp);
                 offspring.AddRange(temp);
-                */
             }
 
-            // Add 10 percent of elite chromosomes and keep in next generation ->
+            // Add 10 % of elite. If 10 % is less than 1 choose just a best chromosome ->
             var numberOfBest = (int)(0.1 * GenerationMaxSize);
-            var elite = Chromosomes
-                .Where(c => c.Fitness != null && c.Fitness.Value > 0)
-                .OrderByDescending(c => c.Fitness.Value).Take(numberOfBest);
+            numberOfBest = numberOfBest > 1 ? numberOfBest : 1;
 
+            // Just take. Chromosomes should have been already ordered by desc ->
+            var elite = Chromosomes.Take(numberOfBest);
             offspring.AddRange(elite);
 
-            // Mutate best chromosome's genes three times and also add to next gen ->
+            // Mutate best chromosome's genes three times ->
             var best = Population.BestChromosome;
             for(int i = 0; i < 3; i++)
             {
                 for(int j = 0; j < best.Length; j++)
                 {
-                    // Copy deep, replace specific gene with random value, add to collection ->
+                    // Clone, replace specific gene with random value, add to collection ->
                     var temp = best.CreateNew();
                     IndexedGeneMutation(temp, j);
                     offspring.Add(temp);
@@ -346,7 +344,7 @@ namespace Optimization
             // Calculate fitness for all the chomosomes in Current Generation ->
             EvaluateFitness();
 
-            // Leave only the values that have positive fitness ->
+            // Leave only the values that have positive fitness and order by descending ->
             Chromosomes = Chromosomes
                 .Where(c => c.Fitness != null && c.Fitness.Value > 0)
                 .OrderByDescending(c => c.Fitness.Value)
