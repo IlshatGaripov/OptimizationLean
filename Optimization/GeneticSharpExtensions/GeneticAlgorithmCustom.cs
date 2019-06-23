@@ -330,7 +330,7 @@ namespace Optimization
             // Create new generation and assign it to CurrentGeneration ->
             Population.CreateNewGeneration(offspring);
 
-            // Evaluate, choose best and inform ->
+            // Evaluate, choose best and fire events ->
             return PerformEvolution();
         }
 

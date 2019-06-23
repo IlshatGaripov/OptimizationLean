@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using GeneticSharp.Domain.Chromosomes;
-using GeneticSharp.Infrastructure.Framework.Commons;
 
 namespace Optimization
 {
@@ -17,6 +16,7 @@ namespace Optimization
         /// </summary>
         protected PopulationBase()
         {
+            GenerationsNumber = 0;
             CreationDate = DateTime.Now;
             Generations = new List<Generation>();
         }
@@ -59,8 +59,6 @@ namespace Optimization
         /// </summary>
         public virtual void CreateInitialGeneration()
         {
-            GenerationsNumber = 0;
-
             // Generate chromosomes and define a first generation ->
             var chromosomesList = GenerateChromosomes();
             CreateNewGeneration(chromosomesList);
@@ -78,13 +76,18 @@ namespace Optimization
         /// <param name="chromosomes">The chromosomes for new generation.</param>
         public virtual void CreateNewGeneration(IList<IChromosome> chromosomes)
         {
-            ExceptionHelper.ThrowIfNull("chromosomes", chromosomes);
+            chromosomes.ValidateGenes();   // validate 
 
-            // Validate for not null values ->
-            chromosomes.ValidateGenes();
+            var distinct = chromosomes.SelectDistinct();  // select distinct
+
+            // Make sure that chromosomes without fitness are unique in terms of
+            // same gene values sequence has not been encountered in previous generations ->
+            distinct.RemoveRepeating(Generations);
             
-            // Create new Generation and add to collection ->
+            // Create new Generation ->
             CurrentGeneration = new Generation(++GenerationsNumber, chromosomes);
+
+            // Add to collection ->
             Generations.Add(CurrentGeneration);
         }
 
@@ -106,7 +109,7 @@ namespace Optimization
             BestChromosome = CurrentGeneration.BestChromosome;
             OnBestChromosomeChanged(EventArgs.Empty);
         }
-        
+
         /// <summary>
         /// Raises the best chromosome changed event.
         /// </summary>

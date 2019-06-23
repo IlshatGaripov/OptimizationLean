@@ -63,12 +63,18 @@ namespace Optimization
 
         /// <summary>
         /// Makes sure that given chromosomes contain only distinct gene value sequences.
-        /// When selecting by two or more equal sequence priority is given to chromosomes with evaluated fitness.
+        /// When selecting between two or more equal value sequence chromosomes
+        /// priority will be given to chromosomes that have evaluated fitness value.
         /// </summary>
         /// <param name="chromosomes">The list that may have chromosomes with repeating sequence of genes</param>
         /// <returns></returns>
         public static IList<IChromosome> SelectDistinct(this IList<IChromosome> chromosomes)
         {
+            // Will first sort depending on whether or not gene has value
+            // then group to objects depending on the uniqueness of gene values sequences
+            // and will select the first item of a group. If there are two values that have
+            // same gene values sequance but one has fitness values and second has not the
+            // first chromosome will be chosen ->
             return chromosomes.OrderBy(c => c.Fitness.HasValue
                     ? 0
                     : 1)
@@ -76,6 +82,41 @@ namespace Optimization
                     new GeneArrayComparer())
                 .Select(g => g.First())
                 .ToList();
+        }
+
+        /// <summary>
+        /// Removes from list the chromosomes that have gene sequence encountered in past generations 
+        /// </summary>
+        /// <param name="chromosomes">Chromosomes to check for duplicates</param>
+        /// <param name="generations">Past generations</param>
+        public static void RemoveRepeating(this IList<IChromosome> chromosomes, IList<Generation> generations)
+        {
+            if(generations == null || generations.Count == 0)
+                throw new ArgumentException("Please make sure generations has value");
+
+            var comparer = new GeneArrayComparer();
+            var pastGenChromosomes = new List<IChromosome>();
+
+            foreach (var g in generations)
+            {
+                pastGenChromosomes.AddRange(g.Chromosomes);
+            }
+
+            // Delete from list if gene sequence has been encountered before ->
+            for (int i = chromosomes.Count - 1; i >= 0; i--)
+            {
+                if(chromosomes[i].Fitness.HasValue)
+                    continue;   // if has value then it came from previos generation
+
+                foreach (var p in pastGenChromosomes)
+                {
+                    if (comparer.Equals(chromosomes[i].GetGenes(), p.GetGenes()))
+                    {
+                        chromosomes.RemoveAt(i);
+                    }
+                }
+            }
+
         }
 
         /// <summary>
