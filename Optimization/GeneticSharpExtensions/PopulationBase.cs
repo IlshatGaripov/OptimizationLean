@@ -82,7 +82,10 @@ namespace Optimization
 
             // Make sure that chromosomes without fitness are unique in terms of
             // same gene values sequence has not been encountered in previous generations ->
-            distinct.RemoveRepeating(Generations);
+            if (GenerationsNumber > 0)
+            {
+                distinct.RemoveRepeating(Generations);
+            }
             
             // Create new Generation ->
             CurrentGeneration = new Generation(++GenerationsNumber, chromosomes);
