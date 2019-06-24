@@ -70,7 +70,7 @@ namespace Optimization
         public static void DeployResources()
         {
             // Set up App Domain settings no matter what computation mode will be used - local PC or a cloud ->
-            OptimizerAppDomainManager.Initialize();
+            AppDomainManager.Initialize();
 
             // Computation mode specific settings ->
             switch (Program.Config.TaskExecutionMode)
@@ -94,9 +94,9 @@ namespace Optimization
                     AzureBatchManager.FinalizeAsync().Wait();
                     break;
             }
-            
+
             // -2- Release AppDomain
-            OptimizerAppDomainManager.Release();
+            AppDomainManager.Release();
         }
 
         /// <summary>

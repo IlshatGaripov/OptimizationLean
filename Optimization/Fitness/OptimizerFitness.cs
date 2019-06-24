@@ -47,7 +47,7 @@ namespace Optimization
                 list.Add("data-folder", Program.Config.DataFolder);
 
                 // Obtain full results -> 
-                var result = OptimizerAppDomainManager.RunAlgorithm(list);
+                var result = AppDomainManager.RunAlgorithm(list);
 
                 // Save full results ->
                 chromosomeBase.FitnessResult = new FitnessResult

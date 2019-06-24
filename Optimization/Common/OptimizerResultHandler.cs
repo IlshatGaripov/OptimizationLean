@@ -13,7 +13,7 @@ using QuantConnect.Packets;
 using QuantConnect.Securities;
 using QuantConnect.Statistics;
 
-namespace Optimization.RunnerLocal
+namespace Optimization
 {
     public class OptimizerResultHandler : IResultHandler
     {
