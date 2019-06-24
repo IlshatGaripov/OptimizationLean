@@ -6,7 +6,7 @@ using QuantConnect.Lean.Engine;
 using QuantConnect.Logging;
 using QuantConnect.Util;
 
-namespace Optimization.RunnerAzureApp
+namespace Optimization.RunnerAppAzure
 { 
     /// <summary>
     /// Class that runs QC algorithm on a node in Azure batch.

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Optimization.RunnerAzureApp")]
+[assembly: AssemblyTitle("Optimization.RunnerAppAzure")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Optimization.RunnerAzureApp")]
+[assembly: AssemblyProduct("Optimization.RunnerAppAzure")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("1f3fa3d8-e592-4055-a23a-e33a6a7534a6")]
+[assembly: Guid("8b55c818-35c5-4ea6-bd18-bb37da72ec78")]
 
 // Version information for an assembly consists of the following four values:
 //
