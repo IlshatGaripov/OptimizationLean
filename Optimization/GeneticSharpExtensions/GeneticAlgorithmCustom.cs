@@ -111,11 +111,6 @@ namespace Optimization
         public float CrossoverMixProbability { get; set; }
 
         /// <summary>
-        /// Max number of chromosomes each generation to contain.
-        /// </summary>
-        public int GenerationMaxSize { get; set; }
-
-        /// <summary>
         /// Gets or sets the termination condition.
         /// </summary>
         public ITermination Termination { get; set; }
@@ -179,8 +174,7 @@ namespace Optimization
             ExceptionHelper.ThrowIfNull("termination", Termination);
 
             // Throw if one of the variables is zero -> 
-            if (GenerationMaxSize == 0 ||
-                CrossoverParentsNumber == 0 ||
+            if (CrossoverParentsNumber == 0 ||
                 Math.Abs(MutationProbability) < 0.01||
                 Math.Abs(CrossoverMixProbability) < 0.01)
             {
@@ -294,7 +288,7 @@ namespace Optimization
             // Select the chromosomes to be origin for crossovers and mutations ->
             var parents = SelectParents(CrossoverParentsNumber);
 
-            while (offspring.Count < GenerationMaxSize)
+            while (offspring.Count < Population.GenerationMaxSize)
             {
                 // Select random crossover operator, select random parents 
                 // apply the operator, add result to offspring collection ->
@@ -307,7 +301,7 @@ namespace Optimization
             }
 
             // Add 10 % of elite. If 10 % is less than 1 choose just a best chromosome ->
-            var numberOfBest = (int)(0.1 * GenerationMaxSize);
+            var numberOfBest = (int)(0.1 * Population.GenerationMaxSize);
             numberOfBest = numberOfBest > 1 ? numberOfBest : 1;
 
             // Just take. Chromosomes should have been already ordered by desc ->
@@ -344,20 +338,8 @@ namespace Optimization
             // Calculate fitness for all the chomosomes in Current Generation ->
             EvaluateFitness();
 
-            // Leave only the values that have positive fitness and order by descending ->
-            Chromosomes = Chromosomes
-                .Where(c => c.Fitness != null && c.Fitness.Value > 0)
-                .OrderByDescending(c => c.Fitness.Value)
-                .ToList();
-
-            // Truncate if amount is more than max size ->
-            if (Chromosomes.Count > GenerationMaxSize)
-            {
-                Chromosomes = Chromosomes.Take(GenerationMaxSize).ToList();
-            }
-
-            // Trace the best chromosome ->
-            Population.RegisterTheBestChromosome();
+            // Analyze the results, shapre the generation and select best chromosome ->
+            Population.OnEvaluationCompleted();
 
             // Inform one step of evolution has been accomplished ->
             var handler = GenerationRan;
@@ -392,12 +374,12 @@ namespace Optimization
             {
                 var chromosomesWithoutFitness = Population.CurrentGeneration.Chromosomes.Where(c => !c.Fitness.HasValue).ToList();
 
+                // Inform how many we send ->
+                Program.Logger.Trace($"Sending {chromosomesWithoutFitness.Count} for backtest!");
+
                 foreach (var c in chromosomesWithoutFitness)
                 {
-                    TaskExecutor.Add(() =>
-                    {
-                        RunEvaluateFitness(c);
-                    });
+                    TaskExecutor.Add(() => { RunEvaluateFitness(c); } );
                 }
 
                 if (!TaskExecutor.Start())

@@ -94,7 +94,10 @@ namespace Optimization
                 case OptimizationMode.Genetic:
                     {
                         // Create random population ->
-                        population = new PopulationRandom(Program.Config.GeneConfigArray, Program.Config.PopulationInitialSize);
+                        population = new PopulationRandom(Program.Config.GeneConfigArray, Program.Config.PopulationInitialSize)
+                        {
+                            GenerationMaxSize = Program.Config.GenerationMaxSize
+                        };
 
                         // If generations and stagnation generation values are assigned create the appropriate termination objects ->
                         var terminationParams = new List<ITermination>();
@@ -123,7 +126,6 @@ namespace Optimization
                 Termination = termination,
 
                 // Numeric values ->
-                GenerationMaxSize = Program.Config.GenerationMaxSize,
                 CrossoverParentsNumber = Program.Config.CrossoverParentsNumber,
                 CrossoverMixProbability = Program.Config.CrossoverMixProbability,
                 MutationProbability = Program.Config.MutationProbability

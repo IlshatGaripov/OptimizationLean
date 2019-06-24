@@ -49,6 +49,11 @@ namespace Optimization
         public int GenerationsNumber { get; protected set; }
 
         /// <summary>
+        /// Max number of chromosomes each generation to contain.
+        /// </summary>
+        public int GenerationMaxSize { get; set; } = 1000;
+
+        /// <summary>
         /// Gets or sets the best chromosome.
         /// </summary>
         /// <value>The best chromosome.</value>
@@ -95,14 +100,30 @@ namespace Optimization
         }
 
         /// <summary>
-        /// Assigns the best chromosome.
+        /// Runs when all generation chromosomes got evaluated
         /// </summary>
-        public virtual void RegisterTheBestChromosome()
+        public virtual void OnEvaluationCompleted()
         {
+            // Alias
+            var chromosomes = CurrentGeneration.Chromosomes;
+
+            // Leave only the values that have positive fitness and order by descending ->
+            chromosomes = chromosomes
+                .Where(c => c.Fitness != null && c.Fitness.Value > 0)
+                .OrderByDescending(c => c.Fitness.Value)
+                .ToList();
+
+            // Truncate if amount is more than max allowed size ->
+            if (chromosomes.Count > GenerationMaxSize)
+            {
+                var howManyDelete = chromosomes.Count - GenerationMaxSize;
+                chromosomes.ToList().RemoveRange(GenerationMaxSize, howManyDelete);
+            }
+
             // Select the generation's best chromosome ->
             CurrentGeneration.BestChromosome = CurrentGeneration.Chromosomes.First();
 
-            // If there is no better chromosome rather then existing then return ->
+            // If there is no better chromosome then exist then return ->
             if (Equals(BestChromosome, CurrentGeneration.BestChromosome))
             {
                 return;
