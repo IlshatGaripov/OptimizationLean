@@ -282,47 +282,16 @@ namespace Optimization
         /// <returns>True if termination has been reached, otherwise false.</returns>
         private bool CreateChildrenAndPerformEvolution()
         {
-            // Create container for the offspring ->
-            var offspring = new List<IChromosome>();
-
-            // Select the chromosomes to be origin for crossovers and mutations ->
-            var parents = SelectParents(CrossoverParentsNumber);
-
-            while (offspring.Count < Population.GenerationMaxSize)
+            // If previous generation was fruitless try again? ->
+            if (Population.FruitlessGenerationsCount > 0)
             {
-                // Select random crossover operator, select random parents 
-                // apply the operator, add result to offspring collection ->
-                var temp = RandomCrossover(parents);
-                offspring.AddRange(temp);
-
-                // To increase diversity apply mutation to results of crossover and add to offspring ->
-                Mutate(temp);
-                offspring.AddRange(temp);
+                Population.CreateInitialGeneration();
             }
-
-            // Add 10 % of elite. If 10 % is less than 1 choose just a best chromosome ->
-            var numberOfBest = (int)(0.1 * Population.GenerationMaxSize);
-            numberOfBest = numberOfBest > 1 ? numberOfBest : 1;
-
-            // Just take. Chromosomes should have been already ordered by desc ->
-            var elite = Chromosomes.Take(numberOfBest);
-            offspring.AddRange(elite);
-
-            // Mutate best chromosome's genes three times ->
-            var best = Population.BestChromosome;
-            for(int i = 0; i < 3; i++)
+            else   // Create chilren and new generation ->
             {
-                for(int j = 0; j < best.Length; j++)
-                {
-                    // Clone, replace specific gene with random value, add to collection ->
-                    var temp = best.CreateNew();
-                    IndexedGeneMutation(temp, j);
-                    offspring.Add(temp);
-                }
+                var children = CreateChildren();
+                Population.CreateNewGeneration(children);
             }
-
-            // Create new generation and assign it to CurrentGeneration ->
-            Population.CreateNewGeneration(offspring);
 
             // Evaluate, choose best and fire events ->
             return PerformEvolution();
@@ -363,6 +332,54 @@ namespace Optimization
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Creates offsprings.
+        /// </summary>
+        /// <returns>List containit offspring</returns>
+        private List<IChromosome> CreateChildren()
+        {
+            // Create container for the offspring ->
+            var offspring = new List<IChromosome>();
+
+            // Select the chromosomes to be origin for crossovers and mutations ->
+            var parents = SelectParents(CrossoverParentsNumber);
+
+            while (offspring.Count < Population.GenerationMaxSize)
+            {
+                // Select random crossover operator, select random parents 
+                // apply the operator, add result to offspring collection ->
+                var temp = RandomCrossover(parents);
+                offspring.AddRange(temp);
+
+                // To increase diversity apply mutation to results of crossover and add to offspring ->
+                Mutate(temp);
+                offspring.AddRange(temp);
+            }
+
+            // Add 10 % of elite. If 10 % is less than 1 choose just a best chromosome ->
+            var numberOfBest = (int)(0.1 * Population.GenerationMaxSize);
+            numberOfBest = numberOfBest > 1 ? numberOfBest : 1;
+
+            // Just take. Chromosomes should have been already ordered by desc ->
+            var elite = Chromosomes.Take(numberOfBest);
+            offspring.AddRange(elite);
+
+            // Mutate best chromosome's genes three times ->
+            var best = Population.BestChromosome;
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < best.Length; j++)
+                {
+                    // Clone, replace specific gene with random value, add to collection ->
+                    var temp = best.CreateNew();
+                    IndexedGeneMutation(temp, j);
+                    offspring.Add(temp);
+                }
+            }
+
+            return offspring;
         }
 
         /// <summary>
@@ -465,7 +482,7 @@ namespace Optimization
         /// Mutate the specified chromosomes.
         /// </summary>
         /// <param name="chromosomes">The chromosomes.</param>
-        private void Mutate(IList<IChromosome> chromosomes)
+        private void Mutate(IEnumerable<IChromosome> chromosomes)
         {
             foreach (var c in chromosomes)
             {

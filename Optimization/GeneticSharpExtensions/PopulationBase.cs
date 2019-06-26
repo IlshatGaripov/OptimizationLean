@@ -54,6 +54,11 @@ namespace Optimization
         public int GenerationMaxSize { get; set; } = 1000;
 
         /// <summary>
+        /// Number of initial generations in a row without at least a single positive chromosome.
+        /// </summary>
+        public int FruitlessGenerationsCount { get; set; }
+
+        /// <summary>
         /// Gets or sets the best chromosome.
         /// </summary>
         /// <value>The best chromosome.</value>
@@ -113,6 +118,13 @@ namespace Optimization
                 .OrderByDescending(c => c.Fitness.Value)
                 .ToList();
 
+            // If no any positive fitness chromosome in collection ->
+            if (!chromosomes.Any())
+            {
+                FruitlessGenerationsCount++;
+                return;
+            }
+                
             // Truncate if amount is more than max allowed size ->
             if (chromosomes.Count > GenerationMaxSize)
             {
