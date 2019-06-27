@@ -39,7 +39,7 @@ namespace Optimization
                     WalkForwardConfiguration = Config.WalkForwardConfiguration
                 };
 
-                wfoManager.OneEvaluationStepCompleted += WfoStepCompleted;
+                wfoManager.WfoStepCompleted += WalkForwardStepCompleted;
 
                 // Start it ->
                 wfoManager.Start();
@@ -101,12 +101,12 @@ namespace Optimization
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public static void WfoStepCompleted(object sender, WalkForwardEventArgs e)
+        public static void WalkForwardStepCompleted(object sender, WalkForwardEventArgs e)
         {
-            Logger.Trace(" >> VALIDATION COMPLETED >> \n");
+            Logger.Trace($" WFO validation from {e.ValidationStartDate} to {e.ValidationEndDate} completed");
 
-            Logger.Trace($"Sharpe in-sample: {e.InSampleBestResults["SharpeRatio"]} " +
-                         $"Sharpe validation: {e.ValidationResults["SharpeRatio"]}");
+            Logger.Trace($" WFO fitness is {e.InSampleBestResultsDict["SharpeRatio"]} " +
+                         $"in-sample vs {e.ValidationResultsDict["SharpeRatio"]} out-of-sample");
         }
 
     }

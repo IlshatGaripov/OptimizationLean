@@ -27,14 +27,13 @@ namespace Optimization
                 var list = chromosomeBase.ToDictionary();
                 list.Add("chromosome-id", chromosomeBase.Id);
 
-                // Create an output string ->
+                // Algorithm input parameters ->
                 var paramsString = chromosomeBase.ToKeyValueString();
-                var outputBeforeRun = $"Chromosome Id: {chromosomeBase.Id} -> params: [{paramsString}]";
 
                 // Write to the log information before an experiment ->
                 lock (Obj)
                 {
-                    Program.Logger.Trace(outputBeforeRun);
+                    Program.Logger.Trace($"Chromosome Id: {chromosomeBase.Id} -> params: [{paramsString}]");
                 }
 
                 // Set algorithm start and end dates ->

@@ -54,6 +54,12 @@ namespace Optimization
             // Algorithm input parameters
             var algorithmInputs = chromosomeBase.ToKeyValueString();
 
+            // Write to the log information before an experiment ->
+            lock (Obj)
+            {
+                Program.Logger.Trace($"Sending [{algorithmInputs}] for backtest");
+            }
+
             // -- 1 -- Create an argument string of gene key-values
             var runnerInputArguments = algorithmInputs + " ";
 

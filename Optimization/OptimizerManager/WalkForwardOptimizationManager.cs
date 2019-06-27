@@ -35,7 +35,7 @@ namespace Optimization
         /// Event fired as one stage of optimization on in-sample and
         /// verification on out-of-sample data is completed
         /// </summary>
-        public event EventHandler<WalkForwardEventArgs> OneEvaluationStepCompleted;
+        public event EventHandler<WalkForwardEventArgs> WfoStepCompleted;
 
         /// <summary>
         /// Full results dicrionary for best in sample chromosome backtest result 
@@ -76,7 +76,8 @@ namespace Optimization
             if (StartDate.Value.AddDays(minDaysBtStartEnd) > EndDate.Value)
             {
                 throw new ArgumentOutOfRangeException(
-                    $"The range between {StartDate.Value} and {EndDate.Value} is short for walk forward configuration values specified");
+                    $"The range between {StartDate.Value} and {EndDate.Value} " +
+                    $"is short for walk forward configuration values specified");
             }
                 
 
@@ -101,99 +102,114 @@ namespace Optimization
                 optimumFinder.Start();
 
                 // Once completed retrive best chromosome and cast it to base class object ->
-                var bestChromosome = optimumFinder.GenAlgorithm.BestChromosome;
                 var bestChromosomeBase = (Chromosome)optimumFinder.GenAlgorithm.BestChromosome;
 
                 // Save best results to the list ->
                 var bestInSampleResults = bestChromosomeBase.FitnessResult.FullResults;
                 _inSampleBestResultsList.Add(bestInSampleResults);
 
-                // Validate out of sample ->
-                var date = validationStartDate;
-                var endDate = validationEndDate;
-
-                // Add task to the collection ->
-                validationTasks.Add(Task.Run(() => ValidateOutOfSample(bestChromosome, 
-                    date,
-                    endDate,
-                    SortCriteria.Value,
-                    bestInSampleResults))); 
+                // Create validation task ->
+                var insmpStart = insampleStartDate;
+                var insmpEnd = insampleEndDate;
+                var outsmpStart = validationEndDate;
+                var outsmpEnd = validationEndDate;
+                
+                validationTasks.Add(       // Add the task to collection ->
+                    Task.Run(() => 
+                        ValidateOutOfSample(bestChromosomeBase,
+                            insmpStart,
+                            insmpEnd,
+                            outsmpStart,
+                            outsmpEnd,
+                            SortCriteria.Value,
+                            bestInSampleResults))); 
 
                 // Increment the variables and step to the next iteration ->
                 // If anchored do not increment insample Start Date ->
                 if (!WalkForwardConfiguration.Anchored.Value)
+                {
                     insampleStartDate = insampleStartDate.AddDays(step);
-
+                }
                 insampleEndDate = insampleEndDate.AddDays(step);
                 validationStartDate = validationStartDate.AddDays(step);
                 validationEndDate = validationEndDate.AddDays(step);
             }
 
-            // Make sure all out-of-sample experiment are complete before exit ->
+            // Make sure all out-of-sample experiment are completed before exit ->
             Task.WaitAll(validationTasks.ToArray());
         }
 
         /// <summary>
         /// Method called in the backgound to validate the best chromosome on out-of-sample data
         /// </summary>
-        /// <param name="chromosome"></param>
-        /// <param name="startDate"></param>
-        /// <param name="endDate"></param>
-        /// <param name="fitScore"></param>
-        /// <param name="bestInSampleResults"></param>
-        protected void ValidateOutOfSample(IChromosome chromosome,
-            DateTime startDate,
-            DateTime endDate,
+        protected void ValidateOutOfSample(
+            Chromosome chromosome,
+            DateTime insampleStartDate,
+            DateTime insampleEndDate,
+            DateTime validationStartDate,
+            DateTime validationEndDate,
             FitnessScore fitScore,
             Dictionary<string, decimal> bestInSampleResults)
         {
-            Program.Logger.Trace($" >> WALK FORWARD VALIDATION ({startDate} to {endDate}) STARTED >> \n");
+            Program.Logger.Trace($" Starting WFO validation from ({validationStartDate} to {validationEndDate})");
 
-            // Cast to base class ->
-            var bestChromosomeBase = (Chromosome) chromosome;
-
-            // Save best chromosome's genes to dictionary ->
-            var bestGenes = bestChromosomeBase.ToDictionary();
+            // clone the best in-sample chromosome
+            var validationSolution = chromosome.CreateNew();
 
             // Run a backtest ->
             IFitness fitness;
             if (Program.Config.TaskExecutionMode == TaskExecutionMode.Azure)
             {
-                fitness = new AzureFitness(startDate, endDate, fitScore);
-                fitness.Evaluate(chromosome);
+                fitness = new AzureFitness(validationStartDate, validationEndDate, fitScore);
+                fitness.Evaluate(validationSolution);
             }
             else
             {
-                fitness = new OptimizerFitness(startDate, endDate, fitScore);
-                fitness.Evaluate(chromosome);
+                fitness = new OptimizerFitness(validationStartDate, validationEndDate, fitScore);
+                fitness.Evaluate(validationSolution);
             }
             
             // Save full results to dictionary ->
-            var validationResults = bestChromosomeBase.FitnessResult.FullResults;
+            var validationResults = ((Chromosome)validationSolution).FitnessResult.FullResults;
             _validationResultsList.Add(validationResults);
 
-            // Raise an event informing a single step of evaluation is completed ->
-            OnOneEvaluationStepCompleted(bestInSampleResults, validationResults, bestGenes);
+            // Raise an event to inform a single step of evaluation was completed ->
+            OnWfoStepCompleted(
+                chromosome,
+                insampleStartDate,
+                insampleEndDate,
+                validationStartDate,
+                validationEndDate,
+                bestInSampleResults, 
+                validationResults);
         }
 
         /// <summary>
         /// Wrapper for OneEvaluationStepCompleted event
         /// </summary>
-        /// <param name="bestInSampleResults"></param>
-        /// <param name="validationResults"></param>
-        /// <param name="bestGenes"></param>
-        protected virtual void OnOneEvaluationStepCompleted(Dictionary<string, decimal> bestInSampleResults,
-            Dictionary<string, decimal> validationResults,
-            Dictionary<string, string> bestGenes)
+        protected virtual void OnWfoStepCompleted(
+            IChromosome bestChromosome,
+            DateTime insampleStartDate,
+            DateTime insampleEndDate,
+            DateTime validationStartDate,
+            DateTime validationEndDate,
+            Dictionary<string, decimal> bestInSampleResults,
+            Dictionary<string, decimal> validationResults)
         {
-            // Create event args object and invoke a delegate ->
+            // Create event args object ->
             var eventArgs = new WalkForwardEventArgs
             {
-                InSampleBestResults = bestInSampleResults,
-                ValidationResults = validationResults,
-                BestGenes = bestGenes
+                Chromosome = bestChromosome,
+                InsampleStartDate = insampleStartDate,
+                InsampleEndDate = insampleEndDate,
+                ValidationStartDate = validationStartDate,
+                ValidationEndDate = validationEndDate,
+                InSampleBestResultsDict = bestInSampleResults,
+                ValidationResultsDict = validationResults
             };
-            OneEvaluationStepCompleted?.Invoke(this, eventArgs);
+
+            // Invoke ->
+            WfoStepCompleted?.Invoke(this, eventArgs);
         }
     }
 
@@ -202,20 +218,18 @@ namespace Optimization
     /// </summary>
     public class WalkForwardEventArgs : EventArgs
     {
-        /// <summary>
-        /// Dictionary with full backtest results for best in-sample chromosome 
-        /// </summary>
-        public Dictionary<string, decimal> InSampleBestResults { get; set; }
+        public IChromosome Chromosome { get; set; }
 
-        /// <summary>
-        /// Dictionary with full validation results on out-of-sample data
-        /// </summary>
-        public Dictionary<string, decimal> ValidationResults { get; set; }
+        public DateTime InsampleStartDate { get; set; }
 
-        /// <summary>
-        /// Genes that showed best performance on in sample data
-        /// </summary>
-        public Dictionary<string, string> BestGenes { get; set; }
+        public DateTime InsampleEndDate { get; set; }
 
+        public DateTime ValidationStartDate { get; set; }
+
+        public DateTime ValidationEndDate { get; set; }
+
+        public Dictionary<string, decimal> InSampleBestResultsDict { get; set; }
+
+        public Dictionary<string, decimal> ValidationResultsDict { get; set; }
     }
 }
