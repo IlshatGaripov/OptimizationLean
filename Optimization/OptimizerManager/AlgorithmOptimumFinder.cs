@@ -99,8 +99,10 @@ namespace Optimization
                             GenerationMaxSize = Program.Config.GenerationMaxSize
                         };
 
-                        // If generations and stagnation generation values are assigned create the appropriate termination objects ->
-                        var terminationParams = new List<ITermination>();
+                        // Terminations - frutless, stagnation, max number generations ->
+                        var terminationParams = new List<ITermination>
+                            { new FruitlessGenerationsTermination(2) };
+
                         if (Program.Config.Generations.HasValue) 
                             terminationParams.Add(new GenerationNumberTermination(Program.Config.Generations.Value));
                         if (Program.Config.StagnationGenerations.HasValue)

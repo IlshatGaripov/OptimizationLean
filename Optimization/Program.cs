@@ -9,29 +9,26 @@ namespace Optimization
         public static ILogHandler Logger = new ConsoleLogHandler();
 
         // Program wide config file object
-        public static OptimizerConfiguration Config;
+        public static OptimizerConfiguration Config = Exstensions.LoadConfigFromFile("optimization_local.json");
 
         /// <summary>
         /// Main is main
         /// </summary>
         public static void Main(string[] args)
         {
-            // Load the optimizer settings from config json ->
-            Config = Exstensions.LoadConfigFromFile("optimization_local.json");
-
-            // Make sure that start and end dates are existent ->
+            // Make sure that start and end dates are specified ->
             if (Config.StartDate == null || 
                 Config.EndDate == null ||
                 Config.FitnessScore == null ||
                 Config.WalkForwardConfiguration == null)
             {
-                throw new ArgumentException("Check that all required config variables are not defined ..");
+                throw new ArgumentException("Please check that all required config variables are defined ..");
             }
 
-            // Required initial settings ->
+            // Create resources ->
             DeployResources();
 
-            // Init and start an optimization manager ->
+            // Init and start the optimization manager ->
             if (Config.WalkForwardConfiguration.Enabled == true)
             {
                 var wfoManager = new WalkForwardOptimizationManager

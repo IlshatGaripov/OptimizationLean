@@ -180,8 +180,8 @@ namespace Optimization
             {
                 throw new ArgumentException("Checking failed. One of the arguments is zero.");
             }
-            
-            // Init Uniform Crossover op. ->
+
+            // Add operator to CrossoverCollection ->
             CrossoverCollection.Add(new UniformCrossover(CrossoverMixProbability));
 
             lock (m_lock)
@@ -202,9 +202,7 @@ namespace Optimization
 
         /// <summary>
         /// Resumes the last evolution of the genetic algorithm.
-        /// <remarks>
         /// If genetic algorithm was not explicit Stop (calling Stop method), you will need provide a new extended Termination.
-        /// </remarks>
         /// </summary>
         public void Resume()
         {
@@ -244,7 +242,7 @@ namespace Optimization
 
                     m_stopwatch.Restart();
 
-                    // Create descendants from current generation and perform evolution ->
+                    // Create descendants and perform evolution ->
                     terminationConditionReached = CreateChildrenAndPerformEvolution();
 
                     m_stopwatch.Stop();
@@ -282,47 +280,16 @@ namespace Optimization
         /// <returns>True if termination has been reached, otherwise false.</returns>
         private bool CreateChildrenAndPerformEvolution()
         {
-            // Create container for the offspring ->
-            var offspring = new List<IChromosome>();
-
-            // Select the chromosomes to be origin for crossovers and mutations ->
-            var parents = SelectParents(CrossoverParentsNumber);
-
-            while (offspring.Count < Population.GenerationMaxSize)
+            // If previous generation has no chromosome of positive fit ->
+            if (Population.CurrentGeneration.IsFruitless)
             {
-                // Select random crossover operator, select random parents 
-                // apply the operator, add result to offspring collection ->
-                var temp = RandomCrossover(parents);
-                offspring.AddRange(temp);
-
-                // To increase diversity apply mutation to results of crossover and add to offspring ->
-                Mutate(temp);
-                offspring.AddRange(temp);
+                Population.CreateInitialGeneration();
             }
-
-            // Add 10 % of elite. If 10 % is less than 1 choose just a best chromosome ->
-            var numberOfBest = (int)(0.1 * Population.GenerationMaxSize);
-            numberOfBest = numberOfBest > 1 ? numberOfBest : 1;
-
-            // Just take. Chromosomes should have been already ordered by desc ->
-            var elite = Chromosomes.Take(numberOfBest);
-            offspring.AddRange(elite);
-
-            // Mutate best chromosome's genes three times ->
-            var best = Population.BestChromosome;
-            for(int i = 0; i < 3; i++)
+            else   // Create chilren and register new generation ->
             {
-                for(int j = 0; j < best.Length; j++)
-                {
-                    // Clone, replace specific gene with random value, add to collection ->
-                    var temp = best.CreateNew();
-                    IndexedGeneMutation(temp, j);
-                    offspring.Add(temp);
-                }
+                var children = CreateChildren();
+                Population.CreateNewGeneration(children);
             }
-
-            // Create new generation and assign it to CurrentGeneration ->
-            Population.CreateNewGeneration(offspring);
 
             // Evaluate, choose best and fire events ->
             return PerformEvolution();
@@ -338,10 +305,10 @@ namespace Optimization
             // Calculate fitness for all the chomosomes in Current Generation ->
             EvaluateFitness();
 
-            // Analyze the results, shapre the generation and select best chromosome ->
+            // Analyze the chromosomes fitness results, select best ->
             Population.OnEvaluationCompleted();
 
-            // Inform one step of evolution has been accomplished ->
+            // Raise Generation ran event ->
             var handler = GenerationRan;
             handler?.Invoke(this, EventArgs.Empty);
 
@@ -366,6 +333,54 @@ namespace Optimization
         }
 
         /// <summary>
+        /// Creates offsprings.
+        /// </summary>
+        /// <returns>List containit offspring</returns>
+        private List<IChromosome> CreateChildren()
+        {
+            // Create container for the offspring ->
+            var offspring = new List<IChromosome>();
+
+            // Select the chromosomes to be origin for crossovers and mutations ->
+            var parents = SelectParents(CrossoverParentsNumber);
+
+            while (offspring.Count < Population.GenerationMaxSize)
+            {
+                // Select random crossover operator, select random parents 
+                // apply the operator, add result to offspring collection ->
+                var temp = RandomCrossover(parents);
+                offspring.AddRange(temp);
+
+                // To increase diversity apply mutation to results of crossover and add to offspring ->
+                Mutate(temp);
+                offspring.AddRange(temp);
+            }
+
+            // Add 10 % of elite. If 10 % is less than 1 choose just a best chromosome ->
+            var numberOfBest = (int)(0.1 * Population.GenerationMaxSize);
+            numberOfBest = numberOfBest > 1 ? numberOfBest : 1;
+
+            // Just take. Chromosomes have been already ordered by fitness desc. ->
+            var elite = Chromosomes.Take(numberOfBest);
+            offspring.AddRange(elite);
+
+            // Mutate best chromosome's genes three times ->
+            var best = Population.BestChromosome;
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < best.Length; j++)
+                {
+                    // Clone, replace specific gene with random value, add to collection ->
+                    var temp = best.CreateNew();
+                    IndexedGeneMutation(temp, j);
+                    offspring.Add(temp);
+                }
+            }
+
+            return offspring;
+        }
+
+        /// <summary>
         /// Evaluates the fitness.
         /// </summary>
         private void EvaluateFitness()
@@ -374,7 +389,7 @@ namespace Optimization
             {
                 var chromosomesWithoutFitness = Population.CurrentGeneration.Chromosomes.Where(c => !c.Fitness.HasValue).ToList();
 
-                // Inform how many we send ->
+                // Inform how many solutions we send for evaluation ->
                 Program.Logger.Trace($"Sending {chromosomesWithoutFitness.Count} for backtest!");
 
                 foreach (var c in chromosomesWithoutFitness)
@@ -465,7 +480,7 @@ namespace Optimization
         /// Mutate the specified chromosomes.
         /// </summary>
         /// <param name="chromosomes">The chromosomes.</param>
-        private void Mutate(IList<IChromosome> chromosomes)
+        private void Mutate(IEnumerable<IChromosome> chromosomes)
         {
             foreach (var c in chromosomes)
             {
