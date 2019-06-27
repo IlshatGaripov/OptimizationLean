@@ -121,6 +121,9 @@ namespace Optimization
             // If no any positive fitness chromosome in collection ->
             if (!chromosomes.Any())
             {
+                Program.Logger.Error("Current Generation hasn't got a single positive fitness chromosome");
+
+                // Is fruiteless ->
                 CurrentGeneration.IsFruitless = true;
                 FruitlessGenerationsCount++;
                 return;

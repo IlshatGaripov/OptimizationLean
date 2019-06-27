@@ -305,10 +305,10 @@ namespace Optimization
             // Calculate fitness for all the chomosomes in Current Generation ->
             EvaluateFitness();
 
-            // Analyze the results, shapre the generation and select best chromosome ->
+            // Analyze the chromosomes fitness results, select best ->
             Population.OnEvaluationCompleted();
 
-            // Inform one step of evolution has been accomplished ->
+            // Raise Generation ran event ->
             var handler = GenerationRan;
             handler?.Invoke(this, EventArgs.Empty);
 
