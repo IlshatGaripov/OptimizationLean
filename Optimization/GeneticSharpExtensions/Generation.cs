@@ -9,7 +9,6 @@ namespace Optimization
     /// <summary>
     /// Represents a generation of a population.
     /// </summary>
-    [DebuggerDisplay("{Number} = {BestChromosome.Fitness}")]
     public sealed class Generation
     {
         /// <summary>
@@ -50,14 +49,16 @@ namespace Optimization
         /// <summary>
         /// Gets the chromosomes.
         /// </summary>
-        /// <value>The chromosomes.</value>
         public IList<IChromosome> Chromosomes { get; set; }
 
         /// <summary>
         /// Gets the best chromosome.
         /// </summary>
-        /// <value>The best chromosome.</value>
         public IChromosome BestChromosome { get; set; }
-       
+        
+        /// <summary>
+        /// Whether or not generation is frutless, i.e. no single positive fitness chromosome
+        /// </summary>
+        public bool IsFruitless { get; set; }
     }
 }

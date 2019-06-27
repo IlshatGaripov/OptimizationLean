@@ -91,7 +91,7 @@ namespace Optimization
             var distinct = chromosomes.SelectDistinct();  // select distinct
 
             // Make sure that chromosomes without fitness are unique in terms of
-            // same gene values sequence has not been encountered in previous generations ->
+            // same gene values sequence wasn't encountered in previous generations ->
             if (GenerationsNumber > 0)
             {
                 distinct.RemoveRepeating(Generations);
@@ -121,6 +121,7 @@ namespace Optimization
             // If no any positive fitness chromosome in collection ->
             if (!chromosomes.Any())
             {
+                CurrentGeneration.IsFruitless = true;
                 FruitlessGenerationsCount++;
                 return;
             }
@@ -128,8 +129,7 @@ namespace Optimization
             // Truncate if amount is more than max allowed size ->
             if (chromosomes.Count > GenerationMaxSize)
             {
-                var howManyDelete = chromosomes.Count - GenerationMaxSize;
-                chromosomes.ToList().RemoveRange(GenerationMaxSize, howManyDelete);
+                CurrentGeneration.Chromosomes = chromosomes.Take(GenerationMaxSize).ToList();
             }
 
             // Select the generation's best chromosome ->
@@ -141,7 +141,7 @@ namespace Optimization
                 return;
             }
 
-            // Otherwise ->
+            // Otherwise assign new best and raise event ->
             BestChromosome = CurrentGeneration.BestChromosome;
             OnBestChromosomeChanged(EventArgs.Empty);
         }

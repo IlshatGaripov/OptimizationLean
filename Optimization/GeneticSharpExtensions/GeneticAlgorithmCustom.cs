@@ -180,8 +180,8 @@ namespace Optimization
             {
                 throw new ArgumentException("Checking failed. One of the arguments is zero.");
             }
-            
-            // Init Uniform Crossover op. ->
+
+            // Add operator to CrossoverCollection ->
             CrossoverCollection.Add(new UniformCrossover(CrossoverMixProbability));
 
             lock (m_lock)
@@ -202,9 +202,7 @@ namespace Optimization
 
         /// <summary>
         /// Resumes the last evolution of the genetic algorithm.
-        /// <remarks>
         /// If genetic algorithm was not explicit Stop (calling Stop method), you will need provide a new extended Termination.
-        /// </remarks>
         /// </summary>
         public void Resume()
         {
@@ -244,7 +242,7 @@ namespace Optimization
 
                     m_stopwatch.Restart();
 
-                    // Create descendants from current generation and perform evolution ->
+                    // Create descendants and perform evolution ->
                     terminationConditionReached = CreateChildrenAndPerformEvolution();
 
                     m_stopwatch.Stop();
@@ -282,12 +280,12 @@ namespace Optimization
         /// <returns>True if termination has been reached, otherwise false.</returns>
         private bool CreateChildrenAndPerformEvolution()
         {
-            // If previous generation was fruitless try again? ->
-            if (Population.FruitlessGenerationsCount > 0)
+            // If previous generation has no chromosome of positive fit ->
+            if (Population.CurrentGeneration.IsFruitless)
             {
                 Population.CreateInitialGeneration();
             }
-            else   // Create chilren and new generation ->
+            else   // Create chilren and register new generation ->
             {
                 var children = CreateChildren();
                 Population.CreateNewGeneration(children);
@@ -362,7 +360,7 @@ namespace Optimization
             var numberOfBest = (int)(0.1 * Population.GenerationMaxSize);
             numberOfBest = numberOfBest > 1 ? numberOfBest : 1;
 
-            // Just take. Chromosomes should have been already ordered by desc ->
+            // Just take. Chromosomes have been already ordered by fitness desc. ->
             var elite = Chromosomes.Take(numberOfBest);
             offspring.AddRange(elite);
 
@@ -391,7 +389,7 @@ namespace Optimization
             {
                 var chromosomesWithoutFitness = Population.CurrentGeneration.Chromosomes.Where(c => !c.Fitness.HasValue).ToList();
 
-                // Inform how many we send ->
+                // Inform how many solutions we send for evaluation ->
                 Program.Logger.Trace($"Sending {chromosomesWithoutFitness.Count} for backtest!");
 
                 foreach (var c in chromosomesWithoutFitness)
