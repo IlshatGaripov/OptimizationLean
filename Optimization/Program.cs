@@ -70,16 +70,24 @@ namespace Optimization
         /// </summary>
         public static void DeployResources()
         {
-            // Set up App Domain settings no matter what computation mode will be used - local PC or a cloud ->
-            AppDomainManager.Initialize();
-
-            // Computation mode specific settings ->
-            switch (Program.Config.TaskExecutionMode)
+            try
             {
-                // Deploy Batch resources if calculations are made using cloud compute powers
-                case TaskExecutionMode.Azure:
-                    AzureBatchManager.DeployAsync().Wait();
-                    break;
+                // Set up App Domain settings no matter what computation mode will be used - local PC or a cloud ->
+                AppDomainManager.Initialize();
+
+                // Computation mode specific settings ->
+                switch (Config.TaskExecutionMode)
+                {
+                    // Deploy Batch resources if calculations are made using cloud compute powers
+                    case TaskExecutionMode.Azure:
+                        AzureBatchManager.DeployAsync().Wait();
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }
 
@@ -89,7 +97,7 @@ namespace Optimization
         public static void ReleaseDeployedResources()
         {
             // -1- Clean up Task Execution resources
-            switch (Program.Config.TaskExecutionMode)
+            switch (Config.TaskExecutionMode)
             {
                 case TaskExecutionMode.Azure:
                     AzureBatchManager.FinalizeAsync().Wait();

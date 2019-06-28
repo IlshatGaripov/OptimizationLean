@@ -100,16 +100,16 @@ namespace Optimization
                         };
 
                         // Terminations - frutless, stagnation, max number generations ->
-                        var terminationParams = new List<ITermination>
+                        var terminations = new List<ITermination>
                             { new FruitlessGenerationsTermination(2) };
 
                         if (Program.Config.Generations.HasValue) 
-                            terminationParams.Add(new GenerationNumberTermination(Program.Config.Generations.Value));
+                            terminations.Add(new GenerationNumberTermination(Program.Config.Generations.Value));
                         if (Program.Config.StagnationGenerations.HasValue)
-                            terminationParams.Add(new FitnessStagnationTermination(Program.Config.StagnationGenerations.Value));
+                            terminations.Add(new FitnessStagnationTermination(Program.Config.StagnationGenerations.Value));
 
                         // Init termination ->
-                        termination = new OrTermination(terminationParams.ToArray());
+                        termination = new OrTermination(terminations.ToArray());
 
                         break;
                     }

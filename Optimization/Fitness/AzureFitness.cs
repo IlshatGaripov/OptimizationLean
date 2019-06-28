@@ -57,7 +57,7 @@ namespace Optimization
             // Write to the log information before an experiment ->
             lock (Obj)
             {
-                Program.Logger.Trace($"[{algorithmInputs}] sending to the cloud");
+                Program.Logger.Trace($"[{algorithmInputs}] >> sending cloud");
             }
 
             // -- 1 -- Create an argument string of gene key-values
@@ -146,13 +146,7 @@ namespace Optimization
             // Display results to Console ->
             lock (Obj)
             {
-                Program.Logger.Trace($"[{algorithmInputs}] results = {fitness}");
-
-                /*
-                Program.Logger.Trace($"[{algorithmInputs}] results from " +
-                                     $"{StartDate:MM/dd/yyyy} to {EndDate:MM/dd/yyyy} = {fitness}");
-                                     */
-
+                Program.Logger.Trace($"[{algorithmInputs}] Fitness = {fitness}");
             }
 
             return fitness;

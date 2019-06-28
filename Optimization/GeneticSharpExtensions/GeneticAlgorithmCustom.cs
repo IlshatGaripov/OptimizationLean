@@ -382,14 +382,15 @@ namespace Optimization
         {
             try
             {
-                var chromosomesWithoutFitness = Population.CurrentGeneration.Chromosomes.Where(c => !c.Fitness.HasValue).ToList();
+                var withoutFitness = Population.CurrentGeneration.Chromosomes.Where(c => !c.Fitness.HasValue).ToList();
+                var haveFitness = Population.CurrentGeneration.Chromosomes.Where(c => c.Fitness.HasValue).ToList();
 
                 // Inform how many solutions we send for evaluation ->
-                Program.Logger.Trace($"Sending {chromosomesWithoutFitness.Count} for backtest!");
+                Program.Logger.Trace($"Sending {withoutFitness.Count} for backtest and {haveFitness.Count} are good");
 
-                foreach (var c in chromosomesWithoutFitness)
+                foreach (var c in withoutFitness)
                 {
-                    TaskExecutor.Add(() => { RunEvaluateFitness(c); } );
+                    TaskExecutor.Add(() => { c.Fitness = Fitness.Evaluate(c); } );
                 }
 
                 if (!TaskExecutor.Start())
@@ -406,22 +407,6 @@ namespace Optimization
             {
                 TaskExecutor.Stop();
                 TaskExecutor.Clear();
-            }
-        }
-
-        /// <summary>
-        /// Runs the evaluate fitness.
-        /// </summary>
-        /// <param name="chromosome">The chromosome.</param>
-        private void RunEvaluateFitness(IChromosome chromosome)
-        {
-            try
-            {
-                chromosome.Fitness = Fitness.Evaluate(chromosome);
-            }
-            catch (Exception ex)
-            {
-                throw new FitnessException(Fitness, "Error executing Fitness.Evaluate for chromosome: {0}".With(ex.Message), ex);
             }
         }
 
