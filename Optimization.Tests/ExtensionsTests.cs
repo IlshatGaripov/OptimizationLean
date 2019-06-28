@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace Optimization.Tests.Optimization
+namespace Optimization.Tests
 {
     [TestFixture]
     class ExtensionsTests

@@ -109,11 +109,8 @@ namespace Optimization
         /// </summary>
         public virtual void OnEvaluationCompleted()
         {
-            // Alias
-            var chromosomes = CurrentGeneration.Chromosomes;
-
             // Leave only the values that have positive fitness and order by descending ->
-            chromosomes = chromosomes
+            var chromosomes = CurrentGeneration.Chromosomes
                 .Where(c => c.Fitness != null && c.Fitness.Value > 0)
                 .OrderByDescending(c => c.Fitness.Value)
                 .ToList();

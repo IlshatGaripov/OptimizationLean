@@ -81,9 +81,9 @@ namespace Optimization
         public IFitness Fitness { get; }
 
         /// <summary>
-        /// Gets or sets the selection operator.
+        /// Gets or sets the selection operator. Default is Roulette Wheel.
         /// </summary>
-        public ISelection Selection { get; set; }
+        public ISelection Selection { get; set; } = new RouletteWheelSelection();
 
         /// <summary>
         /// Collection of crossover operators.

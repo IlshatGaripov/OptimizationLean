@@ -50,7 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Optimization\ExtensionsTests.cs" />
+    <Compile Include="ExtensionsTests.cs" />
+    <Compile Include="GeneticSharpExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +62,10 @@
     <ProjectReference Include="..\..\GeneticSharp\src\GeneticSharp.Domain\GeneticSharp.Domain.csproj">
       <Project>{B7FDC057-F9F2-4467-89E7-041202FB7BDC}</Project>
       <Name>GeneticSharp.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GeneticSharp\src\GeneticSharp.Infrastructure.Framework\GeneticSharp.Infrastructure.Framework.csproj">
+      <Project>{14130612-FF14-4DF4-8829-27C0E85E09F0}</Project>
+      <Name>GeneticSharp.Infrastructure.Framework</Name>
     </ProjectReference>
     <ProjectReference Include="..\Optimization\Optimization.csproj">
       <Project>{89d0362e-9aed-4718-b35e-bcae2949848d}</Project>

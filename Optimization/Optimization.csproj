@@ -86,6 +86,7 @@
     <Compile Include="GeneticSharpExtensions\FruitlessGenerationsTermination.cs" />
     <Compile Include="GeneticSharpExtensions\Generation.cs" />
     <Compile Include="GeneticSharpExtensions\GeneticAlgorithmCustom.cs" />
+    <Compile Include="GeneticSharpExtensions\LogicalOrTermination.cs" />
     <Compile Include="GeneticSharpExtensions\PopulationCartesian.cs" />
     <Compile Include="GeneticSharpExtensions\PopulationBase.cs" />
     <Compile Include="GeneticSharpExtensions\GeneConverter.cs" />
