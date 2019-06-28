@@ -5,16 +5,20 @@ namespace Optimization
 {
     public static class Program
     {
-        // The logger
-        public static ILogHandler Logger = new ConsoleLogHandler();
-
-        // Program wide config file object
+        // Program wide configuration object ->s
         public static OptimizerConfiguration Config = Exstensions.LoadConfigFromFile("optimization_local.json");
+
+        // The logger ->
+        public static ILogHandler Logger = 
+            new CompositeLogHandler(
+            new ConsoleLogHandler(), 
+            new FileLogHandler(filepath: Config.LogFile)); 
+
 
         /// <summary>
         /// Main is main
         /// </summary>
-        public static void Main(string[] args)
+        public static void Main()
         {
             // Make sure that start and end dates are specified ->
             if (Config.StartDate == null || 

@@ -123,6 +123,12 @@ namespace Optimization
         public string DataFolder { get; set; }
 
         /// <summary>
+        /// Path to the file to write logs into
+        /// </summary>
+        [JsonProperty("log-file")]
+        public string LogFile { get; set; }
+
+        /// <summary>
         /// Azure Batch acc name.
         /// </summary>
         [JsonProperty("batch-account-name")]

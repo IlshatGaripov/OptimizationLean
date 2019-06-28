@@ -309,17 +309,13 @@ namespace Optimization
             Population.OnEvaluationCompleted();
 
             // Raise Generation ran event ->
-            var handler = GenerationRan;
-            handler?.Invoke(this, EventArgs.Empty);
+            GenerationRan?.Invoke(this, EventArgs.Empty);
 
             // Check if termination is reached ->
             if (Termination.HasReached(this))
             {
                 State = GeneticAlgorithmState.TerminationReached;
-
-                handler = TerminationReached;
-                handler?.Invoke(this, EventArgs.Empty);
-
+                TerminationReached?.Invoke(this, EventArgs.Empty);
                 return true;
             }
 

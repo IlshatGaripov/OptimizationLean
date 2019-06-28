@@ -160,7 +160,7 @@ namespace Optimization
         /// </summary>
         public static void GenerationRan(object sender, EventArgs e)
         {
-            Program.Logger.Trace("Ganaration ran completed.");
+            Program.Logger.Trace("GENERATION RAN");
         }
     }
 }

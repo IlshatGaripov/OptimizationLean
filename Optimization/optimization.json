@@ -42,15 +42,16 @@
   "population-initial-size": 30,
   "generation-max-size": 20,
   "crossover-parents-number": 5,
-  "crossover-mix-probability": 0.4, 
+  "crossover-mix-probability": 0.4,
   "mutation-probability": 0.5,
   "generations": 5,
   "stagnation-generations": 3,
 
   // LEAN
   "algorithm-type-name": "SuperTrendAlgorithm",
-  "algorithm-location": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
-  "data-folder": "C:/Users/sterling/Google Drive/Data",
+  "algorithm-location": "C:\\Users\\sterling\\source\\repos\\OptimizationLeanJames\\Optimization.Example\\bin\\Debug\\Optimization.Example.dll",
+  "data-folder": "C:\\Users\\sterling\\Google Drive\\DataCrypto",
+  "log-file": "C:\\Users\\sterling\\Desktop\\optimization_logs.txt",
 
   // AZURE
   "batch-account-name": "",

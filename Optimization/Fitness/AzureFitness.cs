@@ -57,7 +57,7 @@ namespace Optimization
             // Write to the log information before an experiment ->
             lock (Obj)
             {
-                Program.Logger.Trace($"Sending [{algorithmInputs}] for backtest");
+                Program.Logger.Trace($"[{algorithmInputs}] sending to the cloud");
             }
 
             // -- 1 -- Create an argument string of gene key-values
@@ -84,7 +84,7 @@ namespace Optimization
             runnerInputArguments += $"log-file {leanLogFile}";
 
             // Now using all arguments construct the resulting command line string
-            string taskCommandLine = $"cmd /c {appPath}\\Debug\\Optimization.RunnerAzureApp.exe {runnerInputArguments}";
+            string taskCommandLine = $"cmd /c {appPath}\\Debug\\Optimization.RunnerAppAzure.exe {runnerInputArguments}";
 
             // Create task id. Create a cloud task. 
             var taskId = $"task_{id}";
@@ -129,8 +129,8 @@ namespace Optimization
             // Call BatchClient.JobOperations.AddTask() to add the tasks as a collection to a queue
             await batchClient.JobOperations.AddTaskAsync(jobId, cloudTaskCollection);
 
-            // Monitor for a task to complete. Timeout is set to 20 minutes. 
-            await MonitorSpecificTaskToCompleteAsync(batchClient, jobId, taskId, TimeSpan.FromMinutes(20));
+            // Monitor for a task to complete. Timeout is set to 30 minutes. 
+            await MonitorSpecificTaskToCompleteAsync(batchClient, jobId, taskId, TimeSpan.FromMinutes(30));
 
             // Obtain results dictionary ->
             var result = await ObtainResultFromTheBlob(blobClient, AzureBatchManager.OutputContainerName, 
@@ -146,9 +146,13 @@ namespace Optimization
             // Display results to Console ->
             lock (Obj)
             {
-                Console.WriteLine($"Inputs: {algorithmInputs}");
-                Console.WriteLine($"Dates: {StartDate:MM/dd/yyyy} to {EndDate:MM/dd/yyyy}");
-                Console.WriteLine($" {fitness} << Fitness");
+                Program.Logger.Trace($"[{algorithmInputs}] results = {fitness}");
+
+                /*
+                Program.Logger.Trace($"[{algorithmInputs}] results from " +
+                                     $"{StartDate:MM/dd/yyyy} to {EndDate:MM/dd/yyyy} = {fitness}");
+                                     */
+
             }
 
             return fitness;
