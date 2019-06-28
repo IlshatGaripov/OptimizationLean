@@ -89,7 +89,7 @@ namespace Optimization
         /// </summary>
         /// <param name="chromosomes">Chromosomes to check for duplicates</param>
         /// <param name="generations">Past generations</param>
-        public static void RemoveRepeating(this IList<IChromosome> chromosomes, IList<Generation> generations)
+        public static void RemoveEvaluatedPreviously(this IList<IChromosome> chromosomes, IList<Generation> generations)
         {
             if(generations == null || generations.Count == 0)
                 throw new ArgumentException("Please make sure generations has value");

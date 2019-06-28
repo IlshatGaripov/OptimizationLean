@@ -334,33 +334,32 @@ namespace Optimization
         /// <returns>List containit offspring</returns>
         private List<IChromosome> CreateChildren()
         {
-            // Create container for the offspring ->
-            var offspring = new List<IChromosome>();
+            var offspring = new List<IChromosome>();   // Container to hold the offspring
 
-            // Select the chromosomes to be origin for crossovers and mutations ->
+            // Select parents for crossover/mutations ->
             var parents = SelectParents(CrossoverParentsNumber);
 
+            // Until offspring size is less than max ->
             while (offspring.Count < Population.GenerationMaxSize)
             {
-                // Select random crossover operator, select random parents 
-                // apply the operator, add result to offspring collection ->
+                // Select random crossover operator, select random parents, apply ->
                 var temp = RandomCrossover(parents);
                 offspring.AddRange(temp);
 
-                // To increase diversity apply mutation to results of crossover and add to offspring ->
+                // To increase diversity apply mutation to results of crossover ->
                 Mutate(temp);
                 offspring.AddRange(temp);
             }
-
-            // Add 10 % of elite. If 10 % is less than 1 choose just a best chromosome ->
-            var numberOfBest = (int)(0.1 * Population.GenerationMaxSize);
+            
+            // If 20 % is less than 1 unit choose just a single solution ->
+            var numberOfBest = (int)(0.2 * Population.GenerationMaxSize);
             numberOfBest = numberOfBest > 1 ? numberOfBest : 1;
 
-            // Just take. Chromosomes have been already ordered by fitness desc. ->
+            // Chromosomes are ordered by fitness desc so just take ->
             var elite = Chromosomes.Take(numberOfBest);
             offspring.AddRange(elite);
 
-            // Mutate best chromosome's genes three times ->
+            // Change best chromosome's every gene to random value three times ->
             var best = Population.BestChromosome;
             for (int i = 0; i < 3; i++)
             {

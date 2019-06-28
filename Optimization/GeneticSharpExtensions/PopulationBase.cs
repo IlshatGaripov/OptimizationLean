@@ -94,11 +94,11 @@ namespace Optimization
             // same gene values sequence wasn't encountered in previous generations ->
             if (GenerationsNumber > 0)
             {
-                distinct.RemoveRepeating(Generations);
+                distinct.RemoveEvaluatedPreviously(Generations);
             }
             
-            // Create new Generation ->
-            CurrentGeneration = new Generation(++GenerationsNumber, chromosomes);
+            // Create new Generation from distinct (!) ->
+            CurrentGeneration = new Generation(++GenerationsNumber, distinct);
 
             // Add to collection ->
             Generations.Add(CurrentGeneration);
