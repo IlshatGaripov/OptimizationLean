@@ -2,7 +2,6 @@
 using GeneticSharp.Domain.Terminations;
 using GeneticSharp.Infrastructure.Framework.Threading;
 using System;
-using System.Collections.Generic;
 using GeneticSharp.Domain.Fitnesses;
 
 namespace Optimization
@@ -99,18 +98,18 @@ namespace Optimization
                             GenerationMaxSize = Program.Config.GenerationMaxSize
                         };
 
-                        // Terminations - frutless, stagnation, max number generations ->
-                        var terminations = new List<ITermination>
-                            { new FruitlessGenerationsTermination(2) };
+                        // Logical terminaton ->
+                        var localTerm = new LogicalOrTermination();
 
-                        if (Program.Config.Generations.HasValue) 
-                            terminations.Add(new GenerationNumberTermination(Program.Config.Generations.Value));
+                        localTerm.AddTermination(new FruitlessGenerationsTermination(2));
+
+                        if (Program.Config.Generations.HasValue)
+                            localTerm.AddTermination(new GenerationNumberTermination(Program.Config.Generations.Value));
+
                         if (Program.Config.StagnationGenerations.HasValue)
-                            terminations.Add(new FitnessStagnationTermination(Program.Config.StagnationGenerations.Value));
+                            localTerm.AddTermination(new FitnessStagnationTermination(Program.Config.StagnationGenerations.Value));
 
-                        // Init termination ->
-                        termination = new OrTermination(terminations.ToArray());
-
+                        termination = localTerm;
                         break;
                     }
 

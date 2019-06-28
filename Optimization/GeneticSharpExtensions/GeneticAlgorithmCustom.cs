@@ -111,9 +111,9 @@ namespace Optimization
         public float CrossoverMixProbability { get; set; }
 
         /// <summary>
-        /// Gets or sets the termination condition.
+        /// Gets or sets the termination condition. Default is 100 gen termination.
         /// </summary>
-        public ITermination Termination { get; set; }
+        public ITermination Termination { get; set; } = new GenerationNumberTermination(100);
 
         /// <summary>
         /// Gets or sets the task executor which will be used to execute fitness evaluation.
