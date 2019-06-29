@@ -57,7 +57,7 @@ namespace Optimization
             // Write to the log information before an experiment ->
             lock (Obj)
             {
-                Program.Logger.Trace($"[{algorithmInputs}] >> sending cloud");
+                Program.Logger.Trace($"{algorithmInputs} >>");
             }
 
             // -- 1 -- Create an argument string of gene key-values
@@ -136,17 +136,23 @@ namespace Optimization
             var result = await ObtainResultFromTheBlob(blobClient, AzureBatchManager.OutputContainerName, 
                 @"results\" + resultsOutputFile);
 
-            // Save full results ->
-            chromosomeBase.FitnessResult = new FitnessResult
-                {StartDate = this.StartDate, EndDate = this.EndDate, FullResults = result};
-
             // Calculate fitness ->
             var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore);
 
-            // Display results to Console ->
+            // Save full results ->
+            chromosomeBase.FitnessResult = new FitnessResult
+            {
+                StartDate = this.StartDate,
+                EndDate = this.EndDate,
+                FullResults = result,
+                Fitness = fitness
+            };
+
+
+            // Display results to the log ->
             lock (Obj)
             {
-                Program.Logger.Trace($"[{algorithmInputs}] Fitness = {fitness}");
+                Program.Logger.Trace($"{fitness} ## {algorithmInputs}");
             }
 
             return fitness;

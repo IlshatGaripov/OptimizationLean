@@ -104,6 +104,10 @@ namespace Optimization
                 // Once completed retrive best chromosome and cast it to base class object ->
                 var bestChromosomeBase = (Chromosome)optimumFinder.GenAlgorithm.BestChromosome;
 
+                // Log the results
+                Program.Logger.Trace($"Best fitness # {bestChromosomeBase.Fitness}");
+                Program.Logger.Trace($"Best genes # {bestChromosomeBase.ToKeyValueString()}");
+
                 // Save best results to the list ->
                 var bestInSampleResults = bestChromosomeBase.FitnessResult.FullResults;
                 _inSampleBestResultsList.Add(bestInSampleResults);
@@ -111,7 +115,7 @@ namespace Optimization
                 // Create validation task ->
                 var insmpStart = insampleStartDate;
                 var insmpEnd = insampleEndDate;
-                var outsmpStart = validationEndDate;
+                var outsmpStart = validationStartDate;
                 var outsmpEnd = validationEndDate;
                 
                 validationTasks.Add(       // Add the task to collection ->
@@ -151,26 +155,26 @@ namespace Optimization
             FitnessScore fitScore,
             Dictionary<string, decimal> bestInSampleResults)
         {
-            Program.Logger.Trace($" Starting WFO validation from ({validationStartDate} to {validationEndDate})");
+            Program.Logger.Trace("W.F.O. validation task -> started");
 
             // clone the best in-sample chromosome
-            var validationSolution = chromosome.CreateNew();
+            var copy = chromosome.CreateNew();
 
             // Run a backtest ->
             IFitness fitness;
             if (Program.Config.TaskExecutionMode == TaskExecutionMode.Azure)
             {
                 fitness = new AzureFitness(validationStartDate, validationEndDate, fitScore);
-                fitness.Evaluate(validationSolution);
+                copy.Fitness = fitness.Evaluate(copy);
             }
             else
             {
                 fitness = new OptimizerFitness(validationStartDate, validationEndDate, fitScore);
-                fitness.Evaluate(validationSolution);
+                copy.Fitness = fitness.Evaluate(copy);
             }
             
             // Save full results to dictionary ->
-            var validationResults = ((Chromosome)validationSolution).FitnessResult.FullResults;
+            var validationResults = ((Chromosome)copy).FitnessResult.FullResults;
             _validationResultsList.Add(validationResults);
 
             // Raise an event to inform a single step of evaluation was completed ->
@@ -188,7 +192,7 @@ namespace Optimization
         /// Wrapper for OneEvaluationStepCompleted event
         /// </summary>
         protected virtual void OnWfoStepCompleted(
-            IChromosome bestChromosome,
+            Chromosome bestChromosome,
             DateTime insampleStartDate,
             DateTime insampleEndDate,
             DateTime validationStartDate,
@@ -204,8 +208,8 @@ namespace Optimization
                 InsampleEndDate = insampleEndDate,
                 ValidationStartDate = validationStartDate,
                 ValidationEndDate = validationEndDate,
-                InSampleBestResultsDict = bestInSampleResults,
-                ValidationResultsDict = validationResults
+                InSampleBestResults = bestInSampleResults,
+                ValidationResults = validationResults
             };
 
             // Invoke ->
@@ -228,8 +232,8 @@ namespace Optimization
 
         public DateTime ValidationEndDate { get; set; }
 
-        public Dictionary<string, decimal> InSampleBestResultsDict { get; set; }
+        public Dictionary<string, decimal> InSampleBestResults { get; set; }
 
-        public Dictionary<string, decimal> ValidationResultsDict { get; set; }
+        public Dictionary<string, decimal> ValidationResults { get; set; }
     }
 }

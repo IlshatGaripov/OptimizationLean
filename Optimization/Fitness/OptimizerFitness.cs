@@ -48,16 +48,21 @@ namespace Optimization
                 // Obtain full results -> 
                 var result = AppDomainManager.RunAlgorithm(list);
 
+                // Calculate fitness and concat the results with an output string ->
+                var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore);
+
                 // Save full results ->
                 chromosomeBase.FitnessResult = new FitnessResult
-                    { StartDate = this.StartDate, EndDate = this.EndDate, FullResults = result };
+                {
+                    StartDate = this.StartDate,
+                    EndDate = this.EndDate,
+                    FullResults = result,
+                    Fitness = fitness
+                };
 
                 // - OUTPUT 2 -
                 var output2 = $"chromosome #: {chromosomeBase.Id} results:{Environment.NewLine}";
                 output2 += paramsString + Environment.NewLine;
-                
-                // Calculate fitness and concat the results with an output string ->
-                var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore);
 
                 output2 +=
                     $"-> Fitness = {fitness} Drawdown = {Math.Round(result["Drawdown"], 2)} " +

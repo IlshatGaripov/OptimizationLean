@@ -92,5 +92,10 @@ namespace Optimization
         /// Full backtest results directionay returned by OptimizerResultHandler
         /// </summary>
         public Dictionary<string, decimal> FullResults { get; set; }
+
+        /// <summary>
+        /// Duplicate fitness value
+        /// </summary>
+        public double Fitness { get; set; }
     }
 }
