@@ -149,17 +149,32 @@ namespace Optimization
         /// <summary>
         /// Handler called at the end of work of genetic algorithm
         /// </summary>
-        public static void TerminationReached(object sender, EventArgs e)
+        public static void TerminationReached(object sender, TerminationReachedEventArgs e)
         {
-            Program.Logger.Trace("Termination Reached.");
+            Program.Logger.Trace(" <->");
+            Program.Logger.Trace("Termination reached");
+
+            var best = (Chromosome)e.Pupulation.BestChromosome;
+
+            Program.Logger.Trace($"# Best fitness {best.Fitness}");
+            Program.Logger.Trace($"# Best genes {best.ToKeyValueString()}");
+            Program.Logger.Trace(" <->");
         }
 
         /// <summary>
         /// Handler called at the end of next generation
         /// </summary>
-        public static void GenerationRan(object sender, EventArgs e)
+        public static void GenerationRan(object sender, GenerationRanEventArgs e)
         {
-            Program.Logger.Trace("GENERATION RAN");
+            Program.Logger.Trace(" <->");
+            Program.Logger.Trace($"Generation Ran - Size {e.Generation.Chromosomes.Count} - printing results:");
+
+            foreach (var c in e.Generation.Chromosomes)
+            {
+                var chromBse = (Chromosome) c;
+                Program.Logger.Trace($"{chromBse.FitnessResult.Fitness} ## {chromBse.ToKeyValueString()}");
+            }
+            Program.Logger.Trace(" <->");
         }
     }
 }

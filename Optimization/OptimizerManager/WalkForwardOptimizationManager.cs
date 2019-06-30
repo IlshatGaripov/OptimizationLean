@@ -104,10 +104,6 @@ namespace Optimization
                 // Once completed retrive best chromosome and cast it to base class object ->
                 var bestChromosomeBase = (Chromosome)optimumFinder.GenAlgorithm.BestChromosome;
 
-                // Log the results
-                Program.Logger.Trace($"Best fitness # {bestChromosomeBase.Fitness}");
-                Program.Logger.Trace($"Best genes # {bestChromosomeBase.ToKeyValueString()}");
-
                 // Save best results to the list ->
                 var bestInSampleResults = bestChromosomeBase.FitnessResult.FullResults;
                 _inSampleBestResultsList.Add(bestInSampleResults);
@@ -155,7 +151,7 @@ namespace Optimization
             FitnessScore fitScore,
             Dictionary<string, decimal> bestInSampleResults)
         {
-            Program.Logger.Trace("W.F.O. validation task -> started");
+            Program.Logger.Trace("Start Walk Forward validation task ->");
 
             // clone the best in-sample chromosome
             var copy = chromosome.CreateNew();
@@ -215,25 +211,5 @@ namespace Optimization
             // Invoke ->
             WfoStepCompleted?.Invoke(this, eventArgs);
         }
-    }
-
-    /// <summary>
-    /// Event args wrapper for the variables to pass to OneEvaluationStepCompleted event
-    /// </summary>
-    public class WalkForwardEventArgs : EventArgs
-    {
-        public IChromosome Chromosome { get; set; }
-
-        public DateTime InsampleStartDate { get; set; }
-
-        public DateTime InsampleEndDate { get; set; }
-
-        public DateTime ValidationStartDate { get; set; }
-
-        public DateTime ValidationEndDate { get; set; }
-
-        public Dictionary<string, decimal> InSampleBestResults { get; set; }
-
-        public Dictionary<string, decimal> ValidationResults { get; set; }
     }
 }

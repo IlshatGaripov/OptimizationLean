@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="Common\AzureBatchManager.cs" />
     <Compile Include="Common\CompareHelper.cs" />
+    <Compile Include="Common\EventArgs.cs" />
     <Compile Include="Common\Exstensions.cs" />
     <Compile Include="Common\FitnessFilter.cs" />
     <Compile Include="Common\GeneArrayComparer.cs" />

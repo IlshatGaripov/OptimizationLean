@@ -115,7 +115,7 @@ namespace Optimization
         /// <param name="e"></param>
         public static void WalkForwardStepCompleted(object sender, WalkForwardEventArgs e)
         {
-            Logger.Trace($"W.F.O. {e.ValidationStartDate:yyyy MMMM dd} to {e.ValidationEndDate:yyyy MMMM dd} RESULTS");
+            Logger.Trace($"Walk Forward {e.ValidationStartDate:yyyy-MM-DD} to {e.ValidationEndDate:yyyy MMMM dd} results");
             Logger.Trace($"{e.InSampleBestResults["SharpeRatio"]} # in-sample");
             Logger.Trace($"{e.ValidationResults["SharpeRatio"]} # out-of-sample");
         }

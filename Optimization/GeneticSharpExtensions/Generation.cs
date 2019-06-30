@@ -25,9 +25,10 @@ namespace Optimization
                     "Generation number {0} is invalid. Generation number should be positive and start in 1.".With(number));
             }
 
-            if (chromosomes == null || chromosomes.Count < 2)
+            if (chromosomes == null || chromosomes.Count == 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(chromosomes), "A generation should have at least 2 chromosomes.");
+                throw new ArgumentOutOfRangeException(nameof(chromosomes), 
+                    "A generation should have at least 1 chromosome.");
             }
 
             Number = number;
@@ -38,7 +39,6 @@ namespace Optimization
         /// <summary>
         /// Gets the number.
         /// </summary>
-        /// <value>The number.</value>
         public int Number { get; private set; }
 
         /// <summary>

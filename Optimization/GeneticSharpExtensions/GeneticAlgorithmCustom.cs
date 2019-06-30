@@ -57,12 +57,12 @@ namespace Optimization
         /// <summary>
         /// Occurs when generation ran.
         /// </summary>
-        public event EventHandler GenerationRan;
+        public event EventHandler<GenerationRanEventArgs> GenerationRan;
 
         /// <summary>
         /// Occurs when termination reached.
         /// </summary>
-        public event EventHandler TerminationReached;
+        public event EventHandler<TerminationReachedEventArgs> TerminationReached;
 
         /// <summary>
         /// Occurs when stopped.
@@ -309,13 +309,13 @@ namespace Optimization
             Population.OnEvaluationCompleted();
 
             // Raise Generation ran event ->
-            GenerationRan?.Invoke(this, EventArgs.Empty);
+            GenerationRan?.Invoke(this, new GenerationRanEventArgs(Population.CurrentGeneration));
 
-            // Check if termination is reached ->
+            // Check if termination is reached and raise event if reached ->
             if (Termination.HasReached(this))
             {
                 State = GeneticAlgorithmState.TerminationReached;
-                TerminationReached?.Invoke(this, EventArgs.Empty);
+                TerminationReached?.Invoke(this, new TerminationReachedEventArgs(Population)); 
                 return true;
             }
 
@@ -468,5 +468,6 @@ namespace Optimization
             }
         }
     }
+    
 }
 
