@@ -125,12 +125,14 @@ namespace Optimization
                 FruitlessGenerationsCount++;
                 return;
             }
-                
+
             // Truncate if amount is more than max allowed size ->
             if (chromosomes.Count > GenerationMaxSize)
             {
-                CurrentGeneration.Chromosomes = chromosomes.Take(GenerationMaxSize).ToList();
+                chromosomes = chromosomes.Take(GenerationMaxSize).ToList();
             }
+
+            CurrentGeneration.Chromosomes = chromosomes;
 
             // Select the generation's best chromosome ->
             CurrentGeneration.BestChromosome = CurrentGeneration.Chromosomes.First();
