@@ -142,10 +142,10 @@ namespace Optimization
             // Save full results ->
             chromosomeBase.FitnessResult = new FitnessResult
             {
+                Chromosome = chromosomeBase,
                 StartDate = this.StartDate,
                 EndDate = this.EndDate,
-                FullResults = result,
-                Fitness = fitness
+                FullResults = result
             };
 
 

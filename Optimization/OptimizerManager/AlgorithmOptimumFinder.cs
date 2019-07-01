@@ -2,6 +2,9 @@
 using GeneticSharp.Domain.Terminations;
 using GeneticSharp.Infrastructure.Framework.Threading;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Fitnesses;
 
 namespace Optimization
@@ -24,13 +27,18 @@ namespace Optimization
         /// <summary>
         /// Fitness Score to sort the parameters obtained by optimization
         /// </summary>
-        public FitnessScore? SortCriteria { get; set; }
+        public FitnessScore? FitnessScore { get; set; }
 
         /// <summary>
         /// Genetic algorithm itself!
         /// using https://stackoverflow.com/questions/34743533/automated-property-with-getter-only-can-be-set-why/34743568
         /// </summary>
         public GeneticAlgorithmCustom GenAlgorithm { get; }
+
+        /// <summary>
+        /// Collection of all chromosomes that appeared in GA search that had positive fitness
+        /// </summary>
+        public IList<Chromosome> GoodChromosomes { get; set; }
 
         /// <summary>
         /// Init class variables. Algorithm start and end dates and sorting method
@@ -45,7 +53,7 @@ namespace Optimization
             // Assign Dates and Criteria to sort the results ->
             StartDate = start;
             EndDate = end;
-            SortCriteria = sortCriteria;
+            FitnessScore = sortCriteria;
 
             // Common properties ->
             var selection = new RouletteWheelSelection();
@@ -149,32 +157,57 @@ namespace Optimization
         /// <summary>
         /// Handler called at the end of work of genetic algorithm
         /// </summary>
-        public static void TerminationReached(object sender, TerminationReachedEventArgs e)
+        private void TerminationReached(object sender, TerminationReachedEventArgs e)
         {
+            // Choose all good chromosomes ->
+            GoodChromosomes = ChooseGoodChromosomes(e.Pupulation);
+
             Program.Logger.Trace(" <->");
             Program.Logger.Trace("Termination reached");
+            Program.Logger.Trace($"Good chromosomes - Count {GoodChromosomes.Count} - printing :");
 
-            var best = (Chromosome)e.Pupulation.BestChromosome;
-
-            Program.Logger.Trace($"# Best fitness {best.Fitness}");
-            Program.Logger.Trace($"# Best genes {best.ToKeyValueString()}");
+            foreach (var c in GoodChromosomes)
+            {
+                var chromBase = (Chromosome)c;
+                Program.Logger.Trace($"{chromBase.Fitness} ## {chromBase.ToKeyValueString()}");
+            }
             Program.Logger.Trace(" <->");
         }
 
         /// <summary>
         /// Handler called at the end of next generation
         /// </summary>
-        public static void GenerationRan(object sender, GenerationRanEventArgs e)
+        private void GenerationRan(object sender, GenerationRanEventArgs e)
         {
             Program.Logger.Trace(" <->");
-            Program.Logger.Trace($"Generation Ran - Size {e.Generation.Chromosomes.Count} - printing results:");
+            Program.Logger.Trace($"Generation Ran - Count {e.Generation.Chromosomes.Count} - printing :");
 
             foreach (var c in e.Generation.Chromosomes)
             {
-                var chromBse = (Chromosome) c;
-                Program.Logger.Trace($"{chromBse.FitnessResult.Fitness} ## {chromBse.ToKeyValueString()}");
+                var chromBase = (Chromosome) c;
+                Program.Logger.Trace($"{chromBase.Fitness} ## {chromBase.ToKeyValueString()}");
             }
             Program.Logger.Trace(" <->");
+        }
+
+        /// <summary>
+        /// Selects all chromosomes with positive fitness after GA completes its work and ranges them by fitness
+        /// </summary>
+        /// <param name="population"></param>
+        /// <returns></returns>
+        private IList<Chromosome> ChooseGoodChromosomes(PopulationBase population)
+        {
+            var completeList = new List<IChromosome>();
+            foreach (var g in population.Generations)
+            {
+                completeList.AddRange(g.Chromosomes);
+            }
+
+            return completeList.SelectDistinct()
+                .Where(c => c.Fitness != null && c.Fitness.Value > 0)
+                .OrderByDescending(c => c.Fitness.Value)
+                .Cast<Chromosome>()
+                .ToList();
         }
     }
 }

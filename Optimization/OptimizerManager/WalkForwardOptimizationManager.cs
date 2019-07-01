@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Fitnesses;
@@ -24,7 +25,7 @@ namespace Optimization
         /// <summary>
         /// Fitness Score to sort the parameters obtained by optimization
         /// </summary>
-        public FitnessScore? SortCriteria { get; set; }
+        public FitnessScore? FitnessScore { get; set; }
 
         /// <summary>
         /// Walk forward optimization settings object
@@ -35,17 +36,7 @@ namespace Optimization
         /// Event fired as one stage of optimization on in-sample and
         /// verification on out-of-sample data is completed
         /// </summary>
-        public event EventHandler<WalkForwardEventArgs> WfoStepCompleted;
-
-        /// <summary>
-        /// Full results dicrionary for best in sample chromosome backtest result 
-        /// </summary>
-        private readonly IList<Dictionary<string, decimal>> _inSampleBestResultsList = new List<Dictionary<string, decimal>>();
-
-        /// <summary>
-        /// Full result dictionary for backtest on out-of-sample data
-        /// </summary>
-        private readonly IList<Dictionary<string, decimal>> _validationResultsList = new List<Dictionary<string, decimal>>();
+        public event EventHandler<WalkForwardValidationEventArgs> ValidationCompleted;
 
         /// <summary>
         /// Starts and continues the process till the end
@@ -55,9 +46,8 @@ namespace Optimization
             // All property values must be assigned before calling the method ->
             if (!StartDate.HasValue ||
                 !EndDate.HasValue ||
-                !SortCriteria.HasValue ||
-                WalkForwardConfiguration == null
-                )
+                !FitnessScore.HasValue ||
+                WalkForwardConfiguration == null)
             {
                 throw new ApplicationException("Walk Forward Manager public properties must be initialized before Start()");
             }
@@ -89,40 +79,33 @@ namespace Optimization
 
             var step = WalkForwardConfiguration.Step.Value;
 
-            // The list to store validation tasks, we'll perform validation in the background for not to block the calculations ->
-            var validationTasks = new List<Task>();
-
+            
             // While insampleEndDate is less then fixed optimization EndDate we may crank one more iteration -> 
             while (insampleEndDate < EndDate.Value)
             {
-                // Create new optimum finder (wrapper for GA) ->
-                var optimumFinder = new AlgorithmOptimumFinder(insampleStartDate, insampleEndDate, SortCriteria.Value);
-
-                // Start an optimization and wait to complete ->
+                // Find optimum solutions ->
+                var optimumFinder = new AlgorithmOptimumFinder(insampleStartDate, insampleEndDate, FitnessScore.Value);
                 optimumFinder.Start();
 
-                // Once completed retrive best chromosome and cast it to base class object ->
-                var bestChromosomeBase = (Chromosome)optimumFinder.GenAlgorithm.BestChromosome;
+                // Once completed retrieve N best results ->
+                var bestResults = optimumFinder.GoodChromosomes.Take(5).ToList();
 
-                // Save best results to the list ->
-                var bestInSampleResults = bestChromosomeBase.FitnessResult.FullResults;
-                _inSampleBestResultsList.Add(bestInSampleResults);
+                // Validate the chosen best results ->
+                var validationTasks = new List<Task>();
+                var startDate = validationStartDate;
+                var endDate = validationEndDate;
 
-                // Create validation task ->
-                var insmpStart = insampleStartDate;
-                var insmpEnd = insampleEndDate;
-                var outsmpStart = validationStartDate;
-                var outsmpEnd = validationEndDate;
-                
-                validationTasks.Add(       // Add the task to collection ->
-                    Task.Run(() => 
-                        ValidateOutOfSample(bestChromosomeBase,
-                            insmpStart,
-                            insmpEnd,
-                            outsmpStart,
-                            outsmpEnd,
-                            SortCriteria.Value,
-                            bestInSampleResults))); 
+                // For each good chromosome add the task to collection ->
+                foreach (var c in bestResults)
+                {
+                    validationTasks.Add(       
+                        Task.Run( () => 
+                            ValidateOutOfSample(c.FitnessResult, FitnessScore.Value, startDate, endDate)));
+                }
+
+                // Wait for all tasks to complete before to continue ->
+                Task.WaitAll(validationTasks.ToArray());
+
 
                 // Increment the variables and step to the next iteration ->
                 // If anchored do not increment insample Start Date ->
@@ -134,27 +117,21 @@ namespace Optimization
                 validationStartDate = validationStartDate.AddDays(step);
                 validationEndDate = validationEndDate.AddDays(step);
             }
-
-            // Make sure all out-of-sample experiment are completed before exit ->
-            Task.WaitAll(validationTasks.ToArray());
         }
 
         /// <summary>
-        /// Method called in the backgound to validate the best chromosome on out-of-sample data
+        /// Method called in the backgound to validate the chromosome on out-of-sample data
         /// </summary>
         protected void ValidateOutOfSample(
-            Chromosome chromosome,
-            DateTime insampleStartDate,
-            DateTime insampleEndDate,
-            DateTime validationStartDate,
-            DateTime validationEndDate,
+            FitnessResult insampeResult,
             FitnessScore fitScore,
-            Dictionary<string, decimal> bestInSampleResults)
+            DateTime validationStartDate,
+            DateTime validationEndDate)
         {
-            Program.Logger.Trace("Start Walk Forward validation task ->");
+            Program.Logger.Trace($"{insampeResult.Chromosome.ToKeyValueString()} >> Validate");
 
-            // clone the best in-sample chromosome
-            var copy = chromosome.CreateNew();
+            // Create a chromosome deep copy ->
+            var copy = (Chromosome)insampeResult.Chromosome.CreateNew();
 
             // Run a backtest ->
             IFitness fitness;
@@ -168,48 +145,11 @@ namespace Optimization
                 fitness = new OptimizerFitness(validationStartDate, validationEndDate, fitScore);
                 copy.Fitness = fitness.Evaluate(copy);
             }
-            
-            // Save full results to dictionary ->
-            var validationResults = ((Chromosome)copy).FitnessResult.FullResults;
-            _validationResultsList.Add(validationResults);
 
-            // Raise an event to inform a single step of evaluation was completed ->
-            OnWfoStepCompleted(
-                chromosome,
-                insampleStartDate,
-                insampleEndDate,
-                validationStartDate,
-                validationEndDate,
-                bestInSampleResults, 
-                validationResults);
+            // Raise an event ->
+            ValidationCompleted?.Invoke(this, e: 
+                new WalkForwardValidationEventArgs(insampeResult, copy.FitnessResult));
         }
 
-        /// <summary>
-        /// Wrapper for OneEvaluationStepCompleted event
-        /// </summary>
-        protected virtual void OnWfoStepCompleted(
-            Chromosome bestChromosome,
-            DateTime insampleStartDate,
-            DateTime insampleEndDate,
-            DateTime validationStartDate,
-            DateTime validationEndDate,
-            Dictionary<string, decimal> bestInSampleResults,
-            Dictionary<string, decimal> validationResults)
-        {
-            // Create event args object ->
-            var eventArgs = new WalkForwardEventArgs
-            {
-                Chromosome = bestChromosome,
-                InsampleStartDate = insampleStartDate,
-                InsampleEndDate = insampleEndDate,
-                ValidationStartDate = validationStartDate,
-                ValidationEndDate = validationEndDate,
-                InSampleBestResults = bestInSampleResults,
-                ValidationResults = validationResults
-            };
-
-            // Invoke ->
-            WfoStepCompleted?.Invoke(this, eventArgs);
-        }
     }
 }

@@ -14,7 +14,6 @@ namespace Optimization
             new ConsoleLogHandler(), 
             new FileLogHandler(filepath: Config.LogFile)); 
 
-
         /// <summary>
         /// Main is main
         /// </summary>
@@ -39,11 +38,11 @@ namespace Optimization
                 {
                     StartDate = Config.StartDate,
                     EndDate = Config.EndDate,
-                    SortCriteria = Config.FitnessScore,
+                    FitnessScore = Config.FitnessScore,
                     WalkForwardConfiguration = Config.WalkForwardConfiguration
                 };
 
-                wfoManager.WfoStepCompleted += WalkForwardStepCompleted;
+                wfoManager.ValidationCompleted += CompareResults;
 
                 // Start it ->
                 wfoManager.Start();
@@ -111,13 +110,9 @@ namespace Optimization
         /// <summary>
         /// Called at the end of iterative step of walk forward optimization
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public static void WalkForwardStepCompleted(object sender, WalkForwardEventArgs e)
+        public static void CompareResults(object sender, WalkForwardValidationEventArgs e)
         {
-            Logger.Trace($"Walk Forward {e.ValidationStartDate:yyyy-MM-DD} to {e.ValidationEndDate:yyyy MMMM dd} results");
-            Logger.Trace($"{e.InSampleBestResults["SharpeRatio"]} # in-sample");
-            Logger.Trace($"{e.ValidationResults["SharpeRatio"]} # out-of-sample");
+
         }
 
     }

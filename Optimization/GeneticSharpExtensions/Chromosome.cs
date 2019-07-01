@@ -1,6 +1,5 @@
 ﻿using GeneticSharp.Domain.Chromosomes;
 using System;
-using System.Collections.Generic;
 
 namespace Optimization
 {
@@ -70,32 +69,5 @@ namespace Optimization
         {
             Id = Guid.NewGuid().ToString("N");
         }
-    }
-
-    /// <summary>
-    /// Full backtest result are defined in simpliest by full statistics and start and end dates
-    /// </summary>
-    [Serializable]
-    public class FitnessResult
-    {
-        /// <summary>
-        /// Experiment Start Date
-        /// </summary>
-        public DateTime StartDate { get; set; }
-
-        /// <summary>
-        /// Experiment End Date
-        /// </summary>
-        public DateTime EndDate { get; set; }
-
-        /// <summary>
-        /// Full backtest results directionay returned by OptimizerResultHandler
-        /// </summary>
-        public Dictionary<string, decimal> FullResults { get; set; }
-
-        /// <summary>
-        /// Duplicate fitness value
-        /// </summary>
-        public double Fitness { get; set; }
     }
 }

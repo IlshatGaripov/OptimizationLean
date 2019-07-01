@@ -74,6 +74,7 @@
     <Compile Include="Common\EventArgs.cs" />
     <Compile Include="Common\Exstensions.cs" />
     <Compile Include="Common\FitnessFilter.cs" />
+    <Compile Include="Common\FtnessResult.cs" />
     <Compile Include="Common\GeneArrayComparer.cs" />
     <Compile Include="Common\AppDomainManager.cs" />
     <Compile Include="Common\StatisticsAdapter.cs" />

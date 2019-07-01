@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using GeneticSharp.Domain.Chromosomes;
 
 namespace Optimization
 {
@@ -8,42 +6,28 @@ namespace Optimization
     /// Event args wrapper for the variables to be passed to OneEvaluationStepCompleted event
     /// at <see cref="WalkForwardOptimizationManager"/>
     /// </summary>
-    public class WalkForwardEventArgs : EventArgs
+    public class WalkForwardValidationEventArgs : EventArgs
     {
         /// <summary>
-        /// Best Chromosome
+        /// Collection of best in sample results
         /// </summary>
-        public IChromosome Chromosome { get; set; }
+        public FitnessResult InsampleResults { get; set; }
 
         /// <summary>
-        /// In sample start date
+        /// Corresponding collection of full results on validation data
         /// </summary>
-        public DateTime InsampleStartDate { get; set; }
+        public FitnessResult ValidationResults { get; set; }
 
         /// <summary>
-        /// In sample end date
+        /// Constructor
         /// </summary>
-        public DateTime InsampleEndDate { get; set; }
-
-        /// <summary>
-        /// WFO validation start date
-        /// </summary>
-        public DateTime ValidationStartDate { get; set; }
-
-        /// <summary>
-        /// WFO validation end date
-        /// </summary>
-        public DateTime ValidationEndDate { get; set; }
-
-        /// <summary>
-        /// Dictionary contains full results of a chromosome that has best fitness results on in-sample
-        /// </summary>
-        public Dictionary<string, decimal> InSampleBestResults { get; set; }
-
-        /// <summary>
-        /// Dictionary contais fulls results of validation experiment
-        /// </summary>
-        public Dictionary<string, decimal> ValidationResults { get; set; }
+        /// <param name="insamp">In sample fitness result</param>
+        /// <param name="outsamp">Out of sample fitness result</param>
+        public WalkForwardValidationEventArgs(FitnessResult insamp, FitnessResult outsamp)
+        {
+            InsampleResults = insamp;
+            ValidationResults = outsamp;
+        }
     }
 
     /// <summary>

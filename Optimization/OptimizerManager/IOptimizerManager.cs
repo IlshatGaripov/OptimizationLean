@@ -20,7 +20,7 @@ namespace Optimization
         /// <summary>
         /// Fitness Score to sort the parameters obtained by optimization
         /// </summary>
-        FitnessScore? SortCriteria { get; set; }
+        FitnessScore? FitnessScore { get; set; }
 
         /// <summary>
         /// Starts the process
