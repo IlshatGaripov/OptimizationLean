@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Fitnesses;
 
 namespace Optimization
@@ -25,7 +24,7 @@ namespace Optimization
         /// <summary>
         /// Fitness Score to sort the parameters obtained by optimization
         /// </summary>
-        public FitnessScore? FitnessScore { get; set; }
+        public FitnessScore FitnessScore { get; set; }
 
         /// <summary>
         /// Walk forward optimization settings object
@@ -43,33 +42,8 @@ namespace Optimization
         /// </summary>
         public void Start()
         {
-            // All property values must be assigned before calling the method ->
-            if (!StartDate.HasValue ||
-                !EndDate.HasValue ||
-                !FitnessScore.HasValue ||
-                WalkForwardConfiguration == null)
-            {
-                throw new ApplicationException("Walk Forward Manager public properties must be initialized before Start()");
-            }
-
-            // Validate walk forward configuration values ->
-            if (!WalkForwardConfiguration.InSamplePeriod.HasValue ||
-                !WalkForwardConfiguration.Step.HasValue ||
-                !WalkForwardConfiguration.Anchored.HasValue)
-            {
-                throw new ApplicationException("Walk forward configuration must have InSamplePeriod, Step, Anchored values assigned");
-            }
-
-            // Make sure that number of days between beginning and end is enough for at least one iteration ->
-            // We substract 1 as Lean includes both start and end dates into backtest 
-            var minDaysBtStartEnd = WalkForwardConfiguration.InSamplePeriod.Value + WalkForwardConfiguration.Step.Value - 1;
-            if (StartDate.Value.AddDays(minDaysBtStartEnd) > EndDate.Value)
-            {
-                throw new ArgumentOutOfRangeException(
-                    $"The range between {StartDate.Value} and {EndDate.Value} " +
-                    $"is short for walk forward configuration values specified");
-            }
-                
+            // Make sure all properties are correctly assigned ->
+            ValidateProperties();
 
             // Init datetime variables will be used in first iteration ->
             var insampleStartDate = StartDate.Value;
@@ -84,7 +58,7 @@ namespace Optimization
             while (insampleEndDate < EndDate.Value)
             {
                 // Find optimum solutions ->
-                var optimumFinder = new AlgorithmOptimumFinder(insampleStartDate, insampleEndDate, FitnessScore.Value);
+                var optimumFinder = new AlgorithmOptimumFinder(insampleStartDate, insampleEndDate, FitnessScore);
                 optimumFinder.Start();
 
                 // Once completed retrieve N best results ->
@@ -100,7 +74,7 @@ namespace Optimization
                 {
                     validationTasks.Add(       
                         Task.Run( () => 
-                            ValidateOutOfSample(c.FitnessResult, FitnessScore.Value, startDate, endDate)));
+                            ValidateOutOfSample(c.FitnessResult, FitnessScore, startDate, endDate)));
                 }
 
                 // Wait for all tasks to complete before to continue ->
@@ -149,6 +123,39 @@ namespace Optimization
             // Raise an event ->
             ValidationCompleted?.Invoke(this, e: 
                 new WalkForwardValidationEventArgs(insampeResult, copy.FitnessResult));
+        }
+
+        /// <summary>
+        /// Validates the consistensy of all optimiation parameters and data.
+        /// </summary>
+        private void ValidateProperties()
+        {
+            // All property values must be assigned before calling the method ->
+            if (!StartDate.HasValue ||
+                !EndDate.HasValue ||
+                FitnessScore == 0 ||
+                WalkForwardConfiguration == null)
+            {
+                throw new ApplicationException("Walk Forward Manager public properties must be initialized before Start()");
+            }
+
+            // Validate walk forward configuration values ->
+            if (!WalkForwardConfiguration.InSamplePeriod.HasValue ||
+                !WalkForwardConfiguration.Step.HasValue ||
+                !WalkForwardConfiguration.Anchored.HasValue)
+            {
+                throw new ApplicationException("Walk forward configuration must have InSamplePeriod, Step, Anchored values assigned");
+            }
+
+            // Make sure that number of days between beginning and end is enough for at least one iteration ->
+            // We substract 1 as Lean includes both start and end dates into backtest 
+            var minDaysBtStartEnd = WalkForwardConfiguration.InSamplePeriod.Value + WalkForwardConfiguration.Step.Value - 1;
+            if (StartDate.Value.AddDays(minDaysBtStartEnd) > EndDate.Value)
+            {
+                throw new ArgumentOutOfRangeException(
+                    $"The range between {StartDate.Value} and {EndDate.Value} " +
+                    $"is short for walk forward configuration values specified");
+            }
         }
 
     }

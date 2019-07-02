@@ -22,7 +22,7 @@ namespace Optimization
             // Make sure that start and end dates are specified ->
             if (Config.StartDate == null || 
                 Config.EndDate == null ||
-                Config.FitnessScore == null ||
+                Config.FitnessScore == 0 ||
                 Config.WalkForwardConfiguration == null)
             {
                 throw new ArgumentException("Please check that all required config variables are defined ..");
@@ -49,7 +49,7 @@ namespace Optimization
             }
             else
             {
-                var easyManager = new AlgorithmOptimumFinder(Config.StartDate.Value, Config.EndDate.Value, Config.FitnessScore.Value);
+                var easyManager = new AlgorithmOptimumFinder(Config.StartDate.Value, Config.EndDate.Value, Config.FitnessScore);
 
                 // Start an optimization ->
                 easyManager.Start();

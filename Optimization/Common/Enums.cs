@@ -24,7 +24,7 @@
     /// </summary>
     public enum FitnessScore
     {
-        SharpeRatio,
-        TotalNetProfit
+        SharpeRatio = 1,
+        TotalNetProfit = 2
     }
 }

@@ -30,7 +30,7 @@ namespace Optimization
         /// </summary>
         [JsonProperty("fitness-score")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public FitnessScore? FitnessScore { get; set; }
+        public FitnessScore FitnessScore { get; set; }
 
         /// <summary>
         /// Object contains configuration to sort out algorithms with good performance

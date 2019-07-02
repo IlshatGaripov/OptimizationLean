@@ -27,7 +27,7 @@ namespace Optimization
         /// <summary>
         /// Fitness Score to sort the parameters obtained by optimization
         /// </summary>
-        public FitnessScore? FitnessScore { get; set; }
+        public FitnessScore FitnessScore { get; set; }
 
         /// <summary>
         /// Genetic algorithm itself!
