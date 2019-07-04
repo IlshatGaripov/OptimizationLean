@@ -38,7 +38,7 @@ namespace Optimization
         /// <summary>
         /// Collection of all chromosomes that appeared in GA search that had positive fitness
         /// </summary>
-        public IList<Chromosome> GoodChromosomes { get; set; }
+        public IList<Chromosome> ProfitableChromosomes { get; set; }
 
         /// <summary>
         /// Init class variables. Algorithm start and end dates and sorting method
@@ -160,13 +160,13 @@ namespace Optimization
         private void TerminationReached(object sender, TerminationReachedEventArgs e)
         {
             // Choose all good chromosomes ->
-            GoodChromosomes = ChooseGoodChromosomes(e.Pupulation);
+            ProfitableChromosomes = ChooseProfitableChromosomes(e.Pupulation);
 
             Program.Logger.Trace(" <->");
             Program.Logger.Trace("Termination reached");
-            Program.Logger.Trace($"Good chromosomes - Count {GoodChromosomes.Count} - printing :");
+            Program.Logger.Trace($"Good chromosomes - Count {ProfitableChromosomes.Count} - printing :");
 
-            foreach (var c in GoodChromosomes)
+            foreach (var c in ProfitableChromosomes)
             {
                 var chromBase = (Chromosome)c;
                 Program.Logger.Trace($"{chromBase.Fitness} ## {chromBase.ToKeyValueString()}");
@@ -195,7 +195,7 @@ namespace Optimization
         /// </summary>
         /// <param name="population"></param>
         /// <returns></returns>
-        private IList<Chromosome> ChooseGoodChromosomes(PopulationBase population)
+        private IList<Chromosome> ChooseProfitableChromosomes(PopulationBase population)
         {
             var completeList = new List<IChromosome>();
             foreach (var g in population.Generations)

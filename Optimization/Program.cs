@@ -71,16 +71,20 @@ namespace Optimization
         {
             try
             {
-                // Set up App Domain settings no matter what computation mode will be used - local PC or a cloud ->
-                AppDomainManager.Initialize();
-
                 // Computation mode specific settings ->
                 switch (Config.TaskExecutionMode)
                 {
-                    // Deploy Batch resources if calculations are made using cloud compute powers
+                    // Deploy Batch resources if calculations use cloud compute powers ->
                     case TaskExecutionMode.Azure:
                         AzureBatchManager.DeployAsync().Wait();
                         break;
+                    // Set up App Domain settings - local PC powers are used ->
+                    case TaskExecutionMode.Linear:
+                    case TaskExecutionMode.Parallel:
+                        AppDomainManager.Initialize();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
             catch (Exception e)
@@ -99,12 +103,16 @@ namespace Optimization
             switch (Config.TaskExecutionMode)
             {
                 case TaskExecutionMode.Azure:
-                    AzureBatchManager.FinalizeAsync().Wait();
+                    AzureBatchManager.ReleaseAsync().Wait();
                     break;
+                case TaskExecutionMode.Linear:
+                case TaskExecutionMode.Parallel:
+                    // -2- Release AppDomain
+                    AppDomainManager.Release();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            // -2- Release AppDomain
-            AppDomainManager.Release();
         }
 
         /// <summary>
@@ -112,7 +120,9 @@ namespace Optimization
         /// </summary>
         public static void CompareResults(object sender, WalkForwardValidationEventArgs e)
         {
-
+            Logger.Trace(">> Validation Comparsion");
+            Logger.Trace($"{e.InsampleResults.Chromosome.Fitness} / {e.ValidationResults.Chromosome.Fitness}");
+            Logger.Trace(" <->");
         }
 
     }

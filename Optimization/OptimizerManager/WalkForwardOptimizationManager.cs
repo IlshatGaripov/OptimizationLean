@@ -62,12 +62,23 @@ namespace Optimization
                 optimumFinder.Start();
 
                 // Once completed retrieve N best results ->
-                var bestResults = optimumFinder.GoodChromosomes.Take(5).ToList();
+                var bestResults = optimumFinder.ProfitableChromosomes.Take(5).ToList();
+
+                Program.Logger.Trace(" <->");
+                Program.Logger.Trace($"Overall best chromosomes are:");
+                Program.Logger.Trace(" <->");
+                foreach (var c in bestResults)
+                {
+                    Program.Logger.Trace($"{c.Fitness} ## {c.ToKeyValueString()}");
+                }
+                Program.Logger.Trace(" <->");
 
                 // Validate the chosen best results ->
                 var validationTasks = new List<Task>();
                 var startDate = validationStartDate;
                 var endDate = validationEndDate;
+
+                Program.Logger.Trace("Start validation tasks");
 
                 // For each good chromosome add the task to collection ->
                 foreach (var c in bestResults)
@@ -102,9 +113,7 @@ namespace Optimization
             DateTime validationStartDate,
             DateTime validationEndDate)
         {
-            Program.Logger.Trace($"{insampeResult.Chromosome.ToKeyValueString()} >> Validate");
-
-            // Create a chromosome deep copy ->
+            // Create a deep copy ->
             var copy = (Chromosome)insampeResult.Chromosome.CreateNew();
 
             // Run a backtest ->

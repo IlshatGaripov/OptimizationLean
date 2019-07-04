@@ -104,7 +104,7 @@ namespace Optimization
         /// Clean up Batch resources. Dispose a batch client.
         /// </summary>
         /// <returns>A <see cref="System.Threading.Tasks.Task"/> object that represents the asynchronous operation.</returns>
-        public static async Task FinalizeAsync()
+        public static async Task ReleaseAsync()
         {
             // Print out timing info
             _timer.Stop();
