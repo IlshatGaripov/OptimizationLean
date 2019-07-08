@@ -187,6 +187,16 @@ namespace Optimization
                 if (be.RequestInformation.BatchError.Code == BatchErrorCodeStrings.PoolExists)
                 {
                     Console.WriteLine("The pool {0} already existed when we tried to create it", poolId);
+                    Console.Write("Reboot the existing pool nodes? [yes] no: ");
+                    string response = Console.ReadLine()?.ToLower();
+                    if (response != "n" && response != "no")
+                    {
+                        foreach (var node in BatchClient.PoolOperations.ListComputeNodes(poolId))
+                        {
+                            Console.WriteLine("Reboot the node number {0}", node.Id);
+                            await node.RebootAsync();
+                        }
+                    }
                 }
                 else
                 {

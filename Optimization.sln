@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantConnect.Messaging", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantConnect.Queues", "..\Lean\Queues\QuantConnect.Queues.csproj", "{D6633172-1368-4DF6-9444-825C3E00C819}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantConnect.AlgorithmFactory", "..\Lean\AlgorithmFactory\QuantConnect.AlgorithmFactory.csproj", "{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -298,6 +300,24 @@ Global
 		{D6633172-1368-4DF6-9444-825C3E00C819}.Release|x64.Build.0 = Release|Any CPU
 		{D6633172-1368-4DF6-9444-825C3E00C819}.Release|x86.ActiveCfg = Release|Any CPU
 		{D6633172-1368-4DF6-9444-825C3E00C819}.Release|x86.Build.0 = Release|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Debug|x64.Build.0 = Debug|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Debug|x86.Build.0 = Debug|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Mono|Any CPU.Build.0 = Release|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Mono|x64.ActiveCfg = Release|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Mono|x64.Build.0 = Release|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Mono|x86.ActiveCfg = Release|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Mono|x86.Build.0 = Release|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Release|x64.ActiveCfg = Release|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Release|x64.Build.0 = Release|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Release|x86.ActiveCfg = Release|Any CPU
+		{E99D056A-B6FB-48D2-9F7C-683C54CEBBF9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
