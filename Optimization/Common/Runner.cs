@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.IO;
 using System.Linq;
 using QuantConnect.Configuration;
 using QuantConnect.Lean.Engine;
@@ -39,9 +40,9 @@ namespace Optimization
             Config.Set("result-handler", nameof(OptimizerResultHandler));   //override default result handler
 
             // Separate log uniquely named
-            var dirPath = $"C:/Users/ilshat/Desktop/logs/{DateTime.Now:yyyy-MM-dd}/leanLogs/";
-            var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + id + ".txt";
-            var filePath = String.Concat(dirPath, logFileName);
+            var dirPath = Path.Combine(Directory.GetCurrentDirectory(), "OptimizationLogs");
+            var logFileName = "log" + "_" + id + ".txt";
+            var filePath = Path.Combine(dirPath, logFileName);
 
             // Create directory if not exist
             System.IO.Directory.CreateDirectory(dirPath);

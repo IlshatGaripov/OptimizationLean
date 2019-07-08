@@ -132,6 +132,10 @@
       <Project>{14130612-ff14-4df4-8829-27c0e85e09f0}</Project>
       <Name>GeneticSharp.Infrastructure.Framework</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Algorithm.Framework\QuantConnect.Algorithm.Framework.csproj">
+      <Project>{75981418-7246-4b91-b136-482728e02901}</Project>
+      <Name>QuantConnect.Algorithm.Framework</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Lean\Algorithm\QuantConnect.Algorithm.csproj">
       <Project>{3240aca4-bdd4-4d24-ac36-bbb651c39212}</Project>
       <Name>QuantConnect.Algorithm</Name>
