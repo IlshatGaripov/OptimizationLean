@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Batch;
 using Microsoft.Azure.Batch.Auth;
@@ -257,11 +259,35 @@ namespace Optimization
                 // Catch specific error code JobExists as that is expected if the job already exists
                 if (be.RequestInformation.BatchError.Code == BatchErrorCodeStrings.JobExists)
                 {
-                    Console.WriteLine("Job {0} already exists. I will delete it. Launch again in a minute", jobId);
+                    Console.WriteLine("Job {0} already exists. I will delete it.", jobId);
                     await batchClient.JobOperations.DeleteJobAsync(JobId);
-                }
 
-                throw; // Any other exception is unexpected
+                    // try creating a job again
+                    bool tryAgain = true;
+                    while (tryAgain)
+                    {
+                        try
+                        {
+                            tryAgain = false;
+                            var n = 10;
+                            Console.WriteLine($"I will sleep {n} seconds and make an attempt to create a job");
+                            Thread.Sleep(n * 1000);
+                            await job.CommitAsync();
+                        }
+                        catch (BatchException innerException)
+                        {
+                            if (innerException.RequestInformation.BatchError.Code == BatchErrorCodeStrings.JobBeingDeleted)
+                            {
+                                Console.WriteLine("Job is being deleted - try again later");
+                                tryAgain = true;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    throw; // Any other exception is unexpected
+                }
             }
         }
 
