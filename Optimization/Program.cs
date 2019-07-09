@@ -120,7 +120,7 @@ namespace Optimization
         /// </summary>
         public static void CompareResults(object sender, WalkForwardValidationEventArgs e)
         {
-            Logger.Trace(">> Validation Comparsion");
+            Logger.Trace("Validation Comparsion");
             Logger.Trace($"{e.InsampleResults.Chromosome.Fitness} / {e.ValidationResults.Chromosome.Fitness}");
             Logger.Trace(" <->");
         }

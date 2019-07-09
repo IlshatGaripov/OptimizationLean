@@ -12,12 +12,12 @@ namespace Optimization
         /// <summary>
         /// Algorithm start date
         /// </summary>
-        protected DateTime StartDate { get; set; }
+        public DateTime StartDate { get; set; }
 
         /// <summary>
         /// Algorithm end date
         /// </summary>
-        protected DateTime EndDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         /// <summary>
         /// Fitness score

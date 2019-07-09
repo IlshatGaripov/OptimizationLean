@@ -22,7 +22,6 @@ namespace Optimization
     /// </summary>
     public sealed class GeneticAlgorithmCustom : IGeneticAlgorithm
     {
-        
         private bool m_stopRequested;
         private readonly object m_lock = new object();
         private GeneticAlgorithmState m_state;
@@ -226,7 +225,7 @@ namespace Optimization
                 // This will return true if termination has reached.
                 // For instance, when the GenerationNumberTermination is set to 1 (the case of brute force optimization)
                 // generation must not evolve further and method will return ->
-                if (PerformEvolution())
+                if (EvaluateChooseBestAndFireEvents())
                 {
                     return;
                 }
@@ -285,14 +284,15 @@ namespace Optimization
             {
                 Population.CreateInitialGeneration();
             }
-            else   // Create chilren and register new generation ->
+            // Create children and register new generation ->
+            else
             {
                 var children = CreateChildren();
                 Population.CreateNewGeneration(children);
             }
 
             // Evaluate, choose best and fire events ->
-            return PerformEvolution();
+            return EvaluateChooseBestAndFireEvents();
         }
 
         /// <summary>
@@ -300,7 +300,7 @@ namespace Optimization
         /// Raises <see cref="GenerationRan"/> and <see cref="TerminationReached"/> events.
         /// </summary>
         /// <returns>True if termination has been reached, otherwise false.</returns>
-        private bool PerformEvolution()
+        private bool EvaluateChooseBestAndFireEvents()
         {
             // Calculate fitness for all the chomosomes in Current Generation ->
             EvaluateFitness();
@@ -329,7 +329,7 @@ namespace Optimization
         }
 
         /// <summary>
-        /// Creates offsprings.
+        /// Creates next generation solutions candidates.
         /// </summary>
         /// <returns>List containit offspring</returns>
         private List<IChromosome> CreateChildren()
@@ -385,8 +385,10 @@ namespace Optimization
                 var withoutFitness = Population.CurrentGeneration.Chromosomes.Where(c => !c.Fitness.HasValue).ToList();
                 var haveFitness = Population.CurrentGeneration.Chromosomes.Where(c => c.Fitness.HasValue).ToList();
 
-                // Inform how many solutions we send for evaluation ->
-                Program.Logger.Trace($"Sending {withoutFitness.Count} for backtest and {haveFitness.Count} are good");
+                // Inform how many solutions we send for evaluation and dates ->
+                var leanFit = (LeanFitness) Fitness;
+                Program.Logger.Trace($"EvaluateFitness(): Sending {withoutFitness.Count} for backtest and {haveFitness.Count} have got fitness");
+                Program.Logger.Trace($"Period: {leanFit.StartDate:yyyy MMMM dd} to {leanFit.EndDate:yyyy MMMM dd}");
 
                 foreach (var c in withoutFitness)
                 {

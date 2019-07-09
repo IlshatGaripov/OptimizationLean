@@ -269,7 +269,7 @@ namespace Optimization
                         {
                             tryAgain = false;
                             var n = 10;
-                            Console.WriteLine($"I will sleep {n} seconds and make an attempt to create a job");
+                            Console.WriteLine($"I'll sleep {n} seconds and make another attempt to create a new job");
                             Thread.Sleep(n * 1000);
                             await job.CommitAsync();
                         }

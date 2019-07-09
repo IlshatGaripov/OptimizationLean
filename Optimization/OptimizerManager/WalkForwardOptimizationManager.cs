@@ -62,7 +62,11 @@ namespace Optimization
                 optimumFinder.Start();
 
                 // Once completed retrieve N best results ->
-                var bestResults = optimumFinder.ProfitableChromosomes.Take(5).ToList();
+                var n = 10;
+                var take = optimumFinder.ProfitableChromosomes.Count > n
+                    ? n
+                    : optimumFinder.ProfitableChromosomes.Count;
+                var bestResults = optimumFinder.ProfitableChromosomes.Take(take).ToList();
 
                 Program.Logger.Trace(" <->");
                 Program.Logger.Trace($"Overall best chromosomes are:");
@@ -78,7 +82,8 @@ namespace Optimization
                 var startDate = validationStartDate;
                 var endDate = validationEndDate;
 
-                Program.Logger.Trace("Start validation tasks");
+                Program.Logger.Trace("Starting validation tasks");
+                Program.Logger.Trace($"Period: {startDate:yyyy MMMM dd} to {endDate:yyyy MMMM dd}");
 
                 // For each good chromosome add the task to collection ->
                 foreach (var c in bestResults)

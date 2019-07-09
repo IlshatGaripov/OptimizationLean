@@ -180,7 +180,7 @@ namespace Optimization
         private void GenerationRan(object sender, GenerationRanEventArgs e)
         {
             Program.Logger.Trace(" <->");
-            Program.Logger.Trace($"Generation Ran - Count {e.Generation.Chromosomes.Count} - printing :");
+            Program.Logger.Trace($"Generation Ran - profitable solutions count - {e.Generation.Chromosomes.Count} :");
 
             foreach (var c in e.Generation.Chromosomes)
             {
