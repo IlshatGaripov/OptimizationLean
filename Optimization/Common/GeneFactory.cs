@@ -10,6 +10,15 @@ namespace Optimization
     public static class GeneFactory
     {
         /// <summary>
+        /// Static constructor
+        /// </summary>
+        static GeneFactory()
+        {
+            // Set general randomization provider
+            RandomizationProvider.Current = new BasicRandomization();
+        }
+
+        /// <summary>
         /// Returns random int within an interval.
         /// </summary>
         public static int RandomBetween(int minValue, int maxValue)
