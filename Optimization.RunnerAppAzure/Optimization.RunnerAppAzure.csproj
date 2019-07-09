@@ -57,6 +57,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Lean\Algorithm.Framework\QuantConnect.Algorithm.Framework.csproj">
+      <Project>{75981418-7246-4b91-b136-482728e02901}</Project>
+      <Name>QuantConnect.Algorithm.Framework</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Lean\AlgorithmFactory\QuantConnect.AlgorithmFactory.csproj">
       <Project>{e99d056a-b6fb-48d2-9f7c-683c54cebbf9}</Project>
       <Name>QuantConnect.AlgorithmFactory</Name>
@@ -76,6 +80,10 @@
     <ProjectReference Include="..\..\Lean\Engine\QuantConnect.Lean.Engine.csproj">
       <Project>{12156f46-d07e-4e3d-ad2b-7409e82ab62f}</Project>
       <Name>QuantConnect.Lean.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Indicators\QuantConnect.Indicators.csproj">
+      <Project>{73fb2522-c3ed-4e47-8e3d-afad48a6b888}</Project>
+      <Name>QuantConnect.Indicators</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Lean\Logging\QuantConnect.Logging.csproj">
       <Project>{01911409-86be-4e7d-9947-df714138610d}</Project>
