@@ -24,11 +24,24 @@ namespace Optimization
         /// </summary>
         protected FitnessScore FitnessScore { get; set; }
 
-        protected LeanFitness(DateTime start, DateTime end, FitnessScore fitScore)
+        /// <summary>
+        /// Flag indicating whether or not enable filtering of results
+        /// </summary>
+        protected bool FilterEnabled { get; set; }
+
+        /// <summary>
+        /// Base class constructor for all custom fitness objects implementations
+        /// </summary>
+        /// <param name="start">Start date</param>
+        /// <param name="end">End date</param>
+        /// <param name="fitScore">Fitness value calculation method</param>
+        /// <param name="enableFilter">Whether or not to apply filter to results of fitness evaluation</param>
+        protected LeanFitness(DateTime start, DateTime end, FitnessScore fitScore, bool enableFilter)
         {
             StartDate = start;
             EndDate = end;
             FitnessScore = fitScore;
+            FilterEnabled = enableFilter;
         }
 
         public abstract double Evaluate(IChromosome chromosome);

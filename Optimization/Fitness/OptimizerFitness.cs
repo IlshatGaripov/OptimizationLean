@@ -10,7 +10,11 @@ namespace Optimization
     {
         private static readonly object Obj = new object();
 
-        public OptimizerFitness(DateTime start, DateTime end, FitnessScore fitScore) : base(start, end, fitScore)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public OptimizerFitness(DateTime start, DateTime end, FitnessScore fitScore, bool enableFilter) : 
+            base(start, end, fitScore, enableFilter)
         { }
 
         /// <summary>
@@ -49,7 +53,7 @@ namespace Optimization
                 var result = AppDomainManager.RunAlgorithm(list);
 
                 // Calculate fitness and concat the results with an output string ->
-                var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore);
+                var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore, FilterEnabled);
 
                 // Save full results ->
                 chromosomeBase.FitnessResult = new FitnessResult

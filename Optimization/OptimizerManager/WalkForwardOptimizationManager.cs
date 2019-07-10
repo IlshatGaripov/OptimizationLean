@@ -121,16 +121,17 @@ namespace Optimization
             // Create a deep copy ->
             var copy = (Chromosome)insampeResult.Chromosome.CreateNew();
 
-            // Run a backtest ->
+            // Run a backtest.
+            // Do not apply fitness filtering to validation results - let it expose a true picture ->
             IFitness fitness;
             if (Program.Config.TaskExecutionMode == TaskExecutionMode.Azure)
             {
-                fitness = new AzureFitness(validationStartDate, validationEndDate, fitScore);
+                fitness = new AzureFitness(validationStartDate, validationEndDate, fitScore, false);
                 copy.Fitness = fitness.Evaluate(copy);
             }
             else
             {
-                fitness = new OptimizerFitness(validationStartDate, validationEndDate, fitScore);
+                fitness = new OptimizerFitness(validationStartDate, validationEndDate, fitScore, false);
                 copy.Fitness = fitness.Evaluate(copy);
             }
 

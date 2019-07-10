@@ -67,19 +67,20 @@ namespace Optimization
             // Task execution mode ->
             switch (Program.Config.TaskExecutionMode)
             {
+                // Enable fitness filtering while searching for optimum parameters ->
                 case TaskExecutionMode.Linear:
                     executor = new LinearTaskExecutor();
-                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria);
+                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria, true);
                     break;
 
                 case TaskExecutionMode.Parallel:
                     executor = new ParallelTaskExecutor();
-                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria);
+                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria, true);
                     break;
 
                 case TaskExecutionMode.Azure:
                     executor = new TaskExecutorAzure();
-                    fitness = new AzureFitness(StartDate.Value, EndDate.Value, sortCriteria);
+                    fitness = new AzureFitness(StartDate.Value, EndDate.Value, sortCriteria, true);
                     break;
 
                 default:

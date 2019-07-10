@@ -5,7 +5,7 @@ namespace Optimization
 {
     public static class StatisticsAdapter
     {
-        private static readonly Dictionary<string, string> Binding = new Dictionary<string, string>
+        public static readonly Dictionary<string, string> Binding = new Dictionary<string, string>
         {
             {"Average Win","AverageWinRate"},
             {"Average Loss","AverageLossRate"},
@@ -29,32 +29,42 @@ namespace Optimization
         };
 
         /// <summary>
-        /// Calculates fitness by build-in score key
+        /// Calculates fitness by given metric (fitness score).
         /// </summary>
-        /// <param name="result">Full results directionary</param>
+        /// <remarks></remarks>
+        /// <param name="result">Full results dictionary</param>
         /// <param name="scoreKey">Existing score of effectivness of an algorithm</param>
+        /// <param name="filterEnabled">Indicates whether need to filter the results</param>
         /// <returns></returns>
-        public static double CalculateFitness(Dictionary<string, decimal> result, FitnessScore scoreKey)
+        public static double CalculateFitness(Dictionary<string, decimal> result, FitnessScore scoreKey, bool filterEnabled)
         {
-            // Apply a Fitness Filter to result
-            if (Program.Config.FitnessFilter != null && !FitnessFilter.IsSuccess(result))
-            {
-                return FitnessFilter.ErrorValue;
-            }
-            
-            // If filter successfully passed calculate the fitness using metric specified in config
+            // Calculate fitness using the metric specified
+            double fitness;
             switch (scoreKey)
             {
                 case FitnessScore.SharpeRatio:
-                    return (double) result["SharpeRatio"];
+                    fitness = (double) result["SharpeRatio"];
+                    break;
 
                 case FitnessScore.TotalNetProfit:
-                    return (double) result["TotalNetProfit"];
+                    fitness = (double) result["TotalNetProfit"];
+                    break;
 
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException("StatisticsAdapter.CalculateFitness() : default");
             }
-            
+
+            // Filter positive results ->
+            if (fitness > 0 && filterEnabled)
+            {
+                // If filter is not passed -> 
+                if ( !FitnessFilter.IsSuccess(result))
+                {
+                    fitness = FitnessFilter.ErrorValue;
+                }
+            }
+
+            return fitness;
         }
     }
 }

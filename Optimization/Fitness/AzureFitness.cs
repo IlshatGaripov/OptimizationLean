@@ -19,9 +19,10 @@ namespace Optimization
         private static readonly object Obj = new object();
 
         /// <summary>
-        /// Constructor initializes algorithm start and end dates
+        /// Constructor
         /// </summary>
-        public AzureFitness(DateTime start, DateTime end, FitnessScore fitScore) : base(start, end, fitScore)
+        public AzureFitness(DateTime start, DateTime end, FitnessScore fitScore, bool enableFilter) : 
+            base(start, end, fitScore, enableFilter)
         { }
 
         /// <summary>
@@ -31,7 +32,6 @@ namespace Optimization
         /// <returns>The fitness of the chromosome.</returns>
         public override double Evaluate(IChromosome chromosome)
         {
-
             // All functionality is wrapped in async method. Execute it to obtain a result.
             return EvaluateAsync(chromosome).GetAwaiter().GetResult();
         }
@@ -137,7 +137,7 @@ namespace Optimization
                 @"results\" + resultsOutputFile);
 
             // Calculate fitness ->
-            var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore);
+            var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore, FilterEnabled);
 
             // Save full results ->
             chromosomeBase.FitnessResult = new FitnessResult
