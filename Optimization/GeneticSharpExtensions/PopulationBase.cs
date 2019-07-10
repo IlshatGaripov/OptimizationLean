@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using GeneticSharp.Domain.Chromosomes;
 
@@ -68,6 +67,7 @@ namespace Optimization
         /// </summary>
         public virtual void CreateInitialGeneration()
         {
+            Program.Logger.Trace("CreateInitialGeneration():");
             // Generate chromosomes and define a first generation ->
             var chromosomesList = GenerateChromosomes();
             CreateNewGeneration(chromosomesList);
@@ -117,7 +117,11 @@ namespace Optimization
             // If no any positive fitness chromosome in collection ->
             if (!chromosomes.Any())
             {
-                Program.Logger.Error("Current Generation hasn't got a single positive fitness chromosome");
+                Program.Logger.Trace(" <->");
+                Program.Logger.Error("WARNING: Generation has no single acceptable solution!!");
+
+                // CurrentGeneration is an empty list
+                CurrentGeneration.Chromosomes = new List<IChromosome>();
 
                 // Is fruiteless ->
                 CurrentGeneration.IsFruitless = true;

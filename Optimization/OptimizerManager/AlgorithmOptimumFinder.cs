@@ -181,14 +181,13 @@ namespace Optimization
         private void GenerationRan(object sender, GenerationRanEventArgs e)
         {
             Program.Logger.Trace(" <->");
-            Program.Logger.Trace($"Generation Ran - profitable solutions count - {e.Generation.Chromosomes.Count} :");
+            Program.Logger.Trace($"Generation formed - profitable solutions count - {e.Generation.Chromosomes.Count} :");
 
             foreach (var c in e.Generation.Chromosomes)
             {
                 var chromBase = (Chromosome) c;
                 Program.Logger.Trace($"{chromBase.Fitness} ## {chromBase.ToKeyValueString()}");
             }
-            Program.Logger.Trace(" <->");
         }
 
         /// <summary>

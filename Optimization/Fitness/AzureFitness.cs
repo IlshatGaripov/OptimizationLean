@@ -57,7 +57,7 @@ namespace Optimization
             // Write to the log information before an experiment ->
             lock (Obj)
             {
-                Program.Logger.Trace($"{algorithmInputs} >>");
+                Program.Logger.Trace($">> {algorithmInputs}");
             }
 
             // -- 1 -- Create an argument string of gene key-values
@@ -152,7 +152,7 @@ namespace Optimization
             // Display results to the log ->
             lock (Obj)
             {
-                Program.Logger.Trace($"{fitness} ## {algorithmInputs}");
+                Program.Logger.Trace($"({fitness}) {algorithmInputs}");
             }
 
             return fitness;
