@@ -388,7 +388,7 @@ namespace Optimization
                 // Inform how many solutions we send for evaluation and dates ->
                 var leanFit = (LeanFitness) Fitness;
                 Program.Logger.Trace($"EvaluateFitness(): Sending {withoutFitness.Count} for backtest and {haveFitness.Count} have got fitness");
-                Program.Logger.Trace($"Period: {leanFit.StartDate:yyyy MMMM dd} to {leanFit.EndDate:yyyy MMMM dd}");
+                Program.Logger.Trace($"Period: {leanFit.StartDate:M/d/yy} to {leanFit.EndDate:M/d/yy}");
 
                 foreach (var c in withoutFitness)
                 {
