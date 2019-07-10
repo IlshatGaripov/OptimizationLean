@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GeneticSharp.Domain.Chromosomes;
 using Microsoft.Azure.Batch;
 using Microsoft.Azure.Batch.Common;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 
@@ -32,8 +33,35 @@ namespace Optimization
         /// <returns>The fitness of the chromosome.</returns>
         public override double Evaluate(IChromosome chromosome)
         {
-            // All functionality is wrapped in async method. Execute it to obtain a result.
-            return EvaluateAsync(chromosome).GetAwaiter().GetResult();
+            try
+            {
+                // All functionality is wrapped in async method. Execute it to obtain a result.
+                return EvaluateAsync(chromosome).GetAwaiter().GetResult();
+            }
+            // Catch storage exception ->
+            catch (StorageException ex)
+            {
+                var requestInformation = ex.RequestInformation;
+                Program.Logger.Error(requestInformation.HttpStatusMessage);
+
+                // get more details about the exception 
+                var information = requestInformation.ExtendedErrorInformation;
+
+                // if you have aditional information, you can use it for your logs
+                if (information == null)
+                    throw;
+
+                var errorCode = information.ErrorCode;
+
+                var message = $"({errorCode}) {information.ErrorMessage}";
+
+                var details = information
+                    .AdditionalDetails
+                    .Aggregate("", (s, pair) => s + $"{pair.Key}={pair.Value},");
+
+                Program.Logger.Error(message + " details " + details);
+                throw;
+            }
         }
 
         /// <summary>
@@ -181,7 +209,7 @@ namespace Optimization
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Program.Logger.Error(e.Message);
                 throw;
             }
 
@@ -197,7 +225,7 @@ namespace Optimization
 
             if (failedTasks.Any())
             {
-                Console.WriteLine($"{taskId} failed.");
+                Program.Logger.Error($"{taskId} failed.");
             }
         }
 
