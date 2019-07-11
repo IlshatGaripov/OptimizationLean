@@ -116,11 +116,12 @@ namespace Optimization
                 .ToList();
 
             // Is fruitless? 
-            if(chromosomes.Count < 4)
+            if (chromosomes.Count < 4)
             {
                 Program.Logger.Trace(" <->");
                 Program.Logger.Error("WARNING: Generation has zero or very few acceptable solutions!!");
 
+                CurrentGeneration.Chromosomes = chromosomes;
                 CurrentGeneration.IsFruitless = true;
                 FruitlessGenerationsCount++;
 
