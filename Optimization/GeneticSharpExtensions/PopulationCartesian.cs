@@ -25,7 +25,7 @@ namespace Optimization
         /// Creates a population for brute force optimization mode.
         /// All possible combinations (within bounds of acceptable values specified in optimization config) are generated
         /// </summary>
-        protected override IList<IChromosome> GenerateChromosomes()
+        public override List<IChromosome> GenerateChromosomes()
         {
             // in this list we will store the sequences of possible gene values represented as an object array.
             var inputGeneValuesContainer = new List<object[]>();

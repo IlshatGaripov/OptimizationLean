@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Infrastructure.Framework.Texts;
-using System.Diagnostics;
 
 namespace Optimization
 {

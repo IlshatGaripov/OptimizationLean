@@ -26,7 +26,7 @@ namespace Optimization
         /// Generates a list of chromosomes to make up the inital generation.
         /// See <see cref="PopulationBase.CreateInitialGeneration"/>
         /// </summary>
-        protected override IList<IChromosome> GenerateChromosomes()
+        public override List<IChromosome> GenerateChromosomes()
         {
             var chromosomes = new List<IChromosome>();
 

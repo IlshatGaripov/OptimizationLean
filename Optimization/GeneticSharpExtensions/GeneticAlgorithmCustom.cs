@@ -241,8 +241,8 @@ namespace Optimization
 
                     m_stopwatch.Restart();
 
-                    // Create descendants and perform evolution ->
-                    terminationConditionReached = CreateChildrenAndPerformEvolution();
+                    // Create next generation ->
+                    terminationConditionReached = CreateNextGeneration();
 
                     m_stopwatch.Stop();
                     TimeEvolving += m_stopwatch.Elapsed;
@@ -251,7 +251,7 @@ namespace Optimization
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Program.Logger.Error(e.Message);
                 State = GeneticAlgorithmState.Stopped;
                 throw;
             }
@@ -277,19 +277,27 @@ namespace Optimization
         /// Evolve one generation.
         /// </summary>
         /// <returns>True if termination has been reached, otherwise false.</returns>
-        private bool CreateChildrenAndPerformEvolution()
+        private bool CreateNextGeneration()
         {
-            // If previous generation has no chromosome of positive fit ->
+            List<IChromosome> list;
             if (Population.CurrentGeneration.IsFruitless)
             {
-                Population.CreateInitialGeneration();
+                // If previous generation has not got enough positive fit chromosomes use a simple
+                // strategy to form the next generation: generate in random the initial amount
+                list = Population.GenerateChromosomes();
+
+                // Plus add to the list that scarce amount of good chromosomes from past gen ->
+                list.AddRange(Population.CurrentGeneration.Chromosomes);
             }
-            // Create children and register new generation ->
             else
             {
-                var children = CreateChildren();
-                Population.CreateNewGeneration(children);
+                // Otherwise use custom GA means to form new generation:
+                // mutations, crossovers, elite selection, etc. ->
+                list = CreateChildren();
             }
+
+            // Create new generation
+            Population.CreateNewGeneration(list);
 
             // Evaluate, choose best and fire events ->
             return EvaluateChooseBestAndFireEvents();

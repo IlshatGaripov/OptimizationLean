@@ -110,7 +110,7 @@ namespace Optimization
                         // Logical terminaton ->
                         var localTerm = new LogicalOrTermination();
 
-                        localTerm.AddTermination(new FruitlessGenerationsTermination(2));
+                        localTerm.AddTermination(new FruitlessGenerationsTermination(3));
 
                         if (Program.Config.Generations.HasValue)
                             localTerm.AddTermination(new GenerationNumberTermination(Program.Config.Generations.Value));
@@ -169,10 +169,8 @@ namespace Optimization
 
             foreach (var c in ProfitableChromosomes)
             {
-                var chromBase = (Chromosome)c;
-                Program.Logger.Trace($"{chromBase.Fitness} ## {chromBase.ToKeyValueString()}");
+                Program.Logger.Trace($"{c.Fitness} ## {c.ToKeyValueString()}");
             }
-            Program.Logger.Trace(" <->");
         }
 
         /// <summary>
@@ -195,7 +193,7 @@ namespace Optimization
         /// </summary>
         /// <param name="population"></param>
         /// <returns></returns>
-        private IList<Chromosome> ChooseProfitableChromosomes(PopulationBase population)
+        private static IList<Chromosome> ChooseProfitableChromosomes(PopulationBase population)
         {
             var completeList = new List<IChromosome>();
             foreach (var g in population.Generations)

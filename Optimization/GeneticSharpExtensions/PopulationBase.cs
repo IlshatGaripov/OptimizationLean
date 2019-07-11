@@ -68,6 +68,7 @@ namespace Optimization
         public virtual void CreateInitialGeneration()
         {
             Program.Logger.Trace("CreateInitialGeneration():");
+
             // Generate chromosomes and define a first generation ->
             var chromosomesList = GenerateChromosomes();
             CreateNewGeneration(chromosomesList);
@@ -77,7 +78,7 @@ namespace Optimization
         /// Generates a list of chromosomes to make up the inital generation.
         /// See <see cref="CreateInitialGeneration"/>
         /// </summary>
-        protected abstract IList<IChromosome> GenerateChromosomes();
+        public abstract List<IChromosome> GenerateChromosomes();
 
         /// <summary>
         /// Creates a new generation.
@@ -114,18 +115,15 @@ namespace Optimization
                 .OrderByDescending(c => c.Fitness.Value)
                 .ToList();
 
-            // If no any positive fitness chromosome in collection ->
-            if (!chromosomes.Any())
+            // Is fruitless? 
+            if(chromosomes.Count < 4)
             {
                 Program.Logger.Trace(" <->");
-                Program.Logger.Error("WARNING: Generation has no single acceptable solution!!");
+                Program.Logger.Error("WARNING: Generation has zero or very few acceptable solutions!!");
 
-                // CurrentGeneration is an empty list
-                CurrentGeneration.Chromosomes = new List<IChromosome>();
-
-                // Is fruiteless ->
                 CurrentGeneration.IsFruitless = true;
                 FruitlessGenerationsCount++;
+
                 return;
             }
 
@@ -135,6 +133,7 @@ namespace Optimization
                 chromosomes = chromosomes.Take(GenerationMaxSize).ToList();
             }
 
+            // Assig the result
             CurrentGeneration.Chromosomes = chromosomes;
 
             // Select the generation's best chromosome ->
