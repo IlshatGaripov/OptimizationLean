@@ -285,7 +285,9 @@ namespace Optimization
                 }
                 else
                 {
-                    throw; // Any other exception is unexpected
+                    // Any other exception is unexpected
+                    Program.Logger.Error($"CreateJobAsync(): BatchException: Code - {be.RequestInformation.BatchError.Code}");
+                    throw;
                 }
             }
         }
@@ -332,10 +334,11 @@ namespace Optimization
         private static string GetContainerSasUrl(CloudBlobClient blobClient, string containerName, SharedAccessBlobPermissions permissions)
         {
             // Set the expiry time and permissions for the container access signature. In this case, no start time is specified,
-            // so the shared access signature becomes valid immediately. Expiration is in 2 hours.
+            // so the shared access signature becomes valid immediately. 
             SharedAccessBlobPolicy sasConstraints = new SharedAccessBlobPolicy
             {
-                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(2),
+                // Expiration is in 12 hours.
+                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(12),
                 Permissions = permissions
             };
 

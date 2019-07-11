@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Azure.Batch.Protocol.Models;
 using QuantConnect.Logging;
 
 namespace Optimization
@@ -69,28 +70,20 @@ namespace Optimization
         /// </summary>
         public static void DeployResources()
         {
-            try
+            // Computation mode specific settings ->
+            switch (Config.TaskExecutionMode)
             {
-                // Computation mode specific settings ->
-                switch (Config.TaskExecutionMode)
-                {
-                    // Deploy Batch resources if calculations use cloud compute powers ->
-                    case TaskExecutionMode.Azure:
-                        AzureBatchManager.DeployAsync().Wait();
-                        break;
-                    // Set up App Domain settings - local PC powers are used ->
-                    case TaskExecutionMode.Linear:
-                    case TaskExecutionMode.Parallel:
-                        AppDomainManager.Initialize();
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
+                // Deploy Batch resources if calculations use cloud compute powers ->
+                case TaskExecutionMode.Azure:
+                    AzureBatchManager.DeployAsync().Wait();
+                    break;
+                // Set up App Domain settings - local PC powers are used ->
+                case TaskExecutionMode.Linear:
+                case TaskExecutionMode.Parallel:
+                    AppDomainManager.Initialize();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
