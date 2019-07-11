@@ -42,7 +42,7 @@ namespace Optimization
             catch (StorageException ex)
             {
                 var requestInformation = ex.RequestInformation;
-                Program.Logger.Error(requestInformation.HttpStatusMessage);
+                Program.Logger.Error($"AzureFitness.Evaluate() catch http: {requestInformation.HttpStatusMessage}");
 
                 // get more details about the exception 
                 var information = requestInformation.ExtendedErrorInformation;
@@ -51,15 +51,14 @@ namespace Optimization
                 if (information == null)
                     throw;
 
-                var errorCode = information.ErrorCode;
-
-                var message = $"({errorCode}) {information.ErrorMessage}";
+                var message = $"({information.ErrorCode}) {information.ErrorMessage}";
 
                 var details = information
                     .AdditionalDetails
                     .Aggregate("", (s, pair) => s + $"{pair.Key}={pair.Value},");
 
-                Program.Logger.Error(message + " details " + details);
+                Program.Logger.Error($"AzureFitness.Evaluate() catch message: {message}");
+                Program.Logger.Error($"AzureFitness.Evaluate() catch details: {details}");
                 throw;
             }
         }
