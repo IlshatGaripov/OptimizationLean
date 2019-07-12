@@ -56,49 +56,62 @@ namespace Optimization
         /// </summary>
         public static async Task DeployAsync()
         {
-            Console.WriteLine("Optimization / Azure Start: {0}", DateTime.Now);
-            Console.WriteLine();
-            _timer = Stopwatch.StartNew();
+            try
+            {
+                Console.WriteLine("Optimization / Azure Start: {0}", DateTime.Now);
+                Console.WriteLine();
+                _timer = Stopwatch.StartNew();
 
-            // == BATCH CLIENT ==
-            var batchAccountUrl = Program.Config.BatchAccountUrl;
-            var batchAccountName = Program.Config.BatchAccountName;
-            var batchAccountKey = Program.Config.BatchAccountKey;
+                // == BATCH CLIENT ==
+                var batchAccountUrl = Program.Config.BatchAccountUrl;
+                var batchAccountName = Program.Config.BatchAccountName;
+                var batchAccountKey = Program.Config.BatchAccountKey;
 
-            // Create a Batch client and authenticate with shared key credentials.
-            // The Batch client allows the app to interact with the Batch service.
-            BatchSharedKeyCredentials sharedKeyCredentials = new BatchSharedKeyCredentials(batchAccountUrl, batchAccountName, batchAccountKey);
-            BatchClient = BatchClient.Open(sharedKeyCredentials);
+                // Create a Batch client and authenticate with shared key credentials.
+                // The Batch client allows the app to interact with the Batch service.
+                BatchSharedKeyCredentials sharedKeyCredentials = new BatchSharedKeyCredentials(batchAccountUrl, batchAccountName, batchAccountKey);
+                BatchClient = BatchClient.Open(sharedKeyCredentials);
 
-            // == STORAGE ==
-            // Construct the Storage account connection string
-            string storageConnectionString =
-                $"DefaultEndpointsProtocol=https;AccountName={Program.Config.StorageAccountName};AccountKey={Program.Config.StorageAccountKey}";
+                // == STORAGE ==
+                // Construct the Storage account connection string
+                string storageConnectionString =
+                    $"DefaultEndpointsProtocol=https;AccountName={Program.Config.StorageAccountName};AccountKey={Program.Config.StorageAccountKey}";
 
-            // Retrieve the storage account
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+                // Retrieve the storage account
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
 
-            // Create the blob client, to reference the blob storage containers
-            BlobClient = storageAccount.CreateCloudBlobClient();
+                // Create the blob client, to reference the blob storage containers
+                BlobClient = storageAccount.CreateCloudBlobClient();
 
-            // Create File Client, to access Azure Files
-            FileClient = storageAccount.CreateCloudFileClient();
+                // Create File Client, to access Azure Files
+                FileClient = storageAccount.CreateCloudFileClient();
 
-            // == CREATES AND UPLOADS ==
-            // Upload historical data from data folder to Cloud File Share
-            await SynchronizeHistoricalDataWithFileShareAsync(FileClient);
+                // == CREATES AND UPLOADS ==
+                // Upload historical data from data folder to Cloud File Share
+                await SynchronizeHistoricalDataWithFileShareAsync(FileClient);
 
-            // Creat Containers: OutPut Container (where tasks will upload results) and Container for Algorithm DLL
-            // Obtain a shared access signature that provides write access to the output
-            await CreateContainerIfNotExistAsync(BlobClient, DllContainerName);
-            await CreateContainerIfNotExistAsync(BlobClient, OutputContainerName);
-            OutputContainerSasUrl = GetContainerSasUrl(BlobClient, OutputContainerName, SharedAccessBlobPermissions.Write);
+                // Creat Containers: OutPut Container (where tasks will upload results) and Container for Algorithm DLL
+                // Obtain a shared access signature that provides write access to the output
+                await CreateContainerIfNotExistAsync(BlobClient, DllContainerName);
+                await CreateContainerIfNotExistAsync(BlobClient, OutputContainerName);
+                OutputContainerSasUrl = GetContainerSasUrl(BlobClient, OutputContainerName, SharedAccessBlobPermissions.Write);
 
-            // Create the Batch pool, if not exist, which contains the compute nodes that execute the tasks.
-            await CreatePoolIfNotExistAsync(BatchClient, PoolId);
+                // Create the Batch pool, if not exist, which contains the compute nodes that execute the tasks.
+                await CreatePoolIfNotExistAsync(BatchClient, PoolId);
 
-            // Create the job that runs the tasks.
-            await CreateJobAsync(BatchClient, JobId, PoolId);
+                // Create the job that runs the tasks.
+                await CreateJobAsync(BatchClient, JobId, PoolId);
+            }
+            // Catch for an aggregate exception
+            catch (AggregateException ae)
+            {
+                // Flatten agregates all inner exception in one
+                foreach (var innerException in ae.Flatten().InnerExceptions)
+                {
+                    Program.Logger.Error(innerException.Message);
+                }
+                throw;
+            }
         }
 
         /// <summary>

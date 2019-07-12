@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Azure.Batch.Protocol.Models;
 using QuantConnect.Logging;
 
 namespace Optimization
