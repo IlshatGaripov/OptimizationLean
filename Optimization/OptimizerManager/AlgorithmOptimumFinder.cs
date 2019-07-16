@@ -170,6 +170,7 @@ namespace Optimization
             {
                 Program.Logger.Trace($"{c.Fitness} ## {c.ToKeyValueString()}");
             }
+            Program.Logger.Trace(" <->");
         }
 
         /// <summary>

@@ -66,22 +66,13 @@ namespace Optimization
                     : optimumFinder.ProfitableChromosomes.Count;
                 var bestResults = optimumFinder.ProfitableChromosomes.Take(take).ToList();
 
-                Program.Logger.Trace(" <->");
-                Program.Logger.Trace($"Overall best chromosomes are:");
-                Program.Logger.Trace(" <->");
-                foreach (var c in bestResults)
-                {
-                    Program.Logger.Trace($"{c.Fitness} ## {c.ToKeyValueString()}");
-                }
-                Program.Logger.Trace(" <->");
-
                 // Validate the chosen best results ->
                 var validationTasks = new List<Task>();
                 var startDate = validationStartDate;
                 var endDate = validationEndDate;
 
-                Program.Logger.Trace("Starting validation tasks");
-                Program.Logger.Trace($"Period: {startDate:M/d/yy} to {endDate:M/d/yy}");
+                Program.Logger.Trace($"Taking {take} best solutions and launching the validation tasks");
+                Program.Logger.Trace($"Validation period: {startDate:M/d/yy} to {endDate:M/d/yy}");
 
                 // For each good chromosome add the task to collection ->
                 foreach (var c in bestResults)
