@@ -115,16 +115,14 @@ namespace Optimization
                 .OrderByDescending(c => c.Fitness.Value)
                 .ToList();
 
-            // Is fruitless? 
+            // Is fruitless?
             if (chromosomes.Count < 4)
             {
-                Program.Logger.Trace(" <->");
-                Program.Logger.Error("WARNING: Generation has zero or very few acceptable solutions!!");
-
+                // Assign whatever positive chromosomes to CurrentGeneration.Chromosomes
+                // Set generation as fruitless and return
                 CurrentGeneration.Chromosomes = chromosomes;
                 CurrentGeneration.IsFruitless = true;
                 FruitlessGenerationsCount++;
-
                 return;
             }
 

@@ -163,7 +163,6 @@ namespace Optimization
             // Choose all good chromosomes ->
             ProfitableChromosomes = ChooseProfitableChromosomes(e.Pupulation);
 
-            Program.Logger.Trace(" <->");
             Program.Logger.Trace("Termination reached");
             Program.Logger.Trace($"Good chromosomes - Count {ProfitableChromosomes.Count} - printing :");
 
@@ -180,12 +179,17 @@ namespace Optimization
         {
             Program.Logger.Trace(" <->");
             Program.Logger.Trace($"Generation formed - profitable solutions count - {e.Generation.Chromosomes.Count} :");
-
             foreach (var c in e.Generation.Chromosomes)
             {
                 var chromBase = (Chromosome) c;
                 Program.Logger.Trace($"{chromBase.Fitness} ## {chromBase.ToKeyValueString()}");
             }
+
+            if (e.Generation.IsFruitless)
+            {
+                Program.Logger.Error("WARNING: Generation is fruitless, i.e has zero or very few acceptable solutions");
+            }
+            Program.Logger.Trace(" <->");
         }
 
         /// <summary>
