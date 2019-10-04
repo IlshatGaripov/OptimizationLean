@@ -1,6 +1,6 @@
-﻿using GeneticSharp.Infrastructure.Framework.Threading;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using NUnit.Framework;
+using Optimization.Genetic;
 
 namespace Optimization.Tests
 {

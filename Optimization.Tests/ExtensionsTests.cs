@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Optimization.Genetic;
 
 namespace Optimization.Tests
 {
