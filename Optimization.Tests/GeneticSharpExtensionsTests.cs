@@ -30,7 +30,7 @@ namespace Optimization.Tests
             ""fitness-score"": ""SharpeRatio"",
             }");
 
-            var ga = new GeneticAlgorithmCustom(
+            var ga = new GeneticAlgorithm(
                 new PopulationRandom(config.GeneConfigArray, config.PopulationInitialSize),
                 new OptimizerFitness(config.StartDate.Value, config.EndDate.Value, config.FitnessScore, true),
                 new LinearTaskExecutor())

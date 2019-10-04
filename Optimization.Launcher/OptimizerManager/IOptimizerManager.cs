@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Optimization
+namespace Optimization.Launcher
 {
     /// <summary>
     /// Interface to implement by the object to orchestrate the optimization process
@@ -18,7 +18,7 @@ namespace Optimization
         DateTime? EndDate { get; set; }
 
         /// <summary>
-        /// Fitness Score to sort the parameters obtained by optimization
+        /// Fitness score used to rank the backtest results
         /// </summary>
         FitnessScore FitnessScore { get; set; }
 

@@ -25,7 +25,7 @@ namespace Optimization.Genetic
         /// <param name="geneticAlgorithm">The genetic algorithm.</param>
         protected override bool PerformHasReached(IGeneticAlgorithm geneticAlgorithm)
         {
-            var ga = geneticAlgorithm as GeneticAlgorithmCustom;
+            var ga = geneticAlgorithm as GeneticAlgorithm;
 
             if (ga == null) throw new InvalidCastException("I am expecting genetic algorithm to be of Custom type!");
 

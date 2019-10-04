@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using QuantConnect.Logging;
 
 namespace Optimization.Genetic
 {
@@ -41,7 +40,7 @@ namespace Optimization.Genetic
     /// This is a custom implementation of genetic algorithm from Genetic Sharp library
     /// As the library file (GeneticAlgorithm) needed minor modification to solve our problem. 
     /// </summary>
-    public sealed class GeneticAlgorithmCustom : IGeneticAlgorithm
+    public sealed class GeneticAlgorithm : IGeneticAlgorithm
     {
         private bool m_stopRequested;
         private readonly object m_lock = new object();
@@ -49,12 +48,12 @@ namespace Optimization.Genetic
         private Stopwatch m_stopwatch;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GeneticAlgorithmCustom"/> class.
+        /// Initializes a new instance of the <see cref="GeneticAlgorithm"/> class.
         /// </summary>
         /// <param name="population">The chromosomes population.</param>
         /// <param name="fitness">The fitness evaluation function.</param>
         /// <param name="taskExecutor">Task executor.</param>
-        public GeneticAlgorithmCustom(
+        public GeneticAlgorithm(
                           PopulationBase population,
                           IFitness fitness,
                           ITaskExecutor taskExecutor)
@@ -499,7 +498,7 @@ namespace Optimization.Genetic
     }
 
     /// <summary>
-    /// Event args class passed to <see cref="GeneticAlgorithmCustom"/> TerminationReached event
+    /// Event args class passed to <see cref="GeneticAlgorithm"/> TerminationReached event
     /// </summary>
     public class TerminationReachedEventArgs : EventArgs
     {
@@ -518,7 +517,7 @@ namespace Optimization.Genetic
     }
 
     /// <summary>
-    /// Event args class passed to <see cref="GeneticAlgorithmCustom"/> GenerationRan event
+    /// Event args class passed to <see cref="GeneticAlgorithm"/> GenerationRan event
     /// </summary>
     public class GenerationRanEventArgs : EventArgs
     {

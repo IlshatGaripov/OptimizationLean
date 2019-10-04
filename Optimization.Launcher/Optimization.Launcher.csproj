@@ -47,7 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="WalkForwardValidationEventArgs.cs" />
+    <Compile Include="OptimizerManager\WalkForwardValidationEventArgs.cs" />
     <Compile Include="OptimizerManager\AlgorithmOptimumFinder.cs" />
     <Compile Include="OptimizerManager\IOptimizerManager.cs" />
     <Compile Include="OptimizerManager\WalkForwardOptimizationManager.cs" />

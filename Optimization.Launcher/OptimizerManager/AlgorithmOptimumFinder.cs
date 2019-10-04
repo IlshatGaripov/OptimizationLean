@@ -21,7 +21,7 @@ namespace Optimization.Launcher
         public DateTime? EndDate { get; set; }
 
         /// <summary>
-        /// Fitness Score to sort the parameters obtained by optimization
+        /// Fitness score used to rank the backtest results
         /// </summary>
         public FitnessScore FitnessScore { get; set; }
 
@@ -29,7 +29,7 @@ namespace Optimization.Launcher
         /// Genetic algorithm itself!
         /// using https://stackoverflow.com/questions/34743533/automated-property-with-getter-only-can-be-set-why/34743568
         /// </summary>
-        public GeneticAlgorithmCustom GenAlgorithm { get; }
+        public GeneticAlgorithm GenAlgorithm { get; }
 
         /// <summary>
         /// Collection of all chromosomes that appeared in GA search that had positive fitness
@@ -125,7 +125,7 @@ namespace Optimization.Launcher
             // Create the GA itself
             // It's important to initialize GA in a constructor as we would
             // like to declare event handlers from outside the class before calling Start()
-            GenAlgorithm = new GeneticAlgorithmCustom(population, fitness, executor)
+            GenAlgorithm = new GeneticAlgorithm(population, fitness, executor)
             {
                 // Reference type ->
                 Selection = selection,
@@ -143,11 +143,10 @@ namespace Optimization.Launcher
         /// </summary>
         public void Start()
         {
-            // Subscribe to GA events ->
+            // register event handlers and run
             GenAlgorithm.GenerationRan += GenerationRan;
             GenAlgorithm.TerminationReached += TerminationReached;
 
-            // Run the GA 
             GenAlgorithm.Start();
         }
 

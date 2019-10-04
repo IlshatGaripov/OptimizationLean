@@ -6,15 +6,18 @@ using QuantConnect.Logging;
 
 namespace Optimization
 {
+    /// <summary>
+    /// Contains static program wide ojects that are commonly used in various parts
+    /// </summary>
     public static class Shared
     {
         /// <summary>
-        /// Global Optimization configuration object
+        /// Global optimization configuration object
         /// </summary>
         public static OptimizerConfiguration Config = LoadConfigFromFile("optimization_local.json");
 
         /// <summary>
-        /// Global (program wise) logger object
+        /// Global logger object
         /// </summary>
         public static ILogHandler Logger =
             new CompositeLogHandler(
@@ -22,7 +25,7 @@ namespace Optimization
                 new FileLogHandler(filepath: Config.LogFile));
 
         /// <summary>
-        /// Loads values from JSON text file to a special class holding the config values.
+        /// Loads values from JSON text file and converts to an object
         /// </summary>
         public static OptimizerConfiguration LoadConfigFromFile(string path)
         {
@@ -36,7 +39,7 @@ namespace Optimization
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Logger.Error(e.Message);
                 throw;
             }
         }

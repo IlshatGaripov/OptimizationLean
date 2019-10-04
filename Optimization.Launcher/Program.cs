@@ -16,10 +16,9 @@ namespace Optimization.Launcher
                 throw new ArgumentException("Please check that all required config variables are defined ..");
             }
 
-            // Create resources ->
+            // initialize resources depending on task execution mode
             DeployResources();
 
-            // Init and start the optimization manager ->
             if (Shared.Config.WalkForwardConfiguration.Enabled == true)
             {
                 var wfoManager = new WalkForwardOptimizationManager
@@ -30,25 +29,24 @@ namespace Optimization.Launcher
                     WalkForwardConfiguration = Shared.Config.WalkForwardConfiguration
                 };
 
+                // register event and start
                 wfoManager.ValidationCompleted += CompareResults;
-
-                // Start it ->
                 wfoManager.Start();
             }
             else
             {
+                // otherwise create regular optimizator
                 var easyManager = new AlgorithmOptimumFinder(Shared.Config.StartDate.Value, 
                     Shared.Config.EndDate.Value, Shared.Config.FitnessScore);
-
-                // Start an optimization ->
                 easyManager.Start();
             }
 
-            // Сomplete the life cycle of objects have been created in deployment phase ->
+            // release earlier deployed execution resources
             ReleaseDeployedResources();
 
+
             Console.WriteLine();
-            Console.WriteLine("Press ENTER to exit the program");
+            Console.WriteLine("Press any key to exit .. ");
             Console.ReadLine();
         }
 
@@ -58,14 +56,12 @@ namespace Optimization.Launcher
         /// </summary>
         public static void DeployResources()
         {
-            // Computation mode specific settings ->
+            // Computation mode specific settings: azure or app domain ?
             switch (Shared.Config.TaskExecutionMode)
             {
-                // Deploy Batch resources if calculations use cloud compute powers ->
                 case TaskExecutionMode.Azure:
                     AzureBatchManager.DeployAsync().Wait();
                     break;
-                // Set up App Domain settings - local PC powers are used ->
                 case TaskExecutionMode.Linear:
                 case TaskExecutionMode.Parallel:
                     AppDomainManager.Initialize();
