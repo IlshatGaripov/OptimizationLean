@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Optimization
+namespace Optimization.Base
 {
     /// <summary>
     /// The main program configuration object. Reflecting all those values that optimization.json contains.

@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Optimization
+namespace Optimization.Base
 {
     /// <summary>
     /// Converts a gene object to and from JSON.

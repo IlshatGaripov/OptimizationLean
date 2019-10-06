@@ -1,4 +1,6 @@
-﻿namespace Optimization.Genetic
+﻿using Optimization.Base;
+
+namespace Optimization.Genetic
 {
     /// <summary>
     /// Cromosome representation for brute force algorithm mode.

@@ -1,4 +1,5 @@
 using System;
+using Optimization.Base;
 
 namespace Optimization.Genetic
 {
@@ -49,7 +50,7 @@ namespace Optimization.Genetic
                 list.Add("data-folder", Shared.Config.DataFolder);
 
                 // Obtain full results -> 
-                var result = AppDomainManager.RunAlgorithm(list);
+                var result = AppDomainRunner.RunAlgorithm(list);
 
                 // Calculate fitness and concat the results with an output string ->
                 var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore, FilterEnabled);

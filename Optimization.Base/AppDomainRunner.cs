@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Optimization
+namespace Optimization.Base
 {
     /// <summary>
     /// Setup for running QCAlgorithm in a separate AppDomain.
     /// </summary>
-    public static class AppDomainManager
+    public static class AppDomainRunner
     {
         private static AppDomainSetup _ads;
         private static string _assembly;

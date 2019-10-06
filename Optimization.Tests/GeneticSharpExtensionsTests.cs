@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using NUnit.Framework;
+using Optimization.Base;
 using Optimization.Genetic;
 
 namespace Optimization.Tests

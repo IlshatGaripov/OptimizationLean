@@ -1,4 +1,4 @@
-﻿namespace Optimization
+﻿namespace Optimization.Base
 {
     /// <summary>
     /// Mode to evaluate the algorithm fitness

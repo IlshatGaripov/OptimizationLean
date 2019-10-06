@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Optimization.Base;
 using Optimization.Genetic;
 
 namespace Optimization.Launcher

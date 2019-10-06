@@ -9,7 +9,7 @@ using QuantConnect.Lean.Engine.TransactionHandlers;
 using QuantConnect.Orders;
 using QuantConnect.Packets;
 
-namespace Optimization
+namespace Optimization.Base
 {
     public class OptimizerResultHandler : BaseResultsHandler, IResultHandler
     {

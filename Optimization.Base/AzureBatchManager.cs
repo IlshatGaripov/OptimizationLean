@@ -12,7 +12,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.File;
 
-namespace Optimization
+namespace Optimization.Base
 {
     /// <summary>
     /// Manages azure client/credentials/storage etc. to provide an easy access to Azure cloud computing facilities.

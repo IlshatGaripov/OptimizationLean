@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Optimization
+namespace Optimization.Base
 {
     /// <summary>
     /// Contains variables to define algorithm performance filtering

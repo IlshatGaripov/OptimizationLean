@@ -1,4 +1,5 @@
 ﻿using System;
+using Optimization.Base;
 
 namespace Optimization.Launcher
 {
@@ -64,7 +65,7 @@ namespace Optimization.Launcher
                     break;
                 case TaskExecutionMode.Linear:
                 case TaskExecutionMode.Parallel:
-                    AppDomainManager.Initialize();
+                    AppDomainRunner.Initialize();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -85,7 +86,7 @@ namespace Optimization.Launcher
                 case TaskExecutionMode.Linear:
                 case TaskExecutionMode.Parallel:
                     // -2- Release AppDomain
-                    AppDomainManager.Release();
+                    AppDomainRunner.Release();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

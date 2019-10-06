@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using QuantConnect.Logging;
 
-namespace Optimization
+namespace Optimization.Base
 {
     /// <summary>
     /// Contains static program wide ojects that are commonly used in various parts

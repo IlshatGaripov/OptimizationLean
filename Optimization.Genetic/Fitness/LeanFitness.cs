@@ -1,4 +1,5 @@
 ﻿using System;
+using Optimization.Base;
 
 namespace Optimization.Genetic
 {

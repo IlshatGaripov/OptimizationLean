@@ -8,6 +8,7 @@ using Microsoft.Azure.Batch.Common;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
+using Optimization.Base;
 
 namespace Optimization.Genetic
 {

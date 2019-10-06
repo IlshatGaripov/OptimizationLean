@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Optimization
+namespace Optimization.Base
 {
     /// <summary>
     /// Class determines the values helpful to identify genes.

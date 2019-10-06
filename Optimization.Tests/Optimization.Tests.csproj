@@ -59,13 +59,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Optimization.Base\Optimization.Base.csproj">
+      <Project>{89d0362e-9aed-4718-b35e-bcae2949848d}</Project>
+      <Name>Optimization.Base</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Optimization.Genetic\Optimization.Genetic.csproj">
       <Project>{6ae94fa0-c687-4a60-91f1-194ef33158e1}</Project>
       <Name>Optimization.Genetic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Optimization\Optimization.csproj">
-      <Project>{89d0362e-9aed-4718-b35e-bcae2949848d}</Project>
-      <Name>Optimization</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

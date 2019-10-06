@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Optimization.Base;
 
 namespace Optimization.Genetic
 {
