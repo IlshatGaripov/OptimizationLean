@@ -64,9 +64,45 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\lean-extended\Miscellaneous\Miscellaneous.csproj">
+      <Project>{fe595614-7679-4a97-a631-4d0d5fa48267}</Project>
+      <Name>Miscellaneous</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Algorithm.Framework\QuantConnect.Algorithm.Framework.csproj">
+      <Project>{75981418-7246-4b91-b136-482728e02901}</Project>
+      <Name>QuantConnect.Algorithm.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lean\AlgorithmFactory\QuantConnect.AlgorithmFactory.csproj">
+      <Project>{e99d056a-b6fb-48d2-9f7c-683c54cebbf9}</Project>
+      <Name>QuantConnect.AlgorithmFactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Algorithm\QuantConnect.Algorithm.csproj">
+      <Project>{3240aca4-bdd4-4d24-ac36-bbb651c39212}</Project>
+      <Name>QuantConnect.Algorithm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Common\QuantConnect.csproj">
+      <Project>{2545c0b4-fabb-49c9-8dd1-9ad7ee23f86b}</Project>
+      <Name>QuantConnect</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Configuration\QuantConnect.Configuration.csproj">
+      <Project>{0aeb4ea3-28c8-476e-89fd-926f06590b4c}</Project>
+      <Name>QuantConnect.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Engine\QuantConnect.Lean.Engine.csproj">
+      <Project>{12156f46-d07e-4e3d-ad2b-7409e82ab62f}</Project>
+      <Name>QuantConnect.Lean.Engine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Lean\Logging\QuantConnect.Logging.csproj">
       <Project>{01911409-86be-4e7d-9947-df714138610d}</Project>
       <Name>QuantConnect.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Messaging\QuantConnect.Messaging.csproj">
+      <Project>{f2e90e2d-ba25-40e2-b39a-0ba31e68f7f8}</Project>
+      <Name>QuantConnect.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lean\Queues\QuantConnect.Queues.csproj">
+      <Project>{d6633172-1368-4df6-9444-825c3e00c819}</Project>
+      <Name>QuantConnect.Queues</Name>
     </ProjectReference>
     <ProjectReference Include="..\Optimization.Base\Optimization.Base.csproj">
       <Project>{89d0362e-9aed-4718-b35e-bcae2949848d}</Project>

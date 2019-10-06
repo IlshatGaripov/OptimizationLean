@@ -75,14 +75,14 @@ namespace Optimization.Genetic
                 lock (Obj)
                 {
                     // log final output and return the result of evalution
-                    Shared.Logger.Trace(output2);
+                    Shared.Logger.Trace(output2 + Environment.NewLine);
                 }
 
                 return fitness;
             }
             catch (Exception ex)
             {
-                Shared.Logger.Error(ex.Message);
+                Shared.Logger.Error("OptimizerFitness.Evaluate: " + ex.Message);
                 return 0;
             }
         }

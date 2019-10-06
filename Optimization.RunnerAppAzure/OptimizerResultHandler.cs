@@ -2,12 +2,14 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using QuantConnect;
 using QuantConnect.Interfaces;
 using QuantConnect.Lean.Engine.Results;
 using QuantConnect.Lean.Engine.TransactionHandlers;
 using QuantConnect.Orders;
 using QuantConnect.Packets;
+using QuantConnect.Statistics;
 
 namespace Optimization.RunnerAppAzure
 {
@@ -55,19 +57,22 @@ namespace Optimization.RunnerAppAzure
             // generate statistics
             var charts = new Dictionary<string, Chart>(Charts);
             var profitLoss = new SortedDictionary<DateTime, decimal>(Algorithm.Transactions.TransactionRecord);
-            var statisticsResults = GenerateStatisticsResults(charts, profitLoss);
 
-            // get performance and summary
+            // need to invoke that again
+            var statisticsResults = (StatisticsResults)_shadow.GetType().InvokeMember("GenerateStatisticsResults",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, _shadow,
+                new object[] { charts, profitLoss });
+
             var performance = statisticsResults.TotalPerformance;
             var summary = statisticsResults.Summary;
 
-            // create a dictionary
+            // convert to dictionary
             var dictionary = performance.PortfolioStatistics.GetType()
                 .GetProperties()
                 .ToDictionary(k => k.Name,
                     v => (decimal) v.GetValue(performance.PortfolioStatistics));
 
-            // add more metrics we can use
+            // additional performance indicators
             dictionary.Add("TotalNumberOfTrades", int.Parse(summary["Total Trades"]));
             dictionary.Add("TotalFees", decimal.Parse(summary["Total Fees"].Substring(1)));
 
@@ -150,6 +155,7 @@ namespace Optimization.RunnerAppAzure
 
         public void SetAlgorithm(IAlgorithm algorithm, decimal startingPortfolioValue)
         {
+            Algorithm = algorithm;
             _shadow.SetAlgorithm(algorithm, startingPortfolioValue);
         }
 
