@@ -1,0 +1,64 @@
+{
+  // MODE
+  "optimization-mode": "BruteForce",
+  "execution-mode": "Azure",
+  "fitness-score": "SharpeRatio",
+
+  // FITNESS FILTER
+  "fitness-filter": {
+    "min-trades": 9,
+    "max-drawdown": 0.35
+  },
+
+  // THE DATES
+  "start-date": "2017-01-02",
+  "end-date": "2018-01-02",
+
+  // WALK FORWARD
+  "walk-forward": {
+    "enabled": true,
+    "anchored": false,
+    "in-sample-period": 365, // in days
+    "step": 60
+  },
+
+  // GENES
+  "genes": [
+    {
+      "key": "period",
+      "min": 60,
+      "max": 120,
+      "step": 60
+    },
+    {
+      "key": "mult",
+      "min": 1.8,
+      "max": 2.5,
+      "step": 0.3
+    }
+  ],
+
+  // GENETIC OPTIMIZATION
+  "population-initial-size": 30,
+  "generation-max-size": 20,
+  "crossover-parents-number": 5,
+  "crossover-mix-probability": 0.4,
+  "mutation-probability": 0.5,
+  "generations": 5,
+  "stagnation-generations": 3,
+
+  // LEAN
+  "algorithm-type-name": "SuperTrendAlgorithm",
+  "algorithm-location": "C:\\Users\\sterling\\source\\repos\\OptimizationLeanJames\\Optimization.Example\\bin\\Debug\\Optimization.Example.dll",
+  "data-folder": "C:\\Users\\sterling\\Google Drive\\DataCrypto",
+  "log-file": "C:\\Users\\sterling\\Desktop\\optimization_logs.txt",
+
+  // AZURE
+  "batch-account-name": "",
+  "batch-account-key": "",
+  "batch-account-url": "",
+  "storage-account-name": "",
+  "storage-account-key": "",
+  "dedicated-nodes": 0,
+  "low-priority-nodes": 2
+}

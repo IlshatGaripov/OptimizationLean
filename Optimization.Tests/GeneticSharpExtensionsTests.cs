@@ -1,6 +1,7 @@
-﻿using GeneticSharp.Infrastructure.Framework.Threading;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using NUnit.Framework;
+using Optimization.Base;
+using Optimization.Genetic;
 
 namespace Optimization.Tests
 {
@@ -30,7 +31,7 @@ namespace Optimization.Tests
             ""fitness-score"": ""SharpeRatio"",
             }");
 
-            var ga = new GeneticAlgorithmCustom(
+            var ga = new GeneticAlgorithm(
                 new PopulationRandom(config.GeneConfigArray, config.PopulationInitialSize),
                 new OptimizerFitness(config.StartDate.Value, config.EndDate.Value, config.FitnessScore, true),
                 new LinearTaskExecutor())

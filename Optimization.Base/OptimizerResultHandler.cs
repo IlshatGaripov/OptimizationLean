@@ -11,7 +11,7 @@ using QuantConnect.Orders;
 using QuantConnect.Packets;
 using QuantConnect.Statistics;
 
-namespace Optimization.RunnerAppAzure
+namespace Optimization.Base
 {
     public class OptimizerResultHandler : BaseResultsHandler, IResultHandler
     {

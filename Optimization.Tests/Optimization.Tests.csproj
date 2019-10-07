@@ -59,17 +59,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\GeneticSharp\src\GeneticSharp.Domain\GeneticSharp.Domain.csproj">
-      <Project>{B7FDC057-F9F2-4467-89E7-041202FB7BDC}</Project>
-      <Name>GeneticSharp.Domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GeneticSharp\src\GeneticSharp.Infrastructure.Framework\GeneticSharp.Infrastructure.Framework.csproj">
-      <Project>{14130612-FF14-4DF4-8829-27C0E85E09F0}</Project>
-      <Name>GeneticSharp.Infrastructure.Framework</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Optimization\Optimization.csproj">
+    <ProjectReference Include="..\Optimization.Base\Optimization.Base.csproj">
       <Project>{89d0362e-9aed-4718-b35e-bcae2949848d}</Project>
-      <Name>Optimization</Name>
+      <Name>Optimization.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Optimization.Genetic\Optimization.Genetic.csproj">
+      <Project>{6ae94fa0-c687-4a60-91f1-194ef33158e1}</Project>
+      <Name>Optimization.Genetic</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
