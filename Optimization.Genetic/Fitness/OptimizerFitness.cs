@@ -37,7 +37,7 @@ namespace Optimization.Genetic
                 // Write to the log information before an experiment ->
                 lock (Obj)
                 {
-                    Shared.Logger.Trace($"Chromosome Id: {chromosomeBase.Id} -> params: [{paramsString}]");
+                    Shared.Logger.Trace($"chromosome #id: {chromosomeBase.Id} [{paramsString}]");
                 }
 
                 // Set algorithm start and end dates ->
@@ -65,10 +65,8 @@ namespace Optimization.Genetic
                 };
 
                 // - OUTPUT 2 -
-                var output2 = $"chromosome #: {chromosomeBase.Id} results:{Environment.NewLine}";
-                output2 += paramsString + Environment.NewLine;
-
-                output2 +=
+                var output2 =
+                    $"chromosome #id: {chromosomeBase.Id} results:" + Environment.NewLine +
                     $"-> Fitness = {fitness} Drawdown = {Math.Round(result["Drawdown"], 2)} " +
                     $"TotalNumberOfTrades = {result["TotalNumberOfTrades"]}";
 

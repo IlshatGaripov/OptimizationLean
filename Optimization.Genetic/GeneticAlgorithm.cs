@@ -366,8 +366,8 @@ namespace Optimization.Genetic
         {
             var offspring = new List<IChromosome>();   // Container to hold the offspring
 
-            // Select parents for crossover/mutations ->
-            var parents = SelectParents(CrossoverParentsNumber);
+            // select parents
+            var parents = Selection.SelectChromosomes(CrossoverParentsNumber, Population.CurrentGeneration);
 
             // Until offspring size is less than max ->
             while (offspring.Count < Population.GenerationMaxSize)
@@ -415,10 +415,11 @@ namespace Optimization.Genetic
                 var withoutFitness = Population.CurrentGeneration.Chromosomes.Where(c => !c.Fitness.HasValue).ToList();
                 var haveFitness = Population.CurrentGeneration.Chromosomes.Where(c => c.Fitness.HasValue).ToList();
 
-                // Inform how many solutions we send for evaluation and dates ->
+                // display how many we send for backtest and dates
                 var leanFit = (LeanFitness) Fitness;
-                Shared.Logger.Trace($"EvaluateFitness(): Sending {withoutFitness.Count} for backtest and {haveFitness.Count} have got fitness");
-                Shared.Logger.Trace($"Period: {leanFit.StartDate:M/d/yy} to {leanFit.EndDate:M/d/yy}");
+                Shared.Logger.Trace($"EvaluateFitness(): Sending {withoutFitness.Count} for backtest " +
+                                    $"and {haveFitness.Count} have got fitness. period: " +
+                                    $"[{leanFit.StartDate:M/d/yy} to {leanFit.EndDate:M/d/yy}]" + Environment.NewLine);
 
                 foreach (var c in withoutFitness)
                 {
@@ -440,17 +441,6 @@ namespace Optimization.Genetic
                 TaskExecutor.Stop();
                 TaskExecutor.Clear();
             }
-        }
-
-        /// <summary>
-        /// Select parents
-        /// </summary>
-        /// <param name="number">Number of parents chromosomes to select.</param>
-        /// <returns></returns>
-        private IList<IChromosome> SelectParents(int number)
-        {
-            // perform selection
-            return Selection.SelectChromosomes(number, Population.CurrentGeneration);
         }
 
         /// <summary>

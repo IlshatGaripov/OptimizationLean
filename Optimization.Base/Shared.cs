@@ -11,18 +11,20 @@ namespace Optimization.Base
     /// </summary>
     public static class Shared
     {
-        /// <summary>
-        /// Global optimization configuration object
-        /// </summary>
-        public static OptimizerConfiguration Config = LoadConfigFromFile("optimization_local.json");
+        // Location of the configuration file.
+        private static string _configurationFilePath =
+            "C:\\Users\\sterling\\source\\repos\\OptimizationLeanJames\\Optimization.Launcher\\bin\\Debug\\optimization_local.json";
 
         /// <summary>
-        /// Global logger object
+        /// Optimization configuration object
+        /// </summary>
+        public static OptimizerConfiguration Config = LoadConfigFromFile(_configurationFilePath);
+
+        /// <summary>
+        /// Global log handler
         /// </summary>
         public static ILogHandler Logger =
-            new CompositeLogHandler(
-                new ConsoleLogHandler(),
-                new FileLogHandler(filepath: Config.LogFile));
+            new CompositeLogHandler(new ConsoleLogHandler(), new FileLogHandler(filepath: Config.LogFile));
 
         /// <summary>
         /// Loads values from JSON text file and converts to an object
