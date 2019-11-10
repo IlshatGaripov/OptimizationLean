@@ -1,5 +1,6 @@
 ﻿using System;
 using Optimization.Base;
+using QuantConnect.Logging;
 
 namespace Optimization.Launcher
 {
@@ -8,49 +9,59 @@ namespace Optimization.Launcher
         // -- MAIN --
         public static void Main()
         {
-            // Make sure that start and end dates are specified ->
-            if (Shared.Config.StartDate == null ||
-                Shared.Config.EndDate == null ||
-                Shared.Config.FitnessScore == 0 ||
-                Shared.Config.WalkForwardConfiguration == null)
+            try
             {
-                throw new ArgumentException("Please check that all required config variables are defined ..");
-            }
-
-            // initialize resources depending on task execution mode
-            DeployResources();
-
-            if (Shared.Config.WalkForwardConfiguration.Enabled == true)
-            {
-                var wfoManager = new WalkForwardOptimizationManager
+                // Make sure that start and end dates are specified ->
+                if (Shared.Config.StartDate == null ||
+                    Shared.Config.EndDate == null ||
+                    Shared.Config.FitnessScore == 0 ||
+                    Shared.Config.WalkForwardConfiguration == null)
                 {
-                    StartDate = Shared.Config.StartDate,
-                    EndDate = Shared.Config.EndDate,
-                    FitnessScore = Shared.Config.FitnessScore,
-                    WalkForwardConfiguration = Shared.Config.WalkForwardConfiguration
-                };
+                    throw new ArgumentException("Please check that all required config variables are defined ..");
+                }
 
-                // register event and start
-                wfoManager.ValidationCompleted += CompareResults;
-                wfoManager.Start();
+                // initialize resources depending on task execution mode
+                DeployResources();
+
+                if (Shared.Config.WalkForwardConfiguration.Enabled == true)
+                {
+                    var wfoManager = new WalkForwardOptimizationManager
+                    {
+                        StartDate = Shared.Config.StartDate,
+                        EndDate = Shared.Config.EndDate,
+                        FitnessScore = Shared.Config.FitnessScore,
+                        WalkForwardConfiguration = Shared.Config.WalkForwardConfiguration
+                    };
+
+                    // register event and start
+                    wfoManager.ValidationCompleted += CompareResults;
+                    wfoManager.Start();
+                }
+                else
+                {
+                    // otherwise create regular optimizator
+                    var easyManager = new AlgorithmOptimumFinder(
+                        Shared.Config.StartDate.Value,
+                        Shared.Config.EndDate.Value, 
+                        Shared.Config.FitnessScore);
+
+                    easyManager.Start();
+                }
+
+                // release earlier deployed execution resources
+                ReleaseDeployedResources();
+
+
+                Console.WriteLine();
+                Console.WriteLine("Press any key to exit .. ");
+                Console.ReadLine();
             }
-            else
+            catch (Exception e)
             {
-                // otherwise create regular optimizator
-                var easyManager = new AlgorithmOptimumFinder(Shared.Config.StartDate.Value, 
-                    Shared.Config.EndDate.Value, Shared.Config.FitnessScore);
-                easyManager.Start();
+                Log.Error(e);
+                throw;
             }
-
-            // release earlier deployed execution resources
-            ReleaseDeployedResources();
-
-
-            Console.WriteLine();
-            Console.WriteLine("Press any key to exit .. ");
-            Console.ReadLine();
         }
-
 
         /// <summary>
         /// Inits computation resources
