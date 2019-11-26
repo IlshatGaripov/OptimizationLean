@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Optimization.Base
 {
@@ -9,18 +8,6 @@ namespace Optimization.Base
         /// Error value to be assigned to positive results that haven't passed filter.
         /// </summary>
         public static double ErrorValue = -0.001;
-
-        /// <summary>
-        /// Static ctor
-        /// </summary>
-        static FitnessFilter()
-        {
-            // Throw an exception if no fitness filter configuration has been specified
-            if (Shared.Config.FitnessFilter == null)
-            {
-                throw new ArgumentException("FitnessFilter static ctor(): FitnessFilter is null");
-            }
-        }
 
         /// <summary>
         /// Applies filters to eliminate some false positive optimizer results

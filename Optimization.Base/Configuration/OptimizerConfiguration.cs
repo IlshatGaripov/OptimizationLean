@@ -54,7 +54,7 @@ namespace Optimization.Base
         /// Walk-forward optimizaion mode config object
         /// </summary>
         [JsonProperty("walk-forward")]
-        public WalkForwardConfiguration WalkForwardConfiguration { get; set; }
+        public WalkForwardConfiguration WalkingForward { get; set; }
 
         /// <summary>
         /// The settings to generate gene values

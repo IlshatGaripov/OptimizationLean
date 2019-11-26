@@ -71,10 +71,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureBatchManager.cs" />
+    <Compile Include="FitnessFilter.cs" />
     <Compile Include="GeneConfiguration.cs" />
     <Compile Include="GeneConverter.cs" />
     <Compile Include="Shared.cs" />
-    <Compile Include="FitnessFilter.cs" />
     <Compile Include="AppDomainRunner.cs" />
     <Compile Include="Configuration\OptimizerConfiguration.cs" />
     <Compile Include="StatisticsAdapter.cs" />

@@ -15,7 +15,8 @@ namespace Optimization.Launcher
                 if (Shared.Config.StartDate == null ||
                     Shared.Config.EndDate == null ||
                     Shared.Config.FitnessScore == 0 ||
-                    Shared.Config.WalkForwardConfiguration == null)
+                    Shared.Config.WalkingForward == null ||
+                    Shared.Config.FitnessFilter == null)
                 {
                     throw new ArgumentException("Please check that all required config variables are defined ..");
                 }
@@ -23,7 +24,7 @@ namespace Optimization.Launcher
                 // initialize resources depending on task execution mode
                 DeployResources();
 
-                if (Shared.Config.WalkForwardConfiguration.Enabled)
+                if (Shared.Config.WalkingForward.Enabled)
                 {
                     var wfoManager = new WalkForwardOptimizationManager
                     {
@@ -31,7 +32,7 @@ namespace Optimization.Launcher
                         EndDate = Shared.Config.EndDate,
                         FitnessScore = Shared.Config.FitnessScore,
                         FitnessFilter = Shared.Config.FitnessFilter,
-                        WalkForwardConfiguration = Shared.Config.WalkForwardConfiguration
+                        WalkForwardConfiguration = Shared.Config.WalkingForward
                     };
 
                     // register event and start
@@ -50,8 +51,8 @@ namespace Optimization.Launcher
                     easyManager.Start();
                 }
 
-                // release earlier deployed execution resources
-                ReleaseDeployedResources();
+                // release earlier deployed resources
+                ReleaseResources();
 
 
                 Console.WriteLine();
@@ -86,9 +87,9 @@ namespace Optimization.Launcher
         }
 
         /// <summary>
-        /// Releases computation resources at the end of optimization routine
+        /// Releases the computation resources at the end of optimization routine
         /// </summary>
-        public static void ReleaseDeployedResources()
+        public static void ReleaseResources()
         {
             // -1- Clean up Task Execution resources
             switch (Shared.Config.TaskExecutionMode)
