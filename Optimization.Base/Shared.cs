@@ -37,7 +37,21 @@ namespace Optimization.Base
             try
             {
                 // Transform the text from json to an object that holds the values from a file
-                return JsonConvert.DeserializeObject<OptimizerConfiguration>(File.ReadAllText(path), dateTimeConverter);
+                var configuration = JsonConvert.DeserializeObject<OptimizerConfiguration>(File.ReadAllText(path), dateTimeConverter);
+
+                // Make sure that start and end dates, fitness score
+                // and walking forward and fitness filter configuration blocks are present
+                if (configuration.StartDate == null ||
+                    configuration.EndDate == null ||
+                    configuration.FitnessScore == 0 ||
+                    configuration.WalkingForward == null ||
+                    configuration.FitnessFilter == null)
+                {
+                    throw new ArgumentException("Not enough varialbes in 'optimization.json'..");
+                }
+
+                // if all the checks have been successfully passed return an object
+                return configuration;
             }
             catch (Exception e)
             {

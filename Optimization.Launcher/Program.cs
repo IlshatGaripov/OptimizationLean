@@ -11,17 +11,7 @@ namespace Optimization.Launcher
         {
             try
             {
-                // Make sure that start and end dates are specified
-                if (Shared.Config.StartDate == null ||
-                    Shared.Config.EndDate == null ||
-                    Shared.Config.FitnessScore == 0 ||
-                    Shared.Config.WalkingForward == null ||
-                    Shared.Config.FitnessFilter == null)
-                {
-                    throw new ArgumentException("Please check that all required config variables are defined ..");
-                }
-
-                // initialize resources depending on task execution mode
+                // some initialization before the start, that will depend on task execution mode chosen
                 DeployResources();
 
                 if (Shared.Config.WalkingForward.Enabled)
