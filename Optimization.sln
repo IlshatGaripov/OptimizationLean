@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3BE73B50-BCC9-47BD-A83B-BFA05ABF4913}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneticSharp.Domain", "..\GeneticSharp\src\GeneticSharp.Domain\GeneticSharp.Domain.csproj", "{B7FDC057-F9F2-4467-89E7-041202FB7BDC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneticSharp.Infrastructure.Framework", "..\GeneticSharp\src\GeneticSharp.Infrastructure.Framework\GeneticSharp.Infrastructure.Framework.csproj", "{14130612-FF14-4DF4-8829-27C0E85E09F0}"

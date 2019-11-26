@@ -169,11 +169,6 @@ namespace Optimization.Base
             _shadow.SendStatusUpdate(status, message);
         }
 
-        public void SetChartSubscription(string symbol)
-        {
-            _shadow.SetChartSubscription(symbol);
-        }
-
         public void RuntimeStatistic(string key, string value)
         {
             _shadow.RuntimeStatistic(key, value);
