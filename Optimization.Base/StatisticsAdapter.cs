@@ -9,7 +9,7 @@ namespace Optimization.Base
         {
             {"Average Win","AverageWinRate"},
             {"Average Loss","AverageLossRate"},
-            {"Compounding Annual Return ","CompoundingAnnualReturn"},
+            {"Compounding Annual Return","CompoundingAnnualReturn"},
             {"Drawdown","Drawdown"},
             {"Expectancy","Expectancy"},
             {"Net Profit","TotalNetProfit"},

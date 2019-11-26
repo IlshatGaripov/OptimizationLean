@@ -48,6 +48,7 @@ namespace Optimization.Genetic
         /// <summary>
         /// Returns as a string chromosome's key-value representation from ToDictionary().
         /// </summary>
+        /// <param name="ch">The chromosome to represent as a string</param>
         public static string ToKeyValueString(this Chromosome ch)
         {
             var output = new StringBuilder();
@@ -57,6 +58,39 @@ namespace Optimization.Genetic
             }
 
             return output.ToString().TrimEnd(',', ' ');
+        }
+
+        /// <summary>
+        /// Creates a special format string for illustrative logging. 
+        /// </summary>
+        /// <param name="ch">The chromosome to represent as a string</param>
+        /// <returns> Example :
+        /// -------------------------------------
+        /// PARAMETERS: gold-fast-period 6
+        ///             gold-slow-period 40
+        ///             gold-drawdown-percent 0.4
+        ///--------------------------------------
+        /// </returns>
+        public static string ToLogOutputString(this Chromosome ch)
+        {
+            // beginning string
+            var output = new StringBuilder("PARAMETERS: ");
+            // newline and 12 spaces
+            string delimiter = Environment.NewLine + new string(' ', 12);
+            var pairs = ch.ToDictionary();
+
+            for (int i = 0; i < pairs.Count; i++)
+            {
+                var item = pairs.ElementAt(i);
+                output.Append(item.Key).Append(" ").Append(item.Value);
+
+                // if not the last item in collection append delimiter string
+                if (i != (pairs.Count - 1))
+                {
+                    output.Append(delimiter);
+                }
+            }
+            return output.ToString();
         }
 
         /// <summary>

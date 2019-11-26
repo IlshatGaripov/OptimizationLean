@@ -28,21 +28,12 @@ namespace Optimization.Genetic
         {
             try
             {
-                // - OUTPUT 1 -
+                // cast to the base type
                 var chromosomeBase = (Chromosome)chromosome;
 
                 // Convert to dictionary and add "id" key-value pair ->
                 var list = chromosomeBase.ToDictionary();
                 list.Add("chromosome-id", chromosomeBase.Id);
-
-                // Algorithm input parameters ->
-                var paramsString = chromosomeBase.ToKeyValueString();
-
-                // Write to the log information before an experiment ->
-                lock (Obj)
-                {
-                    Shared.Logger.Trace($"chromosome #id: {chromosomeBase.Id} [{paramsString}]");
-                }
 
                 // Set algorithm start and end dates ->
                 list.Add("start-date", StartDate.ToString("O"));
@@ -69,10 +60,12 @@ namespace Optimization.Genetic
                 };
 
                 // - OUTPUT 2 -
-                var output2 =
-                    $"chromosome #id: {chromosomeBase.Id} results:" + Environment.NewLine +
-                    $"-> Fitness = {fitness} Drawdown = {Math.Round(result["Drawdown"], 2)} " +
-                    $"TotalNumberOfTrades = {result["TotalNumberOfTrades"]}";
+                var output2 = $"[chromosome #id: {chromosomeBase.Id}]" + Environment.NewLine +
+                    chromosomeBase.ToLogOutputString() + Environment.NewLine +
+                    $"RESULTS: {FitnessScore} = {fitness:f2} " +
+                    $"Drawdown = {result["Drawdown"] *100 :f2} " +
+                    $"TotalNumberOfTrades = {result["TotalNumberOfTrades"]} " +
+                    $"AnnualReturn = {result["CompoundingAnnualReturn"] *100 :f2}";
 
                 lock (Obj)
                 {
