@@ -43,9 +43,9 @@ namespace Optimization.Launcher
         /// </summary>
         /// <param name="start">Algorithm start date</param>
         /// <param name="end">Algorithm end date</param>
-        /// <param name="sortCriteria">Argument of <see cref="FitnessScore"/> type.
-        /// Defines a criteria to sort the backtest results and choose best parameters</param>
-        public AlgorithmOptimumFinder(DateTime start, DateTime end, FitnessScore sortCriteria)
+        /// <param name="sortCriteria">Argument of <see cref="FitnessScore"/> type. Fintess function to rank the backtest results</param>
+        /// <param name="filterEnabled">Indicates whether to apply fitness filter to backtest results</param>
+        public AlgorithmOptimumFinder(DateTime start, DateTime end, FitnessScore sortCriteria, bool filterEnabled)
         {
             // Assign Dates and Criteria to sort the results ->
             StartDate = start;
@@ -67,17 +67,17 @@ namespace Optimization.Launcher
                 // Enable fitness filtering while searching for optimum parameters ->
                 case TaskExecutionMode.Linear:
                     executor = new LinearTaskExecutor();
-                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria, true);
+                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria, filterEnabled);
                     break;
 
                 case TaskExecutionMode.Parallel:
                     executor = new ParallelTaskExecutor();
-                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria, true);
+                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria, filterEnabled);
                     break;
 
                 case TaskExecutionMode.Azure:
                     executor = new TaskExecutorAzure();
-                    fitness = new AzureFitness(StartDate.Value, EndDate.Value, sortCriteria, true);
+                    fitness = new AzureFitness(StartDate.Value, EndDate.Value, sortCriteria, filterEnabled);
                     break;
 
                 default:

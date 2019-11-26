@@ -11,7 +11,7 @@ namespace Optimization.Launcher
         {
             try
             {
-                // Make sure that start and end dates are specified ->
+                // Make sure that start and end dates are specified
                 if (Shared.Config.StartDate == null ||
                     Shared.Config.EndDate == null ||
                     Shared.Config.FitnessScore == 0 ||
@@ -23,13 +23,14 @@ namespace Optimization.Launcher
                 // initialize resources depending on task execution mode
                 DeployResources();
 
-                if (Shared.Config.WalkForwardConfiguration.Enabled == true)
+                if (Shared.Config.WalkForwardConfiguration.Enabled)
                 {
                     var wfoManager = new WalkForwardOptimizationManager
                     {
                         StartDate = Shared.Config.StartDate,
                         EndDate = Shared.Config.EndDate,
                         FitnessScore = Shared.Config.FitnessScore,
+                        FitnessFilter = Shared.Config.FitnessFilter,
                         WalkForwardConfiguration = Shared.Config.WalkForwardConfiguration
                     };
 
@@ -43,7 +44,8 @@ namespace Optimization.Launcher
                     var easyManager = new AlgorithmOptimumFinder(
                         Shared.Config.StartDate.Value,
                         Shared.Config.EndDate.Value, 
-                        Shared.Config.FitnessScore);
+                        Shared.Config.FitnessScore,
+                        Shared.Config.FitnessFilter.Enabled);
 
                     easyManager.Start();
                 }

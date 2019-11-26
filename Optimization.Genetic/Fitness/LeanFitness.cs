@@ -35,13 +35,13 @@ namespace Optimization.Genetic
         /// <param name="start">Start date</param>
         /// <param name="end">End date</param>
         /// <param name="fitScore">Fitness value calculation method</param>
-        /// <param name="enableFilter">Whether or not to apply filter to results of fitness evaluation</param>
-        protected LeanFitness(DateTime start, DateTime end, FitnessScore fitScore, bool enableFilter)
+        /// <param name="filterEnabled">Indicates whether to apply filter to backtest results</param>
+        protected LeanFitness(DateTime start, DateTime end, FitnessScore fitScore, bool filterEnabled)
         {
             StartDate = start;
             EndDate = end;
             FitnessScore = fitScore;
-            FilterEnabled = enableFilter;
+            FilterEnabled = filterEnabled;
         }
 
         public abstract double Evaluate(IChromosome chromosome);

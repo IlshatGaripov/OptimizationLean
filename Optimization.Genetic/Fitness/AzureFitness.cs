@@ -20,10 +20,14 @@ namespace Optimization.Genetic
         private static readonly object Obj = new object();
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="AzureFitness"/> class
         /// </summary>
-        public AzureFitness(DateTime start, DateTime end, FitnessScore fitScore, bool enableFilter) : 
-            base(start, end, fitScore, enableFilter)
+        /// <param name="start">Start date</param>
+        /// <param name="end">End date</param>
+        /// <param name="fitScore">Fitness value calculation method</param>
+        /// <param name="filterEnabled">Indicates whether to apply filter to backtest results</param>
+        public AzureFitness(DateTime start, DateTime end, FitnessScore fitScore, bool filterEnabled) : 
+            base(start, end, fitScore, filterEnabled)
         { }
 
         /// <summary>

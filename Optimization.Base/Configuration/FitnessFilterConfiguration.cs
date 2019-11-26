@@ -10,6 +10,12 @@ namespace Optimization.Base
     public class FitnessFilterConfiguration
     {
         /// <summary>
+        /// Indicates whether the results should be filtered
+        /// </summary>
+        [JsonProperty("enabled")]
+        public bool Enabled { get; set; }
+
+        /// <summary>
         /// Minimum number of trades algorithm must 
         /// </summary>
         [JsonProperty("min-trades")]

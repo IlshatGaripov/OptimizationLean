@@ -28,6 +28,11 @@ namespace Optimization.Launcher
         public FitnessScore FitnessScore { get; set; }
 
         /// <summary>
+        /// Configuration to filter backtest results
+        /// </summary>
+        public FitnessFilterConfiguration FitnessFilter { get; set; }
+
+        /// <summary>
         /// Walk forward optimization settings object
         /// </summary>
         public WalkForwardConfiguration WalkForwardConfiguration { get; set; }
@@ -57,7 +62,7 @@ namespace Optimization.Launcher
             while (insampleEndDate < EndDate.Value)
             {
                 // Find optimum solutions ->
-                var optimumFinder = new AlgorithmOptimumFinder(insampleStartDate, insampleEndDate, FitnessScore);
+                var optimumFinder = new AlgorithmOptimumFinder(insampleStartDate, insampleEndDate, FitnessScore, FitnessFilter.Enabled);
                 optimumFinder.Start();
 
                 // Once completed retrieve N best results ->

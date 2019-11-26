@@ -13,7 +13,7 @@ namespace Optimization.Base
         /// Whether walking forward optimization mode is enabled or not
         /// </summary>
         [JsonProperty("enabled")]
-        public bool? Enabled { get; set; }
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// The Start date can move forward by step too, or can be anchored 
