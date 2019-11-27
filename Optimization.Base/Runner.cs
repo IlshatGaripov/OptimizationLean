@@ -25,21 +25,21 @@ namespace Optimization.Base
         /// </summary>
         public Dictionary<string, decimal> Run(Dictionary<string, string> alorithmInputs)
         {
-            // Chromosome id must be there ->
+            // Chromosome id must be there
             var id = alorithmInputs["chromosome-id"];
 
-            // Set algorithm input variables ->
+            // Set algorithm input variables
             foreach (var pair in alorithmInputs.Where(i => i.Key != "chromosome-id"))
             {
                 Config.Set(pair.Key, pair.Value);
             }
 
-            // Lean general settings ->
+            // Lean general settings
             Config.Set("environment", "backtesting");
-            Config.Set("algorithm-language", "CSharp");     // omitted?
+            Config.Set("algorithm-language", "CSharp");
             Config.Set("result-handler", nameof(OptimizerResultHandler));   //override default result handler
 
-            // Separate log uniquely named
+            // Create uniquely named log file for the backtest
             var dirPath = Path.Combine(Directory.GetCurrentDirectory(), "OptimizationLogs");
             var logFileName = "log" + "_" + id + ".txt";
             var filePath = Path.Combine(dirPath, logFileName);
@@ -61,8 +61,10 @@ namespace Optimization.Base
                 throw;
             }
 
-            leanEngineSystemHandlers.Initialize();   // can this be omitted?
+            // Setup packeting, queue and controls system: These don't do much locally.
+            leanEngineSystemHandlers.Initialize();
 
+            // Pull job from QuantConnect job queue, or, pull local build:
             var job = leanEngineSystemHandlers.JobQueue.NextJob(out var assemblyPath);
 
             if (job == null)
@@ -85,11 +87,9 @@ namespace Optimization.Base
             // Engine
             try
             {
-                var liveMode = Config.GetBool("live-mode");
-                var algorithmManager = new AlgorithmManager(liveMode);
-                // can this be omitted?
+                var algorithmManager = new AlgorithmManager(false, job);
                 leanEngineSystemHandlers.LeanManager.Initialize(leanEngineSystemHandlers, leanEngineAlgorithmHandlers, job, algorithmManager);
-                var engine = new Engine(leanEngineSystemHandlers, leanEngineAlgorithmHandlers, liveMode);
+                var engine = new Engine(leanEngineSystemHandlers, leanEngineAlgorithmHandlers, false);
                 engine.Run(job, algorithmManager, assemblyPath);
             }
             finally

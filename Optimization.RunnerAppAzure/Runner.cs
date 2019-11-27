@@ -16,7 +16,7 @@ namespace Optimization.RunnerAppAzure
         /// <summary>
         /// Custom Lean's result handler
         /// </summary>
-        public static OptimizerResultHandler ResultHandler;
+        private static OptimizerResultHandler ResultHandler;
 
         /// <summary>
         /// Method performs necessary initialization and starts and algorithm inside Lean Engine.
@@ -31,7 +31,7 @@ namespace Optimization.RunnerAppAzure
 
             // Common settings:
             Config.Set("environment", "backtesting");
-            Config.Set("algorithm-language", "CSharp");     // omitted?
+            Config.Set("algorithm-language", "CSharp");
             Config.Set("result-handler", nameof(OptimizerResultHandler));   //override default result handler
 
             // Log file location
@@ -50,8 +50,10 @@ namespace Optimization.RunnerAppAzure
                 throw;
             }
 
-            leanEngineSystemHandlers.Initialize();   // can this be omitted?
+            // Setup packeting, queue and controls system: These don't do much locally.
+            leanEngineSystemHandlers.Initialize();
 
+            // Pull job from QuantConnect job queue, or, pull local build:
             var job = leanEngineSystemHandlers.JobQueue.NextJob(out var assemblyPath);
 
             if (job == null)
@@ -74,11 +76,9 @@ namespace Optimization.RunnerAppAzure
             // Engine
             try
             {
-                var liveMode = Config.GetBool("live-mode");
-                var algorithmManager = new AlgorithmManager(liveMode);
-                // can this be omitted?
+                var algorithmManager = new AlgorithmManager(false, job);
                 leanEngineSystemHandlers.LeanManager.Initialize(leanEngineSystemHandlers, leanEngineAlgorithmHandlers, job, algorithmManager);
-                var engine = new Engine(leanEngineSystemHandlers, leanEngineAlgorithmHandlers, liveMode);
+                var engine = new Engine(leanEngineSystemHandlers, leanEngineAlgorithmHandlers, false);
                 engine.Run(job, algorithmManager, assemblyPath);
             }
             finally

@@ -400,12 +400,12 @@ namespace Optimization.Base
         /// Method uploads an up to date data required for experiment - bars/ticks - from Lean data folder to Azure File Share
         /// </summary>
         /// <param name="fileClient">Azure File client</param>
-        /// <returns></returns>
+        /// <remarks>Uses Shared.Logger for tracing the logging outputs</remarks>
         private static async Task SynchronizeHistoricalDataWithFileShareAsync(CloudFileClient fileClient)
         {
             // Start timer to check how long it takes to upload all the zip files
             Stopwatch uploadTimer = Stopwatch.StartNew();
-            Console.WriteLine("Synchronize Data <-> FileShare. time: {0}", DateTime.Now);
+            Shared.Logger.Trace($"Synchronize Data <-> FileShare. time: {DateTime.Now}");
 
             // Create share if not exist
             _dataFileShare = fileClient.GetShareReference(DataFileShareName);
@@ -446,7 +446,7 @@ namespace Optimization.Base
                 {
                     var cloudFileReference = cloudDirectory.GetFileReference(fileName);    // Cloud File variable
                     await cloudFileReference.UploadFromFileAsync(Shared.Config.DataFolder + file);
-                    Console.WriteLine($"File uploaded: {file}");
+                    Shared.Logger.Trace($"File uploaded: {file}");
                 }
                 catch (StorageException se)
                 {
@@ -454,6 +454,7 @@ namespace Optimization.Base
                     {
                         try
                         {
+                            Shared.Logger.Error($"\"ParentNotFound\" exception trying to upload: {file}. Needs to create the missing folders.");
                             // See what folders in a branch are missing and create
                             var folderTree = new List<CloudFileDirectory> { cloudDirectory };
                             var parent = cloudDirectory.Parent;
@@ -470,17 +471,17 @@ namespace Optimization.Base
                             foreach (var folder in folderTree)
                             {
                                 await folder.CreateIfNotExistsAsync();
-                                Console.WriteLine($"Created Folder: {folder.Uri.LocalPath}");
+                                Shared.Logger.Trace($"Created Folder: {folder.Uri.LocalPath}");
                             }
 
                             // Finally copy a file
                             var cloudFileReference = cloudDirectory.GetFileReference(fileName);    // Cloud File variable
                             await cloudFileReference.UploadFromFileAsync(Shared.Config.DataFolder + file);
-                            Console.WriteLine($"File uploaded after 2nd attempt: {file}");
+                            Shared.Logger.Trace($"File uploaded : {file}");
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine(e);
+                            Shared.Logger.Error(e.Message);
                             throw;
                         }
                     }
@@ -493,9 +494,8 @@ namespace Optimization.Base
             
             // Print out timing info
             uploadTimer.Stop();
-            Console.WriteLine("Synchronization <-> Compelete. time: {0}", DateTime.Now);
-            Console.WriteLine("Operation took time: {0}", uploadTimer.Elapsed);
-            Console.WriteLine();
+            Shared.Logger.Trace($"Synchronization <-> Compelete. time: {DateTime.Now}");
+            Shared.Logger.Trace($"Operation took time: {uploadTimer.Elapsed}" + Environment.NewLine);
         }
 
         /// <summary>
