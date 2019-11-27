@@ -17,7 +17,7 @@ namespace Optimization.Genetic
     /// </summary>
     public class AzureFitness: LeanFitness
     {
-        private static readonly object Obj = new object();
+        private static readonly object _lock = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureFitness"/> class
@@ -79,20 +79,11 @@ namespace Optimization.Genetic
             string appPath =
                 $"%AZ_BATCH_APP_PACKAGE_{AzureBatchManager.AppPackageId}#{AzureBatchManager.AppPackageVersion}%";
 
-            // Unique identifier of a chromosome
+            // Chromosome's unique identifier
             var id = chromosomeBase.Id;
 
-            // Algorithm input parameters
-            var algorithmInputs = chromosomeBase.ToKeyValueString();
-
-            // Write to the log information before an experiment ->
-            lock (Obj)
-            {
-                Shared.Logger.Trace($">> {algorithmInputs}");
-            }
-
             // -- 1 -- Create an argument string of gene key-values
-            var runnerInputArguments = algorithmInputs + " ";
+            var runnerInputArguments = chromosomeBase.ToKeyValueString() + " ";
 
             // -- 2 -- Add an algorithm name to that string
             runnerInputArguments += $"algorithm-type-name {Shared.Config.AlgorithmTypeName} ";
@@ -163,14 +154,14 @@ namespace Optimization.Genetic
             // Monitor for a task to complete. Timeout is set to 30 minutes. 
             await MonitorSpecificTaskToCompleteAsync(batchClient, jobId, taskId, TimeSpan.FromMinutes(30));
 
-            // Obtain results dictionary ->
+            // Obtain results dictionary
             var result = await ObtainResultFromTheBlob(blobClient, AzureBatchManager.OutputContainerName, 
                 @"results\" + resultsOutputFile);
 
-            // Calculate fitness ->
+            // Calculate fitness 
             var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore, FilterEnabled);
 
-            // Save full results ->
+            // Save full results
             chromosomeBase.FitnessResult = new FitnessResult
             {
                 Chromosome = chromosomeBase,
@@ -179,11 +170,17 @@ namespace Optimization.Genetic
                 FullResults = result
             };
 
+            var logOutput = $"[chromosome #id: {chromosomeBase.Id}]" + Environment.NewLine +
+                          chromosomeBase.ToLogOutputString() + Environment.NewLine +
+                          $"RESULTS: {FitnessScore} = {fitness:f2} " +
+                          $"Drawdown = {result["Drawdown"] * 100:f2} " +
+                          $"TotalNumberOfTrades = {result["TotalNumberOfTrades"]} " +
+                          $"AnnualReturn = {result["CompoundingAnnualReturn"] * 100:f2}";
 
-            // Display results to the log ->
-            lock (Obj)
+            // Display the output
+            lock (_lock)
             {
-                Shared.Logger.Trace($"({fitness}) {algorithmInputs}");
+                Shared.Logger.Trace(logOutput + Environment.NewLine);
             }
 
             return fitness;

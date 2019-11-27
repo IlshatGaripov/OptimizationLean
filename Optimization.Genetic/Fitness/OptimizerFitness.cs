@@ -8,7 +8,7 @@ namespace Optimization.Genetic
     /// </summary>
     public class OptimizerFitness : LeanFitness
     {
-        private static readonly object Obj = new object();
+        private static readonly object _lock = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OptimizerFitness"/> class
@@ -67,9 +67,9 @@ namespace Optimization.Genetic
                     $"TotalNumberOfTrades = {result["TotalNumberOfTrades"]} " +
                     $"AnnualReturn = {result["CompoundingAnnualReturn"] *100 :f2}";
 
-                lock (Obj)
+                // Display the output
+                lock (_lock)
                 {
-                    // log final output and return the result of evalution
                     Shared.Logger.Trace(output2 + Environment.NewLine);
                 }
 
