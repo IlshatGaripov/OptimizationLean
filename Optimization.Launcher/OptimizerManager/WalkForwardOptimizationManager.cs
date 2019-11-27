@@ -15,12 +15,12 @@ namespace Optimization.Launcher
         /// <summary>
         /// Optimization start date
         /// </summary>
-        public DateTime? StartDate { get; set; }
+        public DateTime StartDate { get; set; }
 
         /// <summary>
         /// Optimization end date
         /// </summary>
-        public DateTime? EndDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         /// <summary>
         /// Fitness Score to sort the parameters obtained by optimization
@@ -52,14 +52,14 @@ namespace Optimization.Launcher
             СheckСonsistencyOfTheInputParameters();
 
             // Init datetime variables will be used in first iteration ->
-            var insampleStartDate = StartDate.Value;
+            var insampleStartDate = StartDate;
             var insampleEndDate = insampleStartDate.AddDays(WalkForwardConfiguration.InSamplePeriod.Value - 1);
             var validationStartDate = insampleEndDate.AddDays(1);
             var validationEndDate = insampleEndDate.AddDays(WalkForwardConfiguration.Step.Value);
             var step = WalkForwardConfiguration.Step.Value;
             
             // While insampleEndDate is less then fixed optimization EndDate we may crank one more iteration -> 
-            while (insampleEndDate < EndDate.Value)
+            while (insampleEndDate < EndDate)
             {
                 // Find optimum solutions ->
                 var optimumFinder = new AlgorithmOptimumFinder(insampleStartDate, insampleEndDate, FitnessScore, FitnessFilter.Enabled);
@@ -113,7 +113,7 @@ namespace Optimization.Launcher
             DateTime validationStartDate,
             DateTime validationEndDate)
         {
-            // Create a deep copy ->
+            // Create a deep copy
             var copy = (Chromosome)insampeResult.Chromosome.CreateNew();
 
             // Run a backtest.
@@ -130,7 +130,7 @@ namespace Optimization.Launcher
                 copy.Fitness = fitness.Evaluate(copy);
             }
 
-            // Raise an event ->
+            // Raise an event
             ValidationCompleted?.Invoke(this, e: 
                 new WalkForwardValidationEventArgs(insampeResult, copy.FitnessResult));
         }
@@ -140,16 +140,13 @@ namespace Optimization.Launcher
         /// </summary>
         private void СheckСonsistencyOfTheInputParameters()
         {
-            // All property values must be assigned before calling the method ->
-            if (!StartDate.HasValue ||
-                !EndDate.HasValue ||
-                FitnessScore == 0 ||
-                WalkForwardConfiguration == null)
+            // All property values must be assigned before calling the method
+            if (FitnessScore == 0 || WalkForwardConfiguration == null)
             {
                 throw new ApplicationException("СheckСonsistencyOfTheInputParameters(): WalkForwardManager public properties are not fully initialized");
             }
 
-            // Check for required config values presence ->
+            // Check for required config values presence
             if (!WalkForwardConfiguration.InSamplePeriod.HasValue ||
                 !WalkForwardConfiguration.Step.HasValue ||
                 !WalkForwardConfiguration.Anchored.HasValue)
@@ -158,12 +155,12 @@ namespace Optimization.Launcher
             }
 
             // Make sure that number of days between beginning and end is enough for at least one iteration.
-            // We substract 1 as Lean includes includes boundary date values in the experiment span ->
+            // We substract 1 as Lean includes includes boundary date values in the experiment span
             var minDaysBtwStartEnd = WalkForwardConfiguration.InSamplePeriod.Value + WalkForwardConfiguration.Step.Value - 1;
-            if (StartDate.Value.AddDays(minDaysBtwStartEnd) > EndDate.Value)
+            if (StartDate.AddDays(minDaysBtwStartEnd) > EndDate)
             {
                 throw new ArgumentOutOfRangeException(
-                    $"The range between {StartDate.Value} and {EndDate.Value} " +
+                    $"The range between {StartDate} and {EndDate} " +
                     "is short for walk forward configuration values specified");
             }
         }

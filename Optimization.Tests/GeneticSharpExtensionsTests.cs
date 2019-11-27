@@ -33,7 +33,7 @@ namespace Optimization.Tests
 
             var ga = new GeneticAlgorithm(
                 new PopulationRandom(config.GeneConfigArray, config.PopulationInitialSize),
-                new OptimizerFitness(config.StartDate.Value, config.EndDate.Value, config.FitnessScore, true),
+                new OptimizerFitness(config.StartDate, config.EndDate, config.FitnessScore, true),
                 new LinearTaskExecutor())
             {
                 Termination = new LogicalOrTermination()

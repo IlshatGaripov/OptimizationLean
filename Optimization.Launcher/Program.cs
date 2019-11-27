@@ -33,8 +33,8 @@ namespace Optimization.Launcher
                 {
                     // otherwise create regular optimizator
                     var easyManager = new AlgorithmOptimumFinder(
-                        Shared.Config.StartDate.Value,
-                        Shared.Config.EndDate.Value, 
+                        Shared.Config.StartDate,
+                        Shared.Config.EndDate, 
                         Shared.Config.FitnessScore,
                         Shared.Config.FitnessFilter.Enabled);
 
@@ -51,7 +51,7 @@ namespace Optimization.Launcher
             }
             catch (Exception e)
             {
-                Log.Error(e);
+                Console.WriteLine(e);
                 throw;
             }
         }

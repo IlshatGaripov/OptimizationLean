@@ -42,13 +42,13 @@ namespace Optimization.Base
         /// Algorithm backtest start date
         /// </summary>
         [JsonProperty("start-date")]
-        public DateTime? StartDate { get; set; }
+        public DateTime StartDate { get; set; }
 
         /// <summary>
         /// Algorithm backtest end date
         /// </summary>
         [JsonProperty("end-date")]
-        public DateTime? EndDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         /// <summary>
         /// Walk-forward optimizaion mode config object

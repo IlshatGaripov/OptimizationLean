@@ -11,12 +11,12 @@ namespace Optimization.Launcher
         /// <summary>
         /// Optimization start date
         /// </summary>
-        DateTime? StartDate { get; set; }
+        DateTime StartDate { get; set; }
 
         /// <summary>
         /// Optimization end date
         /// </summary>
-        DateTime? EndDate { get; set; }
+        DateTime EndDate { get; set; }
 
         /// <summary>
         /// Fitness score used to rank the backtest results

@@ -14,12 +14,12 @@ namespace Optimization.Launcher
         /// <summary>
         /// Optimization start date
         /// </summary>
-        public DateTime? StartDate { get; set; }
+        public DateTime StartDate { get; set; }
 
         /// <summary>
         /// Optimization end date
         /// </summary>
-        public DateTime? EndDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         /// <summary>
         /// Fitness score used to rank the backtest results
@@ -67,17 +67,17 @@ namespace Optimization.Launcher
                 // Enable fitness filtering while searching for optimum parameters ->
                 case TaskExecutionMode.Linear:
                     executor = new LinearTaskExecutor();
-                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria, filterEnabled);
+                    fitness = new OptimizerFitness(StartDate, EndDate, sortCriteria, filterEnabled);
                     break;
 
                 case TaskExecutionMode.Parallel:
                     executor = new ParallelTaskExecutor();
-                    fitness = new OptimizerFitness(StartDate.Value, EndDate.Value, sortCriteria, filterEnabled);
+                    fitness = new OptimizerFitness(StartDate, EndDate, sortCriteria, filterEnabled);
                     break;
 
                 case TaskExecutionMode.Azure:
                     executor = new TaskExecutorAzure();
-                    fitness = new AzureFitness(StartDate.Value, EndDate.Value, sortCriteria, filterEnabled);
+                    fitness = new AzureFitness(StartDate, EndDate, sortCriteria, filterEnabled);
                     break;
 
                 default:

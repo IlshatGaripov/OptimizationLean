@@ -14,7 +14,7 @@ namespace Optimization.Base
         // Location of the configuration file.
         private static readonly string ConfigurationFilePath =
             "C:\\Users\\sterling\\source\\repos\\OptimizationLean\\Optimization.Launcher\\optimization_local.json";
-
+        
         /// <summary>
         /// Optimization configuration object
         /// </summary>
@@ -41,13 +41,13 @@ namespace Optimization.Base
 
                 // Make sure that start and end dates, fitness score
                 // and walking forward and fitness filter configuration blocks are present
-                if (configuration.StartDate == null ||
-                    configuration.EndDate == null ||
+                if (configuration.StartDate == DateTime.MinValue ||
+                    configuration.EndDate == DateTime.MinValue ||
                     configuration.FitnessScore == 0 ||
                     configuration.WalkingForward == null ||
                     configuration.FitnessFilter == null)
                 {
-                    throw new ArgumentException("Not enough varialbes in 'optimization.json'..");
+                    throw new ArgumentException("Shared.LoadConfigFromFile(): Not enough varialbes in 'optimization.json'");
                 }
 
                 // if all the checks have been successfully passed return an object
@@ -55,7 +55,8 @@ namespace Optimization.Base
             }
             catch (Exception e)
             {
-                Logger.Error(e.Message);
+                // using console as Logger is yet not initialized here
+                Console.WriteLine(e.Message);
                 throw;
             }
         }
