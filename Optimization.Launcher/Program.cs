@@ -1,6 +1,5 @@
 ﻿using System;
 using Optimization.Base;
-using QuantConnect.Logging;
 
 namespace Optimization.Launcher
 {
@@ -16,17 +15,20 @@ namespace Optimization.Launcher
 
                 if (Shared.Config.WalkingForward.Enabled)
                 {
-                    var wfoManager = new WalkForwardOptimizationManager
-                    {
-                        StartDate = Shared.Config.StartDate,
-                        EndDate = Shared.Config.EndDate,
-                        FitnessScore = Shared.Config.FitnessScore,
-                        FitnessFilter = Shared.Config.FitnessFilter,
-                        WalkForwardConfiguration = Shared.Config.WalkingForward
-                    };
+                    var wfoManager = new WalkForwardOptimizationManager(Shared.Config.StartDate,
+                        Shared.Config.EndDate,
+                        Shared.Config.FitnessScore,
+                        Shared.Config.FitnessFilter.Enabled) { WalkForwardConfiguration = Shared.Config.WalkingForward};
 
-                    // register event and start
-                    wfoManager.ValidationCompleted += CompareResults;
+                    // register event callback
+                    wfoManager.ValidationCompleted +=
+                        (sender, vdarg) => {
+                            Shared.Logger.Trace("Validation Comparsion");
+                            Shared.Logger.Trace($"{vdarg.InsampleResults.Chromosome.Fitness} / {vdarg.ValidationResults.Chromosome.Fitness}");
+                            Shared.Logger.Trace(" <->");
+                        };
+
+                    // and launch
                     wfoManager.Start();
                 }
                 else
@@ -96,16 +98,5 @@ namespace Optimization.Launcher
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-        /// <summary>
-        /// Called at the end of iterative step of walk forward optimization
-        /// </summary>
-        public static void CompareResults(object sender, WalkForwardValidationEventArgs e)
-        {
-            Shared.Logger.Trace("Validation Comparsion");
-            Shared.Logger.Trace($"{e.InsampleResults.Chromosome.Fitness} / {e.ValidationResults.Chromosome.Fitness}");
-            Shared.Logger.Trace(" <->");
-        }
-
     }
 }

@@ -31,25 +31,22 @@ namespace Optimization.Base
         /// </summary>
         public static OptimizerConfiguration LoadConfigFromFile(string path)
         {
-            // DateTimeFormat for proper deserialize of start and end date string to DateTime
-            var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd" };
-
             try
             {
-                // Transform the text from json to an object that holds the values from a file
+                // fulfill an object with values from configuration file 
+                var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd" };
                 var configuration = JsonConvert.DeserializeObject<OptimizerConfiguration>(File.ReadAllText(path), dateTimeConverter);
 
-                // Make sure that start and end dates, fitness score
-                // and walking forward and fitness filter configuration blocks are present
+                // Make sure all the variables have been provided by the config
                 if (configuration.StartDate == DateTime.MinValue ||
                     configuration.EndDate == DateTime.MinValue ||
                     configuration.FitnessScore == 0 ||
                     configuration.WalkingForward == null ||
                     configuration.FitnessFilter == null)
                 {
-                    throw new ArgumentException("Shared.LoadConfigFromFile(): Not enough varialbes in 'optimization.json'");
+                    throw new ArgumentException("Configuration file is not fully completed. Check the args!");
                 }
-
+                
                 // if all the checks have been successfully passed return an object
                 return configuration;
             }

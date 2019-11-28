@@ -38,58 +38,57 @@ namespace Optimization.Launcher
         public IList<Chromosome> ProfitableChromosomes { get; set; }
 
         /// <summary>
-        /// Init class variables. Algorithm start and end dates and sorting method
-        /// are to be set explicitely when declaring a class. Default sortCriteria is Sharpe Ratio.
+        /// Initializes a new instance of the <see cref="AlgorithmOptimumFinder"/> class
         /// </summary>
         /// <param name="start">Algorithm start date</param>
         /// <param name="end">Algorithm end date</param>
-        /// <param name="sortCriteria">Argument of <see cref="FitnessScore"/> type. Fintess function to rank the backtest results</param>
+        /// <param name="fitScore">Argument of <see cref="FitnessScore"/> type. Fintess function to rank the backtest results</param>
         /// <param name="filterEnabled">Indicates whether to apply fitness filter to backtest results</param>
-        public AlgorithmOptimumFinder(DateTime start, DateTime end, FitnessScore sortCriteria, bool filterEnabled)
+        public AlgorithmOptimumFinder(DateTime start, DateTime end, FitnessScore fitScore, bool filterEnabled)
         {
-            // Assign Dates and Criteria to sort the results ->
+            // Assign Dates and Criteria to sort the results
             StartDate = start;
             EndDate = end;
-            FitnessScore = sortCriteria;
+            FitnessScore = fitScore;
 
-            // Common properties ->
+            // Common properties
             var selection = new RouletteWheelSelection();
 
-            // Properties specific to optimization modes ->
+            // Properties specific to optimization modes
             IFitness fitness;
             PopulationBase population;
             ITaskExecutor executor;
             ITermination termination;
 
-            // Task execution mode ->
+            // Task execution mode
             switch (Shared.Config.TaskExecutionMode)
             {
-                // Enable fitness filtering while searching for optimum parameters ->
+                // Enable fitness filtering while searching for optimum parameters
                 case TaskExecutionMode.Linear:
                     executor = new LinearTaskExecutor();
-                    fitness = new OptimizerFitness(StartDate, EndDate, sortCriteria, filterEnabled);
+                    fitness = new OptimizerFitness(StartDate, EndDate, fitScore, filterEnabled);
                     break;
 
                 case TaskExecutionMode.Parallel:
                     executor = new ParallelTaskExecutor();
-                    fitness = new OptimizerFitness(StartDate, EndDate, sortCriteria, filterEnabled);
+                    fitness = new OptimizerFitness(StartDate, EndDate, fitScore, filterEnabled);
                     break;
 
                 case TaskExecutionMode.Azure:
                     executor = new TaskExecutorAzure();
-                    fitness = new AzureFitness(StartDate, EndDate, sortCriteria, filterEnabled);
+                    fitness = new AzureFitness(StartDate, EndDate, fitScore, filterEnabled);
                     break;
 
                 default:
                     throw new Exception("Executor initialization failed");
             }
 
-            // Optimization mode ->
+            // Optimization mode
             switch (Shared.Config.OptimizationMode)
             {
                 case OptimizationMode.BruteForce:
                     {
-                        // Create cartesian population ->
+                        // Create cartesian population
                         population = new PopulationCartesian(Shared.Config.GeneConfigArray);
                         termination = new GenerationNumberTermination(1);
 
@@ -98,13 +97,13 @@ namespace Optimization.Launcher
 
                 case OptimizationMode.Genetic:
                     {
-                        // Create random population ->
+                        // Create random population
                         population = new PopulationRandom(Shared.Config.GeneConfigArray, Shared.Config.PopulationInitialSize)
                         {
                             GenerationMaxSize = Shared.Config.GenerationMaxSize
                         };
 
-                        // Logical terminaton ->
+                        // Logical terminaton
                         var localTerm = new LogicalOrTermination();
 
                         localTerm.AddTermination(new FruitlessGenerationsTermination(3));
@@ -128,11 +127,11 @@ namespace Optimization.Launcher
             // like to declare event handlers from outside the class before calling Start()
             GenAlgorithm = new GeneticAlgorithm(population, fitness, executor)
             {
-                // Reference type ->
+                // Reference type
                 Selection = selection,
                 Termination = termination,
 
-                // Numeric values ->
+                // Numeric values
                 CrossoverParentsNumber = Shared.Config.CrossoverParentsNumber,
                 CrossoverMixProbability = Shared.Config.CrossoverMixProbability,
                 MutationProbability = Shared.Config.MutationProbability
@@ -156,7 +155,7 @@ namespace Optimization.Launcher
         /// </summary>
         private void TerminationReached(object sender, TerminationReachedEventArgs e)
         {
-            // Choose all good chromosomes ->
+            // Choose all good chromosomes
             ProfitableChromosomes = ChooseProfitableChromosomes(e.Pupulation);
 
             Shared.Logger.Trace("Termination reached");
