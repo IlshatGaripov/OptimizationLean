@@ -29,16 +29,13 @@ namespace Optimization.Genetic
         public static Dictionary<string, string> ToDictionary(this Chromosome ch)
         {
             var resultingDictionary = new Dictionary<string, string>();
-
             for (var index = 0; index < ch.Length; index++)
             {
-                // Take the key from Global config ->
+                // Take the key from Global config
                 var key = ch.GeneConfigurationArray[index].Key;
-
-                // Take value from the Gene ->
+                // Take value from the Gene
                 var value = ch.GetGene(index).Value.ToString();
-
-                // Add these to collection ->
+                // Add these to collection
                 resultingDictionary.Add(key, value);
             }
 
@@ -64,14 +61,12 @@ namespace Optimization.Genetic
         /// Creates a special format string for illustrative logging. 
         /// </summary>
         /// <param name="ch">The chromosome to represent as a string</param>
-        /// <returns> Example :
-        /// -------------------------------------
+        /// <returns> Example:
         /// PARAMETERS: gold-fast-period 6
         ///             gold-slow-period 40
         ///             gold-drawdown-percent 0.4
-        ///--------------------------------------
         /// </returns>
-        public static string ToLogOutputString(this Chromosome ch)
+        public static string FitnessLogOutput(this Chromosome ch)
         {
             // beginning string
             var output = new StringBuilder("PARAMETERS: ");
@@ -91,6 +86,52 @@ namespace Optimization.Genetic
                 }
             }
             return output.ToString();
+        }
+
+        /// <summary>
+        /// Creates a formatted string for illustrative logging the collection of chromosomes
+        /// </summary>
+        /// <param name="chromosomes">Collection of chromosomes to display</param>
+        /// <param name="headerMsg">The header message</param>
+        /// <returns> Example:
+        /// [GENERATION RAN] - profitable solutions : 3
+        ///     	1.76 # (6, 40, 0.3)
+        ///         0.90 # (8, 50, 0.3)
+        ///         0.54 # (8, 40, 0.3)
+        /// </returns>
+        public static string SolutionsToLogOutput(this IList<IChromosome> chromosomes, string headerMsg)
+        {
+            // begins with new line
+            var output = new StringBuilder(Environment.NewLine);
+            output.Append($"[{headerMsg}] - profitable solutions : {chromosomes.Count}");
+            output.Append(Environment.NewLine);
+            foreach (var c in chromosomes)
+            {
+                var cBase = (Chromosome)c;
+                output.Append($"\t{cBase.Fitness:f2} # ({string.Join(", ", cBase.ToDictionary().Values).TrimEnd(' ',',')})");
+                output.Append(Environment.NewLine);
+            }
+
+            return output.ToString();
+        }
+
+        /// <summary>
+        /// Selects all chromosomes with positive fitness from given population
+        /// </summary>
+        /// <param name="population">Population</param>
+        /// <returns></returns>
+        public static IList<IChromosome> SelectProfitableChromosomes(this PopulationBase population)
+        {
+            var completeList = new List<IChromosome>();
+            foreach (var g in population.Generations)
+            {
+                completeList.AddRange(g.Chromosomes);
+            }
+
+            return completeList.SelectDistinct()
+                .Where(c => c.Fitness != null && c.Fitness.Value > 0)
+                .OrderByDescending(c => c.Fitness.Value)
+                .ToList();
         }
 
         /// <summary>
@@ -148,7 +189,6 @@ namespace Optimization.Genetic
                     }
                 }
             }
-
         }
 
         /// <summary>

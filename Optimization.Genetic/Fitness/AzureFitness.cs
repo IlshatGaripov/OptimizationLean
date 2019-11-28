@@ -171,7 +171,7 @@ namespace Optimization.Genetic
             };
 
             var logOutput = $"[chromosome #id: {chromosomeBase.Id}]" + Environment.NewLine +
-                          chromosomeBase.ToLogOutputString() + Environment.NewLine +
+                          chromosomeBase.FitnessLogOutput() + Environment.NewLine +
                           $"RESULTS: {FitnessScore} = {fitness:f2} " +
                           $"Drawdown = {result["Drawdown"] * 100:f2} " +
                           $"TotalNumberOfTrades = {result["TotalNumberOfTrades"]} " +

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Optimization.Base;
 using Optimization.Genetic;
 
@@ -35,7 +34,7 @@ namespace Optimization.Launcher
         /// <summary>
         /// Collection of all chromosomes that appeared in GA search that had positive fitness
         /// </summary>
-        public IList<Chromosome> ProfitableChromosomes { get; set; }
+        public IList<IChromosome> ProfitableChromosomes { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AlgorithmOptimumFinder"/> class
@@ -122,16 +121,14 @@ namespace Optimization.Launcher
                     throw new Exception("Optimization mode specific objects were not initialized");
             }
 
-            // Create the GA itself
-            // It's important to initialize GA in a constructor as we would
-            // like to declare event handlers from outside the class before calling Start()
+            // Create GA itself
             GenAlgorithm = new GeneticAlgorithm(population, fitness, executor)
             {
-                // Reference type
+                // Reference types
                 Selection = selection,
                 Termination = termination,
 
-                // Numeric values
+                // Values types
                 CrossoverParentsNumber = Shared.Config.CrossoverParentsNumber,
                 CrossoverMixProbability = Shared.Config.CrossoverMixProbability,
                 MutationProbability = Shared.Config.MutationProbability
@@ -139,63 +136,26 @@ namespace Optimization.Launcher
         }
 
         /// <summary>
-        /// Starts an optimization. 
+        /// Runs an optimization
         /// </summary>
         public void Start()
         {
-            // raised when new generation formed
-            GenAlgorithm.GenerationRan += (sender, generation) => {
-                Shared.Logger.Trace(" <->");
-                Shared.Logger.Trace($"Generation formed - profitable solutions count - {generation.Chromosomes.Count} :");
-                foreach (var c in generation.Chromosomes)
-                {
-                    var chromBase = (Chromosome)c;
-                    Shared.Logger.Trace($"{chromBase.Fitness} ## {chromBase.ToKeyValueString()}");
-                }
-
-                if (generation.IsFruitless)
-                {
-                    Shared.Logger.Error("WARNING: Generation is fruitless, i.e has zero or very few acceptable solutions");
-                }
-                Shared.Logger.Trace(" <->");
-            };
-
-            // raised when completed 
-            GenAlgorithm.TerminationReached += (sender, population) => { 
-                ProfitableChromosomes = ChooseProfitableChromosomes(population);   // choose all good chromosomes
-
-                Shared.Logger.Trace("Termination reached");
-                Shared.Logger.Trace($"Good chromosomes - Count {ProfitableChromosomes.Count} - printing :");
-
-                foreach (var c in ProfitableChromosomes)
-                {
-                    Shared.Logger.Trace($"{c.Fitness} ## {c.ToKeyValueString()}");
-                }
-                Shared.Logger.Trace(" <->");
-            };
-
-            // launch genetic
-            GenAlgorithm.Start();
-        }
-
-        /// <summary>
-        /// Selects all chromosomes with positive fitness after GA completes its work and ranges them by fitness
-        /// </summary>
-        /// <param name="population"></param>
-        /// <returns></returns>
-        private static IList<Chromosome> ChooseProfitableChromosomes(PopulationBase population)
-        {
-            var completeList = new List<IChromosome>();
-            foreach (var g in population.Generations)
+            // -- 1 -- raised when new generation formed 
+            GenAlgorithm.GenerationRan += (sender, generation) => 
             {
-                completeList.AddRange(g.Chromosomes);
-            }
+                Shared.Logger.Trace(generation.Chromosomes.SolutionsToLogOutput("GENERATION RAN"));
+            };
 
-            return completeList.SelectDistinct()
-                .Where(c => c.Fitness != null && c.Fitness.Value > 0)
-                .OrderByDescending(c => c.Fitness.Value)
-                .Cast<Chromosome>()
-                .ToList();
+            // -- 2 -- raised when optimization completed
+            GenAlgorithm.TerminationReached += (sender, population) => 
+            {
+                // save all good chromosomes and log the output
+                ProfitableChromosomes = population.SelectProfitableChromosomes();
+                Shared.Logger.Trace(ProfitableChromosomes.SolutionsToLogOutput("TERMINATION REACHED"));
+            };
+
+            // launches genetic
+            GenAlgorithm.Start();
         }
     }
 }

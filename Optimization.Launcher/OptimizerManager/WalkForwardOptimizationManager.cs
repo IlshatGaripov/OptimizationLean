@@ -110,9 +110,8 @@ namespace Optimization.Launcher
                 // For each good chromosome add the task to collection
                 foreach (var c in bestResults)
                 {
-                    validationTasks.Add(       
-                        Task.Run( () => 
-                            ValidateOutOfSample(c.FitnessResult, FitnessScore, startDate, endDate)));
+                    var cBase = (Chromosome) c;
+                    validationTasks.Add(Task.Run( () => ValidateOutOfSample(cBase.FitnessResult, FitnessScore, startDate, endDate)));
                 }
 
                 // Wait for all tasks to complete before to continue
