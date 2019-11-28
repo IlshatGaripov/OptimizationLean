@@ -143,49 +143,39 @@ namespace Optimization.Launcher
         /// </summary>
         public void Start()
         {
-            // register event handlers and run
-            GenAlgorithm.GenerationRan += GenerationRan;
-            GenAlgorithm.TerminationReached += TerminationReached;
+            // raised when new generation formed
+            GenAlgorithm.GenerationRan += (sender, generation) => {
+                Shared.Logger.Trace(" <->");
+                Shared.Logger.Trace($"Generation formed - profitable solutions count - {generation.Chromosomes.Count} :");
+                foreach (var c in generation.Chromosomes)
+                {
+                    var chromBase = (Chromosome)c;
+                    Shared.Logger.Trace($"{chromBase.Fitness} ## {chromBase.ToKeyValueString()}");
+                }
 
+                if (generation.IsFruitless)
+                {
+                    Shared.Logger.Error("WARNING: Generation is fruitless, i.e has zero or very few acceptable solutions");
+                }
+                Shared.Logger.Trace(" <->");
+            };
+
+            // raised when completed 
+            GenAlgorithm.TerminationReached += (sender, population) => { 
+                ProfitableChromosomes = ChooseProfitableChromosomes(population);   // choose all good chromosomes
+
+                Shared.Logger.Trace("Termination reached");
+                Shared.Logger.Trace($"Good chromosomes - Count {ProfitableChromosomes.Count} - printing :");
+
+                foreach (var c in ProfitableChromosomes)
+                {
+                    Shared.Logger.Trace($"{c.Fitness} ## {c.ToKeyValueString()}");
+                }
+                Shared.Logger.Trace(" <->");
+            };
+
+            // launch genetic
             GenAlgorithm.Start();
-        }
-
-        /// <summary>
-        /// Handler called at the end of work of genetic algorithm
-        /// </summary>
-        private void TerminationReached(object sender, TerminationReachedEventArgs e)
-        {
-            // Choose all good chromosomes
-            ProfitableChromosomes = ChooseProfitableChromosomes(e.Pupulation);
-
-            Shared.Logger.Trace("Termination reached");
-            Shared.Logger.Trace($"Good chromosomes - Count {ProfitableChromosomes.Count} - printing :");
-
-            foreach (var c in ProfitableChromosomes)
-            {
-                Shared.Logger.Trace($"{c.Fitness} ## {c.ToKeyValueString()}");
-            }
-            Shared.Logger.Trace(" <->");
-        }
-
-        /// <summary>
-        /// Handler called at the end of next generation
-        /// </summary>
-        private void GenerationRan(object sender, GenerationRanEventArgs e)
-        {
-            Shared.Logger.Trace(" <->");
-            Shared.Logger.Trace($"Generation formed - profitable solutions count - {e.Generation.Chromosomes.Count} :");
-            foreach (var c in e.Generation.Chromosomes)
-            {
-                var chromBase = (Chromosome) c;
-                Shared.Logger.Trace($"{chromBase.Fitness} ## {chromBase.ToKeyValueString()}");
-            }
-
-            if (e.Generation.IsFruitless)
-            {
-                Shared.Logger.Error("WARNING: Generation is fruitless, i.e has zero or very few acceptable solutions");
-            }
-            Shared.Logger.Trace(" <->");
         }
 
         /// <summary>

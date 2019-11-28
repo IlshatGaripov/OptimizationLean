@@ -38,6 +38,20 @@ namespace Optimization.Genetic
     }
 
     /// <summary>
+    /// Delegate reaised with termination reached
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="generation"></param>
+    public delegate void GenerationRanHandler(object sender, Generation generation);
+
+    /// <summary>
+    /// Delegate reaised with termination reached
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="population"></param>
+    public delegate void TerminationReachedHandler(object sender, PopulationBase population);
+
+    /// <summary>
     /// This is a custom implementation of genetic algorithm from Genetic Sharp library
     /// As the library file (GeneticAlgorithm) needed minor modification to solve our problem. 
     /// </summary>
@@ -77,12 +91,12 @@ namespace Optimization.Genetic
         /// <summary>
         /// Occurs when generation ran.
         /// </summary>
-        public event EventHandler<GenerationRanEventArgs> GenerationRan;
+        public event GenerationRanHandler GenerationRan;
 
         /// <summary>
         /// Occurs when termination reached.
         /// </summary>
-        public event EventHandler<TerminationReachedEventArgs> TerminationReached;
+        public event TerminationReachedHandler TerminationReached;
 
         /// <summary>
         /// Occurs when stopped.
@@ -332,20 +346,20 @@ namespace Optimization.Genetic
         /// <returns>True if termination has been reached, otherwise false.</returns>
         private bool EvaluateChooseBestAndFireEvents()
         {
-            // Calculate fitness for all the chomosomes in Current Generation ->
+            // Calculate fitness for all the chomosomes in Current Generation
             EvaluateFitness();
 
-            // Analyze the chromosomes fitness results, select best ->
+            // Analyze the chromosomes fitness results, select best
             Population.OnEvaluationCompleted();
 
-            // Raise Generation ran event ->
-            GenerationRan?.Invoke(this, new GenerationRanEventArgs(Population.CurrentGeneration));
+            // Raise Generation ran event
+            GenerationRan?.Invoke(this, Population.CurrentGeneration);
 
-            // Check if termination is reached and raise event if reached ->
+            // Check if termination is reached and raise event if reached
             if (Termination.HasReached(this))
             {
                 State = GeneticAlgorithmState.TerminationReached;
-                TerminationReached?.Invoke(this, new TerminationReachedEventArgs(Population)); 
+                TerminationReached?.Invoke(this, Population); 
                 return true;
             }
 
@@ -487,44 +501,5 @@ namespace Optimization.Genetic
             }
         }
     }
-
-    /// <summary>
-    /// Event args class passed to <see cref="GeneticAlgorithm"/> TerminationReached event
-    /// </summary>
-    public class TerminationReachedEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Population that contains information of all generations of GA.
-        /// </summary>
-        public PopulationBase Pupulation { get; set; }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public TerminationReachedEventArgs(PopulationBase population)
-        {
-            Pupulation = population;
-        }
-    }
-
-    /// <summary>
-    /// Event args class passed to <see cref="GeneticAlgorithm"/> GenerationRan event
-    /// </summary>
-    public class GenerationRanEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Final Generation that ran.
-        /// </summary>
-        public Generation Generation;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public GenerationRanEventArgs(Generation generation)
-        {
-            Generation = generation;
-        }
-    }
-
 }
 
