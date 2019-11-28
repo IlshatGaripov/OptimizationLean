@@ -53,7 +53,7 @@ namespace Optimization.Launcher
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Shared.Logger.Trace("Main(): " + e.Message);
                 throw;
             }
         }

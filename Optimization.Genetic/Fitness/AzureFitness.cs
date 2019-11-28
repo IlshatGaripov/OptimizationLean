@@ -42,7 +42,7 @@ namespace Optimization.Genetic
                 // All functionality is wrapped in async method. Execute it to obtain a result.
                 return EvaluateAsync(chromosome).GetAwaiter().GetResult();
             }
-            // Catch storage exception ->
+            // Catch storage exception
             catch (StorageException ex)
             {
                 var requestInformation = ex.RequestInformation;
@@ -63,6 +63,12 @@ namespace Optimization.Genetic
 
                 Shared.Logger.Error($"AzureFitness.Evaluate() catch message: {message}");
                 Shared.Logger.Error($"AzureFitness.Evaluate() catch details: {details}");
+                throw;
+            }
+            // other exceptions
+            catch (Exception ex)
+            {
+                Shared.Logger.Trace("AzureFitness.Evaluate(): " + ex.Message);
                 throw;
             }
         }
@@ -151,8 +157,8 @@ namespace Optimization.Genetic
             // Call BatchClient.JobOperations.AddTask() to add the tasks as a collection to a queue
             await batchClient.JobOperations.AddTaskAsync(jobId, cloudTaskCollection);
 
-            // Monitor for a task to complete. Timeout is set to 30 minutes. 
-            await MonitorSpecificTaskToCompleteAsync(batchClient, jobId, taskId, TimeSpan.FromMinutes(30));
+            // Monitor for a task to complete. Timeout is set to 60 minutes. 
+            await MonitorSpecificTaskToCompleteAsync(batchClient, jobId, taskId, TimeSpan.FromMinutes(60));
 
             // Obtain results dictionary
             var result = await ObtainResultFromTheBlob(blobClient, AzureBatchManager.OutputContainerName, 

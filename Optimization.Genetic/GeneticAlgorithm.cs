@@ -259,7 +259,7 @@ namespace Optimization.Genetic
 
                 // This will return true if termination has reached.
                 // For instance, when the GenerationNumberTermination is set to 1 (the case of brute force optimization)
-                // generation must not evolve further and method will return ->
+                // generation must not evolve further and method will return
                 if (EvaluateChooseBestAndFireEvents())
                 {
                     return;
@@ -276,7 +276,7 @@ namespace Optimization.Genetic
 
                     m_stopwatch.Restart();
 
-                    // Create next generation ->
+                    // Create next generation
                     terminationConditionReached = CreateNextGeneration();
 
                     m_stopwatch.Stop();
@@ -287,7 +287,7 @@ namespace Optimization.Genetic
             catch (Exception e)
             {
                 // QC log handler
-                Shared.Logger.Error(e.Message);
+                Shared.Logger.Error("GeneticAlgorithm.Resume(): " + e.Message);
                 State = GeneticAlgorithmState.Stopped;
                 throw;
             }
