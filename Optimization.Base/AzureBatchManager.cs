@@ -72,7 +72,6 @@ namespace Optimization.Base
                 BatchSharedKeyCredentials sharedKeyCredentials = new BatchSharedKeyCredentials(batchAccountUrl, batchAccountName, batchAccountKey);
                 BatchClient = BatchClient.Open(sharedKeyCredentials);
 
-                // == STORAGE ==
                 // Construct the Storage account connection string
                 string storageConnectionString =
                     $"DefaultEndpointsProtocol=https;AccountName={Shared.Config.StorageAccountName};AccountKey={Shared.Config.StorageAccountKey}";
@@ -86,9 +85,17 @@ namespace Optimization.Base
                 // Create File Client, to access Azure Files
                 FileClient = storageAccount.CreateCloudFileClient();
 
-                // == CREATES AND UPLOADS ==
-                // Upload historical data from data folder to Cloud File Share
-                await SynchronizeHistoricalDataWithFileShareAsync(FileClient);
+                // Create share if not exist
+                _dataFileShare = FileClient.GetShareReference(DataFileShareName);
+                await _dataFileShare.CreateIfNotExistsAsync();
+                
+                // Synchronize data between data folder and Cloud File Share
+                Console.Write("Synchronize data with file share? [yes] no: ");
+                string response = Console.ReadLine()?.ToLower();
+                if (response != "n" && response != "no")
+                {
+                    await SynchronizeHistoricalDataWithFileShareAsync(FileClient);
+                }
 
                 // Creat Containers: OutPut Container (where tasks will upload results) and Container for Algorithm DLL
                 // Obtain a shared access signature that provides write access to the output
@@ -246,6 +253,7 @@ namespace Optimization.Base
             string fileShareUncPath = $"\\\\{_dataFileShare.Uri.Host}\\{_dataFileShare.Name}";
             string cmdMapNetDrive = $"net use {DataNetDrive} {fileShareUncPath} " +
                                   $"/user:Azure\\{Shared.Config.StorageAccountName} {Shared.Config.StorageAccountKey}";
+
             string cmdRobocopy = $"robocopy {DataNetDrive} %AZ_BATCH_NODE_SHARED_DIR%\\Data /E";
             string cmdErrorLevel = "IF %ERRORLEVEL% LEQ 1 SET ERRORLEVEL = 0";
 
@@ -282,7 +290,7 @@ namespace Optimization.Base
                         {
                             tryAgain = false;
                             var n = 10;
-                            Console.WriteLine($"I'll sleep {n} seconds and make another attempt to create a new job");
+                            Console.WriteLine($"Make another attempt to create a new job after {n} seconds.");
                             Thread.Sleep(n * 1000);
                             await job.CommitAsync();
                         }
@@ -406,10 +414,6 @@ namespace Optimization.Base
             // Start timer to check how long it takes to upload all the zip files
             Stopwatch uploadTimer = Stopwatch.StartNew();
             Shared.Logger.Trace($"Synchronize Data <-> FileShare. time: {DateTime.Now}");
-
-            // Create share if not exist
-            _dataFileShare = fileClient.GetShareReference(DataFileShareName);
-            await _dataFileShare.CreateIfNotExistsAsync();
 
             // list all cloud share file
             var rootDirectory = _dataFileShare.GetRootDirectoryReference();
