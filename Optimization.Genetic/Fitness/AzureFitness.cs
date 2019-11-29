@@ -42,14 +42,11 @@ namespace Optimization.Genetic
                 // All functionality is wrapped in async method. Execute it to obtain a result.
                 return EvaluateAsync(chromosome).GetAwaiter().GetResult();
             }
-            // Catch storage exception
+            // storage exception
             catch (StorageException ex)
             {
-                var requestInformation = ex.RequestInformation;
-                Shared.Logger.Error($"AzureFitness.Evaluate() catch http: {requestInformation.HttpStatusMessage}");
-
                 // get more details about the exception 
-                var information = requestInformation.ExtendedErrorInformation;
+                var information = ex.RequestInformation.ExtendedErrorInformation;
 
                 // if you have aditional information, you can use it for your logs
                 if (information == null)
@@ -68,7 +65,7 @@ namespace Optimization.Genetic
             // other exceptions
             catch (Exception ex)
             {
-                Shared.Logger.Trace("AzureFitness.Evaluate(): " + ex.Message);
+                Shared.Logger.Trace($"AzureFitness.Evaluate() other message: {ex.Message}");
                 throw;
             }
         }
@@ -96,8 +93,8 @@ namespace Optimization.Genetic
 
             // -- 3 -- Add algorithm dll and data folder locations
             var dllFileName = Path.GetFileName(Shared.Config.AlgorithmLocation);
-            runnerInputArguments += $"algorithm-location %AZ_BATCH_JOB_PREP_WORKING_DIR%\\{dllFileName} ";
-            runnerInputArguments += "data-folder %AZ_BATCH_NODE_SHARED_DIR%\\Data ";
+            runnerInputArguments += $"algorithm-location %AZ_BATCH_NODE_STARTUP_DIR%\\wd\\{dllFileName} ";
+            runnerInputArguments += $"data-folder {AzureBatchManager.DataNetDrive} ";
 
             // -- 4 -- Algorithm start and end dates
             runnerInputArguments += $"start-date {StartDate:O} ";
@@ -112,11 +109,19 @@ namespace Optimization.Genetic
             runnerInputArguments += $"log-file {leanLogFile}";
 
             // Now using all arguments construct the resulting command line string
-            string taskCommandLine = $"cmd /c {appPath}\\Debug\\Optimization.RunnerAppAzure.exe {runnerInputArguments}";
+            string fileShareUncPath = $"\\\\{AzureBatchManager.DataFileShare.Uri.Host}\\{AzureBatchManager.DataFileShare.Name}";
+            string cmdMapNetDrive = $"net use {AzureBatchManager.DataNetDrive} {fileShareUncPath}";
+            string cmdRunner = $"{appPath}\\Debug\\Optimization.RunnerAppAzure.exe {runnerInputArguments}";
+            string taskCommandLine = $"cmd /c \"{cmdMapNetDrive} & {cmdRunner}\"";
 
             // Create task id. Create a cloud task. 
             var taskId = $"task_{id}";
-            CloudTask cloudTask = new CloudTask(taskId, taskCommandLine);
+            CloudTask cloudTask = new CloudTask(taskId, taskCommandLine)
+            {
+                UserIdentity = new UserIdentity(new AutoUserSpecification(
+                    elevationLevel: ElevationLevel.NonAdmin,
+                    scope: AutoUserScope.Pool))
+            };
 
             // After app package finishes work and exits the Files:
             // Task output file and lean log will be automatically uploaded to the output blob container in Azure Storage.

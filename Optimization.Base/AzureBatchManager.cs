@@ -48,7 +48,7 @@ namespace Optimization.Base
         public static string OutputContainerSasUrl;
 
         // File Share
-        private static CloudFileShare _dataFileShare;
+        public static CloudFileShare DataFileShare;
 
 
         /// <summary>
@@ -86,8 +86,8 @@ namespace Optimization.Base
                 FileClient = storageAccount.CreateCloudFileClient();
 
                 // Create share if not exist
-                _dataFileShare = FileClient.GetShareReference(DataFileShareName);
-                await _dataFileShare.CreateIfNotExistsAsync();
+                DataFileShare = FileClient.GetShareReference(DataFileShareName);
+                await DataFileShare.CreateIfNotExistsAsync();
                 
                 // Synchronize data between data folder and Cloud File Share
                 Console.Write("Synchronize data with file share? [yes] no: ");
@@ -198,6 +198,26 @@ namespace Optimization.Base
                         Version = AppPackageVersion
                     }
                 };
+                
+                // Start task to store credentials to mount file share
+                string startTaskCommandLine =
+                    $"cmd /c \"cmdkey /add:{DataFileShare.Uri.Host} /user:AZURE\\{Shared.Config.StorageAccountName} /pass:{Shared.Config.StorageAccountKey}\"";
+
+                var dllReference =
+                    await UploadResourceFileToContainerAsync(BlobClient, DllContainerName, Shared.Config.AlgorithmLocation);
+
+                // This data will be stored on every node
+                List<ResourceFile> inputFiles = new List<ResourceFile> { dllReference };
+
+                pool.StartTask = new StartTask
+                {
+                    CommandLine = startTaskCommandLine,
+                    UserIdentity = new UserIdentity(new AutoUserSpecification(
+                        elevationLevel: ElevationLevel.NonAdmin,
+                        scope: AutoUserScope.Pool)),
+                    ResourceFiles = inputFiles,
+                    WaitForSuccess = true
+                };
 
                 // Commit async
                 await pool.CommitAsync();
@@ -235,39 +255,9 @@ namespace Optimization.Base
         private static async Task CreateJobAsync(BatchClient batchClient, string jobId, string poolId)
         {
             Console.WriteLine("Creating job [{0}]...", jobId);
-
             CloudJob job = batchClient.JobOperations.CreateJob();
             job.Id = jobId;
             job.PoolInformation = new PoolInformation { PoolId = poolId };
-
-            // Set Job Preparation task to upload with algorithm dll to every pool node that will execute the task
-            
-            // Upload the dll file to newly created container
-            var dllReference =
-                await UploadResourceFileToContainerAsync(BlobClient, DllContainerName, Shared.Config.AlgorithmLocation);
-
-            // This is data that will be processed by each Prep. Task on the nodes
-            List<ResourceFile> inputFiles = new List<ResourceFile> { dllReference };
-
-            // Commands
-            string fileShareUncPath = $"\\\\{_dataFileShare.Uri.Host}\\{_dataFileShare.Name}";
-            string cmdMapNetDrive = $"net use {DataNetDrive} {fileShareUncPath} " +
-                                  $"/user:Azure\\{Shared.Config.StorageAccountName} {Shared.Config.StorageAccountKey}";
-
-            string cmdRobocopy = $"robocopy {DataNetDrive} %AZ_BATCH_NODE_SHARED_DIR%\\Data /E";
-            string cmdErrorLevel = "IF %ERRORLEVEL% LEQ 1 SET ERRORLEVEL = 0";
-
-            // Prep task
-            var preparationTask =
-                new JobPreparationTask
-                {
-                    // Map Azure file share to node drive and copy the content to shared directory
-                    CommandLine = $"cmd /c {cmdMapNetDrive} && {cmdRobocopy} & {cmdErrorLevel}",
-                    ResourceFiles = inputFiles,
-                    WaitForSuccess = true
-                };
-
-            job.JobPreparationTask = preparationTask;
 
             // Commit the Job
             try
@@ -279,7 +269,8 @@ namespace Optimization.Base
                 // Catch specific error code JobExists as that is expected if the job already exists
                 if (be.RequestInformation.BatchError.Code == BatchErrorCodeStrings.JobExists)
                 {
-                    Console.WriteLine("Job {0} already exists. I will delete it.", jobId);
+                    Console.WriteLine("Job [{0}] already exists.", jobId);
+                    Console.WriteLine("Deleting job [{0}]...", jobId);
                     await batchClient.JobOperations.DeleteJobAsync(JobId);
 
                     // try creating a job again
@@ -290,15 +281,15 @@ namespace Optimization.Base
                         {
                             tryAgain = false;
                             var n = 10;
-                            Console.WriteLine($"Make another attempt to create a new job after {n} seconds.");
                             Thread.Sleep(n * 1000);
+                            Console.WriteLine($"Creating job [{jobId}] after {n} sec.");
                             await job.CommitAsync();
                         }
                         catch (BatchException innerException)
                         {
                             if (innerException.RequestInformation.BatchError.Code == BatchErrorCodeStrings.JobBeingDeleted)
                             {
-                                Console.WriteLine("Job is being deleted - try again later");
+                                Console.WriteLine("Job is being deleted.. Try again..");
                                 tryAgain = true;
                             }
                         }
@@ -416,7 +407,7 @@ namespace Optimization.Base
             Shared.Logger.Trace($"Synchronize Data <-> FileShare. time: {DateTime.Now}");
 
             // list all cloud share file
-            var rootDirectory = _dataFileShare.GetRootDirectoryReference();
+            var rootDirectory = DataFileShare.GetRootDirectoryReference();
             var cloudFileShareFiles = new List<string>();
 
             // execute a method in recursive way to retrieve all inner files
@@ -444,7 +435,7 @@ namespace Optimization.Base
 
                 // see https://docs.microsoft.com/ru-ru/dotnet/api/microsoft.azure.storage.file.cloudfiledirectory?view=azure-dotnet
                 // :
-                var cloudDirectory = new CloudFileDirectory(new Uri(_dataFileShare.Uri + uriAddLine), FileClient.Credentials);
+                var cloudDirectory = new CloudFileDirectory(new Uri(DataFileShare.Uri + uriAddLine), FileClient.Credentials);
 
                 try
                 {
