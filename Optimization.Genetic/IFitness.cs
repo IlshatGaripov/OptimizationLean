@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace Optimization.Genetic
 {
     /// <summary>
@@ -14,6 +16,6 @@ namespace Optimization.Genetic
         /// </summary>
         /// <param name="chromosome">The chromosome to be evaluated.</param>
         /// <returns>The fitness of the chromosome.</returns>
-        double Evaluate(IChromosome chromosome);
+        Task EvaluateAsync(IChromosome chromosome);
     }
 }

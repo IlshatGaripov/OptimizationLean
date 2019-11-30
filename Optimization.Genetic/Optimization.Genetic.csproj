@@ -106,7 +106,6 @@
     <Compile Include="RouletteWheelSelection.cs" />
     <Compile Include="SelectionBase.cs" />
     <Compile Include="StringExtensions.cs" />
-    <Compile Include="TaskExecutorAzure.cs" />
     <Compile Include="TaskExecutorBase.cs" />
     <Compile Include="TerminationBase.cs" />
     <Compile Include="UniformCrossover.cs" />

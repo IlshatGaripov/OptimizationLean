@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Optimization.Base;
 
 namespace Optimization.Genetic
@@ -24,33 +25,33 @@ namespace Optimization.Genetic
         /// <summary>
         /// Evaluates the chromosome's fitness.
         /// </summary>
-        public override double Evaluate(IChromosome chromosome)
+        public override async Task EvaluateAsync(IChromosome chromosome)
         {
             try
             {
                 // cast to the base type
                 var chromosomeBase = (Chromosome)chromosome;
 
-                // Convert to dictionary and add "id" key-value pair ->
+                // Convert to dictionary and add "id" key-value pair
                 var list = chromosomeBase.ToDictionary();
                 list.Add("chromosome-id", chromosomeBase.Id);
 
-                // Set algorithm start and end dates ->
+                // Set algorithm start and end dates
                 list.Add("start-date", StartDate.ToString("O"));
                 list.Add("end-date", EndDate.ToString("O"));
 
-                // Additional settings to the list ->
+                // Additional settings to the list
                 list.Add("algorithm-type-name", Shared.Config.AlgorithmTypeName);
                 list.Add("algorithm-location", Shared.Config.AlgorithmLocation);
                 list.Add("data-folder", Shared.Config.DataFolder);
 
-                // Obtain full results -> 
-                var result = AppDomainRunner.RunAlgorithm(list);
+                // Obtain full results 
+                var result = await Task.Run(() => AppDomainRunner.RunAlgorithm(list));
 
-                // Calculate fitness and concat the results with an output string ->
+                // Calculate fitness and concat the results with an output string
                 var fitness = StatisticsAdapter.CalculateFitness(result, FitnessScore, FilterEnabled);
 
-                // Save full results ->
+                // Save full results
                 chromosomeBase.FitnessResult = new FitnessResult
                 {
                     Chromosome = chromosomeBase,
@@ -73,12 +74,12 @@ namespace Optimization.Genetic
                     Shared.Logger.Trace(output2 + Environment.NewLine);
                 }
 
-                return fitness;
+                // assign a value to chromosome fitness
+                chromosome.Fitness = fitness;
             }
             catch (Exception ex)
             {
                 Shared.Logger.Error("OptimizerFitness.Evaluate: " + ex.Message);
-                return 0;
             }
         }
 

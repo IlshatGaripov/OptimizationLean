@@ -1,4 +1,5 @@
 using System;
+using Optimization.Base;
 
 namespace Optimization.Genetic
 {
@@ -7,39 +8,37 @@ namespace Optimization.Genetic
     /// </summary>
     public class LinearTaskExecutor : TaskExecutorBase
     {
-        #region implemented abstract members of TaskExecutorBase
         /// <summary>
         /// Starts the tasks execution.
         /// </summary>
         /// <returns>If has reach the timeout false, otherwise true.</returns>
-        public override bool Start()
+        public override void Start()
         {
             var startTime = DateTime.Now;
             base.Start();
 
             // For each Tasks passed to excutor, 
             // run it one in linear way.
-            for (int i = 0; i < Tasks.Count; i++)
+            foreach (var t in Tasks)
             {
                 // Check if a stop was requested.
                 if (StopRequested)
                 {
-                    return true;
+                    return;
                 }
 
-                Tasks[i]();
+                t.Wait();
 
                 // If take more time expected on Timeout property,
                 // tehn stop thre running.
                 if ((DateTime.Now - startTime) > Timeout)
                 {
-                    return false;
+                    Shared.Logger.Error("LinearTaskExecutor.Start: TimeOut Exceeded!");
+                    return;
                 }
             }
 
             IsRunning = false;
-            return true;
         }
-        #endregion
     }
 }

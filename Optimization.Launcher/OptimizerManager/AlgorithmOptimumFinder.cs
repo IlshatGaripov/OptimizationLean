@@ -74,7 +74,7 @@ namespace Optimization.Launcher
                     break;
 
                 case TaskExecutionMode.Azure:
-                    executor = new TaskExecutorAzure();
+                    executor = new ParallelTaskExecutor();
                     fitness = new AzureFitness(StartDate, EndDate, fitScore, filterEnabled);
                     break;
 

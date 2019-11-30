@@ -148,12 +148,12 @@ namespace Optimization.Launcher
             if (Shared.Config.TaskExecutionMode == TaskExecutionMode.Azure)
             {
                 fitness = new AzureFitness(validationStartDate, validationEndDate, fitScore, false);
-                copy.Fitness = fitness.Evaluate(copy);
+                fitness.EvaluateAsync(copy).GetAwaiter().GetResult();
             }
             else
             {
                 fitness = new OptimizerFitness(validationStartDate, validationEndDate, fitScore, false);
-                copy.Fitness = fitness.Evaluate(copy);
+                fitness.EvaluateAsync(copy).GetAwaiter().GetResult(); ;
             }
 
             // Raise an event

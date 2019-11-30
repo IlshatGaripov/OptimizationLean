@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Optimization.Base;
 
 namespace Optimization.Genetic
@@ -44,6 +45,6 @@ namespace Optimization.Genetic
             FilterEnabled = filterEnabled;
         }
 
-        public abstract double Evaluate(IChromosome chromosome);
+        public abstract Task EvaluateAsync(IChromosome chromosome);
     }
 }

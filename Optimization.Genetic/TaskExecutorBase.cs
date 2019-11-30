@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Optimization.Genetic
 {
@@ -15,7 +16,7 @@ namespace Optimization.Genetic
         /// </summary>
         protected TaskExecutorBase()
         {
-            Tasks = new List<Action>();
+            Tasks = new List<Task>();
             Timeout = TimeSpan.MaxValue;
         }
 
@@ -36,7 +37,7 @@ namespace Optimization.Genetic
         /// <summary>
         /// Gets the tasks.
         /// </summary>
-        protected IList<Action> Tasks { get; private set; }
+        protected List<Task> Tasks { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether this
@@ -49,7 +50,7 @@ namespace Optimization.Genetic
         /// Add the specified task to be executed.
         /// </summary>
         /// <param name="task">The task.</param>
-        public void Add(Action task)
+        public void Add(Task task)
         {
             Tasks.Add(task);
         }
@@ -66,15 +67,13 @@ namespace Optimization.Genetic
         /// Starts the tasks execution.
         /// </summary>
         /// <returns>If has reach the timeout false, otherwise true.</returns>
-        public virtual bool Start()
+        public virtual void Start()
         {
             lock (m_lock)
             {
                 StopRequested = false;
                 IsRunning = true;
             }
-
-            return true;
         }
 
         /// <summary>

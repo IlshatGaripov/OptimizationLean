@@ -10,13 +10,12 @@ namespace Optimization.Genetic
     public class ParallelTaskExecutor : TaskExecutorBase
     {
         /// <summary>
-        /// Initializes a new instance of the
-        /// <see cref="T:Optimization.Genetic.ParallelTaskExecutor"/> class.
+        /// Initializes a new instance of the <see cref="ParallelTaskExecutor"/> class.
         /// </summary>
         public ParallelTaskExecutor()
         {
-            MinThreads = 200;
-            MaxThreads = 200;
+            MinThreads = 2;
+            MaxThreads = 10;
         }
    
         /// <summary>
@@ -40,7 +39,7 @@ namespace Optimization.Genetic
         /// Starts the tasks execution.
         /// </summary>
         /// <returns>If has reach the timeout false, otherwise true.</returns>
-        public override bool Start()
+        public override void Start()
         {
             SetThreadPoolConfig(out int minWorker, out int minIOC, out int maxWorker, out int maxIOC);
 
@@ -48,21 +47,24 @@ namespace Optimization.Genetic
             {
                 base.Start();
                 CancellationTokenSource = new CancellationTokenSource();
-                var parallelTasks = new Task[Tasks.Count];
 
+
+                /*
+                 var parallelTasks = new Task[Tasks.Count];
                 for (int i = 0; i < Tasks.Count; i++)
                 {
                     parallelTasks[i] = Task.Run(Tasks[i], CancellationTokenSource.Token);
                 }
+                */
 
                 // Need to verify, because TimeSpan.MaxValue passed to Task.WaitAll throws a System.ArgumentOutOfRangeException.
                 if (Timeout == TimeSpan.MaxValue)
                 {
-                    Task.WaitAll(parallelTasks);
-                    return true;
+                    Task.WaitAll(Tasks.ToArray());
+                    return;
                 }
 
-                return Task.WaitAll(parallelTasks, Timeout);
+                Task.WaitAll(Tasks.ToArray(), Timeout);
             }
             finally
             {

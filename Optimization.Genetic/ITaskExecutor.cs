@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
 namespace Optimization.Genetic
 {
@@ -8,7 +9,6 @@ namespace Optimization.Genetic
     /// </summary>
     public interface ITaskExecutor
     {
-        #region Properties
         /// <summary>
         /// Gets or sets the timeout to execute the tasks.
         /// </summary>
@@ -21,14 +21,12 @@ namespace Optimization.Genetic
         /// <c>true</c> if this instance is running; otherwise, <c>false</c>.
         /// </value>
         bool IsRunning { get; }
-        #endregion
 
-        #region Methods
         /// <summary>
         /// Add the specified task to be executed.
         /// </summary>
         /// <param name="task">The task.</param>
-        void Add(Action task);
+        void Add(Task task);
 
         /// <summary>
         /// Clear all the tasks.
@@ -39,13 +37,12 @@ namespace Optimization.Genetic
         /// Starts the tasks execution.
         /// </summary>
         /// <returns>If has reach the timeout false, otherwise true.</returns>
-        bool Start();
+        void Start();
 
         /// <summary>
         /// Stops the tasks execution.
         /// </summary>
         [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", MessageId = "Stop", Justification = "there is no better name")]
         void Stop();
-        #endregion
     }
 }

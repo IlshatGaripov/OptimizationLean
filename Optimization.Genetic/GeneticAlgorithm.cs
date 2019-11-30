@@ -437,13 +437,10 @@ namespace Optimization.Genetic
 
                 foreach (var c in withoutFitness)
                 {
-                    TaskExecutor.Add(() => { c.Fitness = Fitness.Evaluate(c); } );
+                    TaskExecutor.Add(Fitness.EvaluateAsync(c));
                 }
 
-                if (!TaskExecutor.Start())
-                {
-                    throw new TimeoutException("The fitness evaluation reached the {0} timeout.".With(TaskExecutor.Timeout));
-                }
+                TaskExecutor.Start();
             }
             catch (Exception e)
             {

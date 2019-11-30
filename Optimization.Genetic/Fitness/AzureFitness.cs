@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Batch;
 using Microsoft.Azure.Batch.Common;
-using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 using Optimization.Base;
@@ -30,50 +29,11 @@ namespace Optimization.Genetic
             base(start, end, fitScore, filterEnabled)
         { }
 
-        /// <summary>
-        /// Performs the evaluation against the specified chromosome.
-        /// </summary>
-        /// <param name="chromosome">The chromosome to be evaluated.</param>
-        /// <returns>The fitness of the chromosome.</returns>
-        public override double Evaluate(IChromosome chromosome)
-        {
-            try
-            {
-                // All functionality is wrapped in async method. Execute it to obtain a result.
-                return EvaluateAsync(chromosome).GetAwaiter().GetResult();
-            }
-            // storage exception
-            catch (StorageException ex)
-            {
-                // get more details about the exception 
-                var information = ex.RequestInformation.ExtendedErrorInformation;
-
-                // if you have aditional information, you can use it for your logs
-                if (information == null)
-                    throw;
-
-                var message = $"({information.ErrorCode}) {information.ErrorMessage}";
-
-                var details = information
-                    .AdditionalDetails
-                    .Aggregate("", (s, pair) => s + $"{pair.Key}={pair.Value},");
-
-                Shared.Logger.Error($"AzureFitness.Evaluate() catch message: {message}");
-                Shared.Logger.Error($"AzureFitness.Evaluate() catch details: {details}");
-                throw;
-            }
-            // other exceptions
-            catch (Exception ex)
-            {
-                Shared.Logger.Trace($"AzureFitness.Evaluate() other message: {ex.Message}");
-                throw;
-            }
-        }
-
+        
         /// <summary>
         /// Async evalutation.
         /// </summary>
-        private async Task<double> EvaluateAsync(IChromosome chromosome)
+        public override async Task EvaluateAsync(IChromosome chromosome)
         {
             // Cast to base chromosome type
             var chromosomeBase = (Chromosome)chromosome;
@@ -194,7 +154,8 @@ namespace Optimization.Genetic
                 Shared.Logger.Trace(logOutput + Environment.NewLine);
             }
 
-            return fitness;
+            // assign fitness to chromosomes
+            chromosome.Fitness = fitness;
         }
 
         /// <summary>
