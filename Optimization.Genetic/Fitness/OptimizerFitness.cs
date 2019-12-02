@@ -60,18 +60,13 @@ namespace Optimization.Genetic
                     FullResults = result
                 };
 
-                // - OUTPUT 2 -
-                var output2 = $"[chromosome #id: {chromosomeBase.Id}]" + Environment.NewLine +
-                    chromosomeBase.FitnessLogOutput() + Environment.NewLine +
-                    $"RESULTS: {FitnessScore} = {fitness:f2} " +
-                    $"Drawdown = {result["Drawdown"] *100 :f2} " +
-                    $"TotalNumberOfTrades = {result["TotalNumberOfTrades"]} " +
-                    $"AnnualReturn = {result["CompoundingAnnualReturn"] *100 :f2}";
+                // create an output string
+                var theOutput = chromosomeBase.EvaluationToLogOutput(result, FitnessScore, fitness);
 
                 // Display the output
                 lock (_lock)
                 {
-                    Shared.Logger.Trace(output2 + Environment.NewLine);
+                    Shared.Logger.Trace(theOutput + Environment.NewLine);
                 }
 
                 // assign a value to chromosome fitness

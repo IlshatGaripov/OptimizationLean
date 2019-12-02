@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Newtonsoft.Json;
+using Optimization.Base;
 
 namespace Optimization.Genetic
 {
@@ -61,15 +62,20 @@ namespace Optimization.Genetic
         /// Creates a special format string for illustrative logging. 
         /// </summary>
         /// <param name="ch">The chromosome to represent as a string</param>
+        /// <param name="result">Dictionary with backtest statistics results</param>
+        /// <param name="ftSc">Fitness Score enum value</param>
+        /// <param name="fitness">Fitness value</param>
         /// <returns> Example:
-        /// PARAMETERS: gold-fast-period 6
-        ///             gold-slow-period 40
-        ///             gold-drawdown-percent 0.4
+        /// 2019-12-02T13:13:41.3568607Z TRACE:: [chromosome #id: 771bca555a6c42fca30affe9e77d8018]
+        /// PARAMETERS: gold-fast-period 5
+        ///             gold-slow-period 70
+        ///             gold-drawdown-percent 0.2
+        /// RESULTS: SharpeRatio = -0.32 Drawdown = 2.20 TotalNumberOfTrades = 67 AnnualReturn = -1.55
         /// </returns>
-        public static string FitnessLogOutput(this Chromosome ch)
+        public static string EvaluationToLogOutput(this Chromosome ch, Dictionary<string,decimal> result, FitnessScore ftSc, double fitness)
         {
             // beginning string
-            var output = new StringBuilder("PARAMETERS: ");
+            var output = new StringBuilder($"[chromosome #id: {ch.Id}]{Environment.NewLine}PARAMETERS: ");
             // newline and 12 spaces
             string delimiter = Environment.NewLine + new string(' ', 12);
             var pairs = ch.ToDictionary();
@@ -85,6 +91,12 @@ namespace Optimization.Genetic
                     output.Append(delimiter);
                 }
             }
+            // finally
+            output.Append(Environment.NewLine);
+            output.Append($"RESULTS: {ftSc} = {fitness:f2} ");
+            output.Append($"Drawdown = {result["Drawdown"] * 100:f2} ");
+            output.Append($"TotalNumberOfTrades = {result["TotalNumberOfTrades"]} ");
+            output.Append($"AnnualReturn = {result["CompoundingAnnualReturn"] * 100:f2}");
             return output.ToString();
         }
 

@@ -141,12 +141,7 @@ namespace Optimization.Genetic
                 FullResults = result
             };
 
-            var logOutput = $"[chromosome #id: {chromosomeBase.Id}]" + Environment.NewLine +
-                          chromosomeBase.FitnessLogOutput() + Environment.NewLine +
-                          $"RESULTS: {FitnessScore} = {fitness:f2} " +
-                          $"Drawdown = {result["Drawdown"] * 100:f2} " +
-                          $"TotalNumberOfTrades = {result["TotalNumberOfTrades"]} " +
-                          $"AnnualReturn = {result["CompoundingAnnualReturn"] * 100:f2}";
+            var logOutput = chromosomeBase.EvaluationToLogOutput(result, FitnessScore, fitness);
 
             // Display the output
             lock (_lock)
