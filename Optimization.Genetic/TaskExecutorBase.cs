@@ -40,10 +40,8 @@ namespace Optimization.Genetic
         protected List<Task> Tasks { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether this
-        /// <see cref="TaskExecutorBase"/> stop requested.
+        /// Gets a value indicating whether this <see cref="TaskExecutorBase"/> stop requested.
         /// </summary>
-        /// <value><c>true</c> if stop requested; otherwise, <c>false</c>.</value>
         protected bool StopRequested { get; private set; }
   
         /// <summary>
@@ -67,14 +65,7 @@ namespace Optimization.Genetic
         /// Starts the tasks execution.
         /// </summary>
         /// <returns>If has reach the timeout false, otherwise true.</returns>
-        public virtual void Start()
-        {
-            lock (m_lock)
-            {
-                StopRequested = false;
-                IsRunning = true;
-            }
-        }
+        public abstract void Start(IEnumerable<IChromosome> chromosomesWithNoFitness, IFitness fitnessFunction);
 
         /// <summary>
         /// Stops the tasks execution.

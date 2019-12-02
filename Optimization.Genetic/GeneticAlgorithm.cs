@@ -203,11 +203,11 @@ namespace Optimization.Genetic
         /// </summary>
         public void Start()
         {
-            // Check that all properties have been explicitly specified ->
+            // Check that all properties have been explicitly specified
             ExceptionHelper.ThrowIfNull("selection", Selection);
             ExceptionHelper.ThrowIfNull("termination", Termination);
 
-            // Throw if one of the variables is zero -> 
+            // Throw if one of the variables is zero 
             if (CrossoverParentsNumber == 0 ||
                 Math.Abs(MutationProbability) < 0.01||
                 Math.Abs(CrossoverMixProbability) < 0.01)
@@ -215,7 +215,7 @@ namespace Optimization.Genetic
                 throw new ArgumentException("Checking failed. One of the arguments is zero.");
             }
 
-            // Add operator to CrossoverCollection ->
+            // Add operator to CrossoverCollection
             CrossoverCollection.Add(new UniformCrossover(CrossoverMixProbability));
 
             lock (m_lock)
@@ -223,7 +223,7 @@ namespace Optimization.Genetic
                 State = GeneticAlgorithmState.Started;
                 m_stopwatch = Stopwatch.StartNew();
 
-                // Create initial Generation ->
+                // Create initial Generation
                 Population.CreateInitialGeneration();
 
                 m_stopwatch.Stop();
@@ -383,33 +383,33 @@ namespace Optimization.Genetic
             // select parents
             var parents = Selection.SelectChromosomes(CrossoverParentsNumber, Population.CurrentGeneration);
 
-            // Until offspring size is less than max ->
+            // Until offspring size is less than max
             while (offspring.Count < Population.GenerationMaxSize)
             {
-                // Select random crossover operator, select random parents, apply ->
+                // Select random crossover operator, select random parents, apply
                 var temp = RandomCrossover(parents);
                 offspring.AddRange(temp);
 
-                // To increase diversity apply mutation to results of crossover ->
+                // To increase diversity apply mutation to results of crossover
                 Mutate(temp);
                 offspring.AddRange(temp);
             }
             
-            // If 20 % is less than 1 unit choose just a single solution ->
+            // If 20 % is less than 1 unit choose just a single solution
             var numberOfBest = (int)(0.2 * Population.GenerationMaxSize);
             numberOfBest = numberOfBest > 1 ? numberOfBest : 1;
 
-            // Chromosomes are ordered by fitness desc so just take ->
+            // Chromosomes are ordered by fitness desc so just take
             var elite = Chromosomes.Take(numberOfBest);
             offspring.AddRange(elite);
 
-            // Change best chromosome's every gene to random value three times ->
+            // Change best chromosome's every gene to random value three times
             var best = Population.BestChromosome;
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < best.Length; j++)
                 {
-                    // Clone, replace specific gene with random value, add to collection ->
+                    // Clone, replace specific gene with random value, add to collection
                     var temp = best.CreateNew();
                     IndexedGeneMutation(temp, j);
                     offspring.Add(temp);
@@ -420,38 +420,25 @@ namespace Optimization.Genetic
         }
 
         /// <summary>
-        /// Evaluates the fitness.
+        /// Evaluates fitness for chromosomes
         /// </summary>
         private void EvaluateFitness()
         {
-            try
-            {
-                var withoutFitness = Population.CurrentGeneration.Chromosomes.Where(c => !c.Fitness.HasValue).ToList();
-                var haveFitness = Population.CurrentGeneration.Chromosomes.Where(c => c.Fitness.HasValue).ToList();
+            var chromosomesWithNoFitness = Population.CurrentGeneration.Chromosomes
+                .Where(c => !c.Fitness.HasValue)
+                .ToList();
+            var chromosomesThatHaveFitness = Population.CurrentGeneration.Chromosomes
+                .Where(c => c.Fitness.HasValue)
+                .ToList();
 
-                // display how many we send for backtest and dates
-                var leanFit = (LeanFitness) Fitness;
-                Shared.Logger.Trace($"EvaluateFitness(): Sending {withoutFitness.Count} for backtest " +
-                                    $"and {haveFitness.Count} have got fitness. period: " +
-                                    $"[{leanFit.StartDate:M/d/yy} to {leanFit.EndDate:M/d/yy}]" + Environment.NewLine);
+            // display how many we send for backtest and dates
+            var leanFitnessCasted = (LeanFitness)Fitness;
+            Shared.Logger.Trace($"EvaluateFitness(): Sending {chromosomesWithNoFitness.Count} for backtest " +
+                                $"and {chromosomesThatHaveFitness.Count} have got fitness. period: " +
+                                $"[{leanFitnessCasted.StartDate:M/d/yy} to {leanFitnessCasted.EndDate:M/d/yy}]" + Environment.NewLine);
 
-                foreach (var c in withoutFitness)
-                {
-                    TaskExecutor.Add(Fitness.EvaluateAsync(c));
-                }
-
-                TaskExecutor.Start();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-            finally
-            {
-                TaskExecutor.Stop();
-                TaskExecutor.Clear();
-            }
+            // launch the task executor
+            TaskExecutor.Start(chromosomesWithNoFitness, Fitness);
         }
 
         /// <summary>
@@ -461,18 +448,18 @@ namespace Optimization.Genetic
         /// <returns>The result chromosomes.</returns>
         private IList<IChromosome> RandomCrossover(ICollection<IChromosome> parents)
         {
-            // Select random crossover operator from list ->
+            // Select random crossover operator from list
             var randomCrossoverIndex = RandomizationProvider.Current.GetInt(0, CrossoverCollection.Count);
             var randomCrossover = CrossoverCollection[randomCrossoverIndex];
 
-            // Get number of parent required for selected operator ->
+            // Get number of parent required for selected operator
             var parentsRequired = randomCrossover.ParentsNumber;
 
-            // Select in random the required number of unique parents ->
+            // Select in random the required number of unique parents
             var randomParentIndexes = RandomizationProvider.Current.GetUniqueInts(parentsRequired, 0, parents.Count);
             var randomParents = parents.Where((p, i) => randomParentIndexes.Contains(i)).ToList();
 
-            // Apply crossover and return the offspring list ->
+            // Apply crossover and return the offspring list
             return randomCrossover.Cross(randomParents);
         }
 

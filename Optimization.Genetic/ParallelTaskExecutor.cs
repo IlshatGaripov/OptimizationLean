@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,31 +32,20 @@ namespace Optimization.Genetic
         public int MaxThreads { get; set; }
 
         /// <summary>
-        /// Gets or sets the cancellation token source.
-        /// </summary>
-        protected CancellationTokenSource CancellationTokenSource { get; set; }
-
-        /// <summary>
         /// Starts the tasks execution.
         /// </summary>
         /// <returns>If has reach the timeout false, otherwise true.</returns>
-        public override void Start()
+        public override void Start(IEnumerable<IChromosome> chromosomesWithNoFitness, IFitness fitnessFunction)
         {
+            IsRunning = true;
             SetThreadPoolConfig(out int minWorker, out int minIOC, out int maxWorker, out int maxIOC);
 
             try
             {
-                base.Start();
-                CancellationTokenSource = new CancellationTokenSource();
-
-
-                /*
-                 var parallelTasks = new Task[Tasks.Count];
-                for (int i = 0; i < Tasks.Count; i++)
+                foreach (var c in chromosomesWithNoFitness)
                 {
-                    parallelTasks[i] = Task.Run(Tasks[i], CancellationTokenSource.Token);
+                    Add(fitnessFunction.EvaluateAsync(c));
                 }
-                */
 
                 // Need to verify, because TimeSpan.MaxValue passed to Task.WaitAll throws a System.ArgumentOutOfRangeException.
                 if (Timeout == TimeSpan.MaxValue)
@@ -68,20 +58,12 @@ namespace Optimization.Genetic
             }
             finally
             {
-                ResetThreadPoolConfig(minWorker, minIOC, maxWorker, maxIOC);
+                // reset pool and clear the tasks
                 IsRunning = false;
+                Clear();
+                ResetThreadPoolConfig(minWorker, minIOC, maxWorker, maxIOC);
             }
         }
-
-        /// <summary>
-        /// Stops the tasks execution.
-        /// </summary>
-        public override void Stop()
-		{
-            base.Stop();
-            CancellationTokenSource?.Cancel();
-            IsRunning = false;
-		}
 
         /// <summary>
         /// Configure the ThreadPool min and max threads number to the define on this instance properties.

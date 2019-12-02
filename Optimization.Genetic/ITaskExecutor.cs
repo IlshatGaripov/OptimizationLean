@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
@@ -37,7 +38,7 @@ namespace Optimization.Genetic
         /// Starts the tasks execution.
         /// </summary>
         /// <returns>If has reach the timeout false, otherwise true.</returns>
-        void Start();
+        void Start(IEnumerable<IChromosome> chromosomesWithNoFitness, IFitness fitnessFunction);
 
         /// <summary>
         /// Stops the tasks execution.
