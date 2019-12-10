@@ -11,7 +11,7 @@ namespace Optimization.Launcher
             try
             {
                 // some initialization before the start, that will depend on task execution mode chosen
-                DeployResources();
+                Initialize();
 
                 if (Shared.Config.WalkingForward.Enabled)
                 {
@@ -44,8 +44,7 @@ namespace Optimization.Launcher
                 }
 
                 // release earlier deployed resources
-                ReleaseResources();
-
+                Dispose();
 
                 Console.WriteLine();
                 Console.WriteLine("Press any key to exit .. ");
@@ -61,13 +60,13 @@ namespace Optimization.Launcher
         /// <summary>
         /// Inits computation resources
         /// </summary>
-        public static void DeployResources()
+        public static void Initialize()
         {
             // Computation mode specific settings: azure or app domain ?
             switch (Shared.Config.TaskExecutionMode)
             {
                 case TaskExecutionMode.Azure:
-                    AzureBatchManager.DeployAsync().Wait();
+                    AzureBatchManager.InitializeAsync().Wait();
                     break;
                 case TaskExecutionMode.Linear:
                 case TaskExecutionMode.Parallel:
@@ -81,18 +80,18 @@ namespace Optimization.Launcher
         /// <summary>
         /// Releases the computation resources at the end of optimization routine
         /// </summary>
-        public static void ReleaseResources()
+        public static void Dispose()
         {
             // -1- Clean up Task Execution resources
             switch (Shared.Config.TaskExecutionMode)
             {
                 case TaskExecutionMode.Azure:
-                    AzureBatchManager.ReleaseAsync().Wait();
+                    AzureBatchManager.DisposeAsync().Wait();
                     break;
                 case TaskExecutionMode.Linear:
                 case TaskExecutionMode.Parallel:
                     // -2- Release AppDomain
-                    AppDomainRunner.Release();
+                    AppDomainRunner.Dispose();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

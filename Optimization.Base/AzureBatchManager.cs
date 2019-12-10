@@ -54,7 +54,7 @@ namespace Optimization.Base
         /// <summary>
         /// Deploy Batch resourses for cloud computing. Open a batch client.
         /// </summary>
-        public static async Task DeployAsync()
+        public static async Task InitializeAsync()
         {
             try
             {
@@ -62,13 +62,15 @@ namespace Optimization.Base
                 Console.WriteLine();
                 _timer = Stopwatch.StartNew();
 
-                // == BATCH CLIENT ==
-                var batchAccountUrl = Shared.Config.BatchAccountUrl;
-                var batchAccountName = Shared.Config.BatchAccountName;
-                var batchAccountKey = Shared.Config.BatchAccountKey;
+                // This will boost parallel submission speed for REST APIs. If your use requires many simultaneous service calls set this number to something large, such as 100.
+                // See: https://msdn.microsoft.com/en-us/library/system.net.servicepointmanager.defaultconnectionlimit.aspx for more info.
+                System.Net.ServicePointManager.DefaultConnectionLimit = 100;
 
                 // Create a Batch client and authenticate with shared key credentials.
                 // The Batch client allows the app to interact with the Batch service.
+                var batchAccountUrl = Shared.Config.BatchAccountUrl;
+                var batchAccountName = Shared.Config.BatchAccountName;
+                var batchAccountKey = Shared.Config.BatchAccountKey;
                 BatchSharedKeyCredentials sharedKeyCredentials = new BatchSharedKeyCredentials(batchAccountUrl, batchAccountName, batchAccountKey);
                 BatchClient = BatchClient.Open(sharedKeyCredentials);
 
@@ -76,7 +78,7 @@ namespace Optimization.Base
                 string storageConnectionString =
                     $"DefaultEndpointsProtocol=https;AccountName={Shared.Config.StorageAccountName};AccountKey={Shared.Config.StorageAccountKey}";
 
-                // Retrieve the storage account
+                // Retrieve the storage account object
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
 
                 // Create the blob client, to reference the blob storage containers
@@ -115,7 +117,7 @@ namespace Optimization.Base
                 // Flatten agregates all inner exception in one
                 foreach (var innerException in ae.Flatten().InnerExceptions)
                 {
-                    Shared.Logger.Error(innerException.Message);
+                    Shared.Logger.Error($"AzureBatchManager.DeployAsync(): {innerException.Message}");
                 }
                 throw;
             }
@@ -125,7 +127,7 @@ namespace Optimization.Base
         /// Clean up Batch resources. Dispose a batch client.
         /// </summary>
         /// <returns>A <see cref="System.Threading.Tasks.Task"/> object that represents the asynchronous operation.</returns>
-        public static async Task ReleaseAsync()
+        public static async Task DisposeAsync()
         {
             // Print out timing info
             _timer.Stop();

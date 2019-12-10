@@ -17,6 +17,7 @@ namespace Optimization.Genetic
     public class AzureFitness: LeanFitness
     {
         private static readonly object _lock = new object();
+        private static readonly TimeSpan TimeOutForTaskToComplete = TimeSpan.FromHours(24);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureFitness"/> class
@@ -122,8 +123,8 @@ namespace Optimization.Genetic
             // Call BatchClient.JobOperations.AddTask() to add the tasks as a collection to a queue
             await batchClient.JobOperations.AddTaskAsync(jobId, cloudTaskCollection);
 
-            // Monitor for a task to complete. Timeout is set to 60 minutes. 
-            await MonitorSpecificTaskToCompleteAsync(batchClient, jobId, taskId, TimeSpan.FromMinutes(60));
+            // Monitor for a task to complete. Timeout is set as a class's constant variable.
+            await MonitorSpecificTaskToCompleteAsync(batchClient, jobId, taskId, TimeOutForTaskToComplete);
 
             // Obtain results dictionary
             var result = await ObtainResultFromTheBlob(blobClient, AzureBatchManager.OutputContainerName, 
@@ -149,7 +150,7 @@ namespace Optimization.Genetic
                 Shared.Logger.Trace(logOutput + Environment.NewLine);
             }
 
-            // assign fitness to chromosomes
+            // Assign fitness value to a chromosome
             chromosome.Fitness = fitness;
         }
 
@@ -176,7 +177,7 @@ namespace Optimization.Genetic
             }
             catch (Exception e)
             {
-                Shared.Logger.Error(e.Message);
+                Shared.Logger.Error($"AzureFitness.MonitorSpecificTaskToCompleteAsync(): {e.Message}");
                 throw;
             }
 

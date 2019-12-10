@@ -16,7 +16,7 @@ namespace Optimization.Genetic
         public ParallelTaskExecutor()
         {
             MinThreads = 2;
-            MaxThreads = 10;
+            MaxThreads = 20;
         }
    
         /// <summary>
@@ -51,10 +51,11 @@ namespace Optimization.Genetic
                 if (Timeout == TimeSpan.MaxValue)
                 {
                     Task.WaitAll(Tasks.ToArray());
-                    return;
                 }
-
-                Task.WaitAll(Tasks.ToArray(), Timeout);
+                else
+                {
+                    Task.WaitAll(Tasks.ToArray(), Timeout);
+                }
             }
             finally
             {

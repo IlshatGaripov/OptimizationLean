@@ -23,9 +23,9 @@ namespace Optimization.Base
         }
 
         /// <summary>
-        /// Release 
+        /// Dispose 
         /// </summary>
-        public static void Release()
+        public static void Dispose()
         {
 
         }
