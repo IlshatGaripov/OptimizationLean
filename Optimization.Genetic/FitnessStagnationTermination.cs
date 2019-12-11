@@ -11,12 +11,9 @@ namespace Optimization.Genetic
     [DisplayName("Fitness Stagnation")]
     public class FitnessStagnationTermination : TerminationBase
     {
-        #region Fields
-        private double m_lastFitness;
+        private decimal m_lastFitness;
         private int m_stagnantGenerationsCount;
-        #endregion
 
-        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="FitnessStagnationTermination"/> class.
         /// </summary>
@@ -35,16 +32,12 @@ namespace Optimization.Genetic
         {
             ExpectedStagnantGenerationsNumber = expectedStagnantGenerationsNumber;
         }
-        #endregion
 
-        #region Properties
         /// <summary>
         /// Gets or sets the expected stagnant generations number to reach the termination.
         /// </summary>
         public int ExpectedStagnantGenerationsNumber { get; set; }
-        #endregion
 
-        #region Methods
         /// <summary>
         /// Determines whether the specified geneticAlgorithm reached the termination condition.
         /// </summary>
@@ -67,6 +60,5 @@ namespace Optimization.Genetic
 
             return m_stagnantGenerationsCount >= ExpectedStagnantGenerationsNumber;
         }
-        #endregion
     }
 }

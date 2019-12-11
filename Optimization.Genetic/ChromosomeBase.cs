@@ -10,12 +10,9 @@ namespace Optimization.Genetic
     [Serializable]
 	public abstract class ChromosomeBase : IChromosome
     {
-        #region Fields
         private Gene[] m_genes;
         private int m_length;
-        #endregion
-
-        #region Constructors        
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ChromosomeBase"/> class.
         /// </summary>
@@ -27,27 +24,17 @@ namespace Optimization.Genetic
             m_length = length;
             m_genes = new Gene[length];
         }
-        #endregion
 
-        #region Properties
         /// <summary>
         /// Gets or sets the fitness of the chromosome in the current problem.
         /// </summary>
-        public double? Fitness { get; set; }
+        public decimal? Fitness { get; set; }
 
         /// <summary>
         /// Gets the length, in genes, of the chromosome.
         /// </summary>
-        public int Length
-        {
-            get
-            {
-                return m_length;
-            }
-        }
-        #endregion
+        public int Length => m_length;
 
-        #region Methods
         /// <summary>
         /// Implements the operator ==.
         /// </summary>
@@ -336,6 +323,5 @@ namespace Optimization.Genetic
                 throw new ArgumentException("The minimum length for a chromosome is 2 genes.", nameof(length));
             }
         }
-        #endregion      
     }
 }

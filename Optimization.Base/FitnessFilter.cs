@@ -7,7 +7,7 @@ namespace Optimization.Base
         /// <summary>
         /// Error value to be assigned to positive results that haven't passed filter.
         /// </summary>
-        public static double ErrorValue = -0.001;
+        public static decimal ErrorValue = -10;
 
         /// <summary>
         /// Applies filters to eliminate some false positive optimizer results
@@ -19,24 +19,15 @@ namespace Optimization.Base
             // Define a local variable for syntactic convenience
             var filter = Shared.Config.FitnessFilter;
 
-            if (filter == null)
-            {
-                return true;
-            }
-
-            // Filter by min number of trades - null checking and do something with an object
             if (filter.MinimumTrades.HasValue && result["TotalNumberOfTrades"] < filter.MinimumTrades.Value)
                 return false;
 
-            // Filter by DrawDown
             if (filter.MaxDrawdown.HasValue && result["Drawdown"] > filter.MaxDrawdown.Value)
                 return false;
 
-            // Filter by Sharp Ratio
             if (filter.MinSharpeRatio.HasValue && result["SharpeRatio"] < filter.MinSharpeRatio.Value)
                 return false;
 
-            // If all filters passed return true
             return true;
         }
     }

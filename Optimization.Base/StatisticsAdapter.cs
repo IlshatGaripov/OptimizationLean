@@ -9,14 +9,15 @@ namespace Optimization.Base
         {
             {"Average Win","AverageWinRate"},
             {"Average Loss","AverageLossRate"},
+            {"Profit-Loss Ratio","ProfitLossRatio"},
+            {"Win Rate","WinRate"},
+            {"Loss Rate","LossRate"},
+            {"Expectancy","Expectancy"},
             {"Compounding Annual Return","CompoundingAnnualReturn"},
             {"Drawdown","Drawdown"},
-            {"Expectancy","Expectancy"},
             {"Net Profit","TotalNetProfit"},
             {"Sharpe Ratio","SharpeRatio"},
-            {"Loss Rate","LossRate"},
-            {"Win Rate","WinRate"},
-            {"Profit-Loss Ratio","ProfitLossRatio"},
+            {"Probabilistic Sharpe Ratio", "ProbabilisticSharpeRatio"},
             {"Alpha","Alpha"},
             {"Beta","Beta"},
             {"Annual Standard Deviation","AnnualStandardDeviation"},
@@ -33,35 +34,29 @@ namespace Optimization.Base
         /// </summary>
         /// <remarks></remarks>
         /// <param name="result">Full results dictionary</param>
-        /// <param name="scoreKey">Existing score of effectivness of an algorithm</param>
+        /// <param name="fitScore">Existing score of effectivness of an algorithm</param>
         /// <param name="filterEnabled">Indicates whether need to filter the results</param>
         /// <returns></returns>
-        public static double CalculateFitness(Dictionary<string, decimal> result, FitnessScore scoreKey, bool filterEnabled)
+        public static decimal CalculateFitness(Dictionary<string, decimal> result, FitnessScore fitScore, bool filterEnabled)
         {
-            // Calculate fitness using the metric specified
-            double fitness;
-            switch (scoreKey)
+            // Calculate fitness using the chosen fitness finction
+            decimal fitness;
+            switch (fitScore)
             {
                 case FitnessScore.SharpeRatio:
-                    fitness = (double) result["SharpeRatio"];
+                    fitness = result["SharpeRatio"];
                     break;
-
                 case FitnessScore.TotalNetProfit:
-                    fitness = (double) result["TotalNetProfit"];
+                    fitness = result["TotalNetProfit"];
                     break;
-
                 default:
-                    throw new NotImplementedException("StatisticsAdapter.CalculateFitness() : default");
+                    throw new ArgumentOutOfRangeException(fitScore.ToString(),"StatisticsAdapter.CalculateFitness() : default");
             }
 
-            // Filter positive results ->
-            if (fitness > 0 && filterEnabled)
+            // apply filter if enabled
+            if (filterEnabled)
             {
-                // If filter is not passed -> 
-                if ( !FitnessFilter.IsSuccess(result))
-                {
-                    fitness = FitnessFilter.ErrorValue;
-                }
+                if (!FitnessFilter.IsSuccess(result) || fitness < 0) fitness = FitnessFilter.ErrorValue;
             }
 
             return fitness;

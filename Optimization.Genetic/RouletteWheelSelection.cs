@@ -44,7 +44,7 @@ namespace Optimization.Genetic
         /// <param name="rouletteWheel">The roulette wheel.</param>
         /// <param name="getPointer">The get pointer.</param>
         /// <returns>The selected chromosomes.</returns>
-        protected static IList<IChromosome> SelectFromWheel(int number, IList<IChromosome> chromosomes, IList<double> rouletteWheel, Func<double> getPointer)
+        protected static IList<IChromosome> SelectFromWheel(int number, IList<IChromosome> chromosomes, IList<decimal> rouletteWheel, Func<decimal> getPointer)
         {
             var selected = new List<IChromosome>();
 
@@ -68,11 +68,11 @@ namespace Optimization.Genetic
         /// </summary>
         /// <param name="chromosomes">The chromosomes.</param>
         /// <param name="rouletteWheel">The roulette wheel.</param>
-        protected static void CalculateCumulativePercentFitness(IList<IChromosome> chromosomes, IList<double> rouletteWheel)
+        protected static void CalculateCumulativePercentFitness(IList<IChromosome> chromosomes, IList<decimal> rouletteWheel)
         {
             var sumFitness = chromosomes.Sum(c => c.Fitness.Value);
 
-            var cumulativePercent = 0.0;
+            var cumulativePercent = 0m;
 
             for (int i = 0; i < chromosomes.Count; i++)
             {
@@ -90,12 +90,12 @@ namespace Optimization.Genetic
         protected override IList<IChromosome> PerformSelectChromosomes(int number, Generation generation)
         {
             var chromosomes = generation.Chromosomes;
-            var rouletteWheel = new List<double>();
+            var rouletteWheel = new List<decimal>();
             var rnd = RandomizationProvider.Current;
 
             CalculateCumulativePercentFitness(chromosomes, rouletteWheel);
 
-            return SelectFromWheel(number, chromosomes, rouletteWheel, () => rnd.GetDouble());
+            return SelectFromWheel(number, chromosomes, rouletteWheel, () => (decimal)rnd.GetDouble());
         }
         #endregion
     }

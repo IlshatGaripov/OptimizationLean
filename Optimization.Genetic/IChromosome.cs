@@ -14,21 +14,18 @@ namespace Optimization.Genetic
     /// </summary>
     public interface IChromosome : IComparable<IChromosome>
     {
-        #region Properties
         /// <summary>
         /// Gets or sets the fitness.
         /// </summary>
         /// <value>The fitness.</value>
-        double? Fitness { get; set; }
+        decimal? Fitness { get; set; }
 
         /// <summary>
         /// Gets the length.
         /// </summary>
         /// <value>The length.</value>
         int Length { get; }
-        #endregion
 
-        #region Methods
         /// <summary>
         /// Generates the gene for the specified index.
         /// </summary>
@@ -83,6 +80,5 @@ namespace Optimization.Genetic
         /// </summary>
         /// <returns>The chromosome clone.</returns>
         IChromosome Clone();
-        #endregion
     }
 }

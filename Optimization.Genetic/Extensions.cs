@@ -72,7 +72,7 @@ namespace Optimization.Genetic
         ///             gold-drawdown-percent 0.2
         /// RESULTS: SharpeRatio = -0.32 Drawdown = 2.20 TotalNumberOfTrades = 67 AnnualReturn = -1.55
         /// </returns>
-        public static string EvaluationToLogOutput(this Chromosome ch, Dictionary<string,decimal> result, FitnessScore ftSc, double fitness)
+        public static string EvaluationToLogOutput(this Chromosome ch, Dictionary<string,decimal> result, FitnessScore ftSc, decimal fitness)
         {
             // beginning string
             var output = new StringBuilder($"[chromosome #id: {ch.Id}]{Environment.NewLine}PARAMETERS: ");
@@ -92,11 +92,15 @@ namespace Optimization.Genetic
                 }
             }
             // finally
-            output.Append(Environment.NewLine);
-            output.Append($"RESULTS: {ftSc} = {fitness:f2} ");
+            output.Append($"{Environment.NewLine}RESULTS: ");
+            output.Append(fitness == FitnessFilter.ErrorValue ? $"ErrValue = {fitness:f2} " : $"{ftSc} = {fitness:f2} ");
+            output.Append($"NetProfit = {result["TotalNetProfit"] * 100:f2} ");
             output.Append($"Drawdown = {result["Drawdown"] * 100:f2} ");
-            output.Append($"TotalNumberOfTrades = {result["TotalNumberOfTrades"]} ");
-            output.Append($"AnnualReturn = {result["CompoundingAnnualReturn"] * 100:f2}");
+            // new line starts with spaces 
+            output.Append(Environment.NewLine + new string(' ', 9));
+            output.Append($"Trades = {result["TotalNumberOfTrades"]} ");
+            output.Append($"Fees = {result["TotalFees"]} ");
+            output.Append($"Expectancy = {result["Expectancy"]:f2} ");     // Expectancy = WinRate * ProfitLossRatio - LossRate
             return output.ToString();
         }
 
