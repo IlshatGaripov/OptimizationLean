@@ -12,9 +12,9 @@ namespace Optimization.Base
     public static class Shared
     {
         // Location of the configuration file.
-        private static readonly string ConfigurationFilePath =
-            "C:\\Users\\sterling\\source\\repos\\OptimizationLean\\Optimization.Launcher\\optimization_local.json";
-        
+        private const string ConfigurationFilePath = 
+            "C:\\Users\\ilshat\\source\\repos\\OptimizationLean\\Optimization.Launcher\\optimization_local.json";
+
         /// <summary>
         /// Optimization configuration object
         /// </summary>

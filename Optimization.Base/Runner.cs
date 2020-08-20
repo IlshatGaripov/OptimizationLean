@@ -90,7 +90,9 @@ namespace Optimization.Base
                 var algorithmManager = new AlgorithmManager(false, job);
                 leanEngineSystemHandlers.LeanManager.Initialize(leanEngineSystemHandlers, leanEngineAlgorithmHandlers, job, algorithmManager);
                 var engine = new Engine(leanEngineSystemHandlers, leanEngineAlgorithmHandlers, false);
-                engine.Run(job, algorithmManager, assemblyPath);
+
+                // Run -->
+                engine.Run(job, algorithmManager, assemblyPath, WorkerThread.Instance);
             }
             finally
             {

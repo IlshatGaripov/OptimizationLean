@@ -79,7 +79,8 @@ namespace Optimization.RunnerAppAzure
                 var algorithmManager = new AlgorithmManager(false, job);
                 leanEngineSystemHandlers.LeanManager.Initialize(leanEngineSystemHandlers, leanEngineAlgorithmHandlers, job, algorithmManager);
                 var engine = new Engine(leanEngineSystemHandlers, leanEngineAlgorithmHandlers, false);
-                engine.Run(job, algorithmManager, assemblyPath);
+
+                engine.Run(job, algorithmManager, assemblyPath, WorkerThread.Instance);
             }
             finally
             {
