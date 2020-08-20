@@ -18,12 +18,12 @@ namespace Optimization.Base
         /// <summary>
         /// Optimization configuration object
         /// </summary>
-        public static OptimizerConfiguration Config = LoadConfigFromFile(ConfigurationFilePath);
+        public static OptimizerConfiguration Config { get; } = LoadConfigFromFile(ConfigurationFilePath);
 
         /// <summary>
         /// Global log handler
         /// </summary>
-        public static ILogHandler Logger =
+        public static ILogHandler Logger { get;  }=
             new CompositeLogHandler(new ConsoleLogHandler(), new FileLogHandler(filepath: Config.LogFile));
 
         /// <summary>
